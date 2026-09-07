@@ -1,0 +1,63 @@
+# === Raw / intermediate dataset (huge, and restricted by the consent form to
+# the six project members -- never publish these outside the group) ===
+processed_data/
+put_asides/
+crops/
+_scratch/
+
+# === Identity-linking metadata (maps anonymous p## IDs to real people /
+# team members and to original camera filenames -- keep this out of any
+# remote you don't fully control, per the consent form) ===
+metadata/person_id_mapping.txt
+metadata/rename.txt
+
+# Large derived artifacts that scripts regenerate from processed_data/
+# (re-run 01_preprocess.py..03_embed.py rather than committing these)
+metadata/embeddings.npz
+metadata/preprocess_log.csv
+metadata/manifest.csv
+
+# === Model weights / checkpoints (large binaries, all reproducible: the
+# .onnx files are auto-downloaded by insightface, the .pt files are written
+# by 05_train_head.py / 06_e3_finetune.py) ===
+*.onnx
+*.pt
+*.pth
+*.ckpt
+
+# Deployed gallery is derived from embeddings.npz via 07_build_gallery.py
+runs/gallery.npz
+runs/gallery_meta.json
+runs/eval/
+
+# Self-signed HTTPS cert/key for the live demo (09_server.py) -- private
+# key material, auto-regenerated on first run if missing
+runs/certs/
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# === LaTeX build artifacts ===
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.toc
+docs/*.synctex.gz
+docs/*.fls
+docs/*.fdb_latexmk
+docs/*.bbl
+docs/*.blg
+
+# === OS / editor ===
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/

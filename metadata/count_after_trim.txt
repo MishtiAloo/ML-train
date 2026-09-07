@@ -1,0 +1,846 @@
+======================================================================
+1. Per member / per person / per occlusion / per brightness
+======================================================================
+
+[Adiba]
+  Adiba
+    cap / low: 12
+    cap / regular: 12
+    clearglass / low: 12
+    clearglass / regular: 12
+    mask / low: 12
+    mask / regular: 12
+    mask_clearglass / low: 12
+    mask_clearglass / regular: 12
+    mask_sunglass / low: 13
+    mask_sunglass / regular: 13
+    none / low: 13
+    none / regular: 13
+    scarf / low: 13
+    scarf / regular: 13
+    sunglass / low: 13
+    sunglass / regular: 13
+  Aunt
+    cap / low: 12
+    cap / regular: 12
+    clearglass / low: 12
+    clearglass / regular: 12
+    mask / low: 12
+    mask / regular: 12
+    mask_clearglass / low: 12
+    mask_clearglass / regular: 12
+    mask_sunglass / low: 13
+    mask_sunglass / regular: 13
+    none / low: 13
+    none / regular: 13
+    scarf / low: 13
+    scarf / regular: 13
+    sunglass / low: 13
+    sunglass / regular: 13
+  Khalamony2
+    cap / low: 12
+    cap / regular: 12
+    clearglass / low: 12
+    clearglass / regular: 12
+    mask / low: 12
+    mask / regular: 12
+    mask_clearglass / low: 12
+    mask_clearglass / regular: 13
+    mask_sunglass / low: 13
+    mask_sunglass / regular: 13
+    none / low: 13
+    none / regular: 13
+    scarf / low: 12
+    scarf / regular: 13
+    sunglass / low: 13
+    sunglass / regular: 13
+  Nabil
+    cap / low: 13
+    cap / regular: 15
+    clearglass / low: 16
+    clearglass / regular: 15
+    mask / low: 16
+    mask / regular: 16
+    mask_clearglass / low: 15
+    mask_clearglass / regular: 15
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 14
+    none / low: 16
+    none / regular: 16
+    sunglass / low: 1
+    sunglass / regular: 17
+  Nanu
+    cap / low: 15
+    cap / regular: 15
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 8
+    mask_clearglass / regular: 6
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 16
+    none / regular: 16
+    scarf / low: 16
+    scarf / regular: 16
+    sunglass / low: 16
+    sunglass / regular: 16
+
+[Arafat]
+  ABRAR
+    cap / low: 10
+    cap / regular: 10
+    clearglass / low: 10
+    clearglass / regular: 10
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 15
+    scarf / low: 10
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+  ARAFAT
+    cap / low: 10
+    cap / regular: 10
+    clearglass / low: 10
+    clearglass / regular: 10
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 15
+    scarf / low: 10
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+  JABER
+    cap / low: 10
+    cap / regular: 10
+    clearglass / low: 10
+    clearglass / regular: 10
+    mask / low: 15
+    mask / regular: 14
+    mask_clearglass / low: 11
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 15
+    scarf / low: 10
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+  MITHUN
+    cap / low: 10
+    cap / regular: 10
+    clearglass / low: 10
+    clearglass / regular: 10
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 15
+    scarf / low: 10
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+  SAAJ
+    cap / low: 10
+    cap / regular: 10
+    clearglass / low: 10
+    clearglass / regular: 10
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 15
+    scarf / low: 10
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+
+[Dip]
+  Ansh
+    cap / low: 12
+    cap / regular: 9
+    clearglass / low: 12
+    clearglass / regular: 10
+    mask / low: 13
+    mask / regular: 12
+    mask_clearglass / low: 11
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 15
+    scarf / low: 11
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+  Ashraful
+    cap / low: 10
+    cap / regular: 10
+    clearglass / low: 10
+    clearglass / regular: 10
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 15
+    scarf / low: 10
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+  Dip
+    cap / low: 13
+    cap / regular: 13
+    clearglass / low: 13
+    clearglass / regular: 10
+    mask / low: 13
+    mask / regular: 13
+    mask_clearglass / low: 13
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 13
+    mask_sunglass / regular: 9
+    none / low: 13
+    none / regular: 13
+    scarf / low: 13
+    scarf / regular: 13
+    sunglass / low: 14
+    sunglass / regular: 14
+  Sayeed
+    cap / low: 10
+    cap / regular: 10
+    clearglass / low: 10
+    clearglass / regular: 10
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 15
+    scarf / low: 10
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+  Ullash
+    cap / low: 11
+    cap / regular: 10
+    clearglass / low: 10
+    clearglass / regular: 10
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 10
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 14
+    none / regular: 15
+    scarf / low: 10
+    scarf / regular: 10
+    sunglass / low: 15
+    sunglass / regular: 15
+
+[Megha]
+  Antu
+    cap / low: 14
+    cap / regular: 15
+    clearglass / low: 15
+    clearglass / regular: 15
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 15
+    mask_clearglass / regular: 15
+    mask_sunglass / low: 5
+    mask_sunglass / regular: 7
+    none / low: 14
+    none / regular: 15
+    scarf / low: 12
+    scarf / regular: 15
+    sunglass / low: 5
+    sunglass / regular: 8
+  Arpita
+    clearglass / low: 15
+    clearglass / regular: 13
+    mask / low: 15
+    mask / regular: 14
+    mask_clearglass / low: 15
+    mask_clearglass / regular: 14
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 15
+    none / regular: 12
+    scarf / low: 14
+    scarf / regular: 14
+    sunglass / low: 15
+    sunglass / regular: 14
+  Megha
+    cap / low: 14
+    cap / regular: 14
+    clearglass / low: 14
+    clearglass / regular: 14
+    mask / low: 5
+    mask / regular: 10
+    mask_clearglass / low: 12
+    mask_clearglass / regular: 14
+    mask_sunglass / low: 6
+    mask_sunglass / regular: 9
+    none / low: 15
+    none / regular: 15
+    scarf / low: 14
+    scarf / regular: 15
+    sunglass / low: 14
+    sunglass / regular: 15
+  Minha
+    cap / low: 12
+    cap / regular: 14
+    clearglass / low: 7
+    clearglass / regular: 5
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 15
+    mask_clearglass / regular: 15
+    mask_sunglass / low: 15
+    mask_sunglass / regular: 15
+    none / low: 9
+    none / regular: 8
+    scarf / low: 12
+    scarf / regular: 14
+    sunglass / low: 14
+    sunglass / regular: 15
+  Rajorshi
+    cap / low: 10
+    cap / regular: 16
+    clearglass / low: 15
+    clearglass / regular: 14
+    mask / low: 10
+    mask / regular: 13
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 14
+    mask_sunglass / low: 10
+    mask_sunglass / regular: 13
+    none / low: 15
+    none / regular: 15
+    scarf / low: 9
+    scarf / regular: 14
+    sunglass / low: 9
+    sunglass / regular: 13
+
+[Rafi]
+  Argho
+    cap / low: 14
+    cap / regular: 14
+    clearglass / low: 14
+    clearglass / regular: 14
+    mask / low: 14
+    mask / regular: 14
+    mask_clearglass / low: 14
+    mask_clearglass / regular: 14
+    mask_sunglass / low: 14
+    mask_sunglass / regular: 14
+    none / low: 15
+    none / regular: 15
+    sunglass / low: 15
+    sunglass / regular: 15
+  Arif
+    cap / low: 14
+    cap / regular: 14
+    clearglass / low: 14
+    clearglass / regular: 14
+    mask / low: 14
+    mask / regular: 14
+    mask_clearglass / low: 14
+    mask_clearglass / regular: 14
+    mask_sunglass / low: 14
+    mask_sunglass / regular: 14
+    none / low: 15
+    none / regular: 15
+    sunglass / low: 15
+    sunglass / regular: 15
+  Masum
+    cap / low: 14
+    cap / regular: 14
+    clearglass / low: 14
+    clearglass / regular: 14
+    mask / low: 14
+    mask / regular: 14
+    mask_clearglass / low: 14
+    mask_clearglass / regular: 14
+    mask_sunglass / low: 14
+    mask_sunglass / regular: 14
+    none / low: 15
+    none / regular: 15
+    sunglass / low: 15
+    sunglass / regular: 15
+  Rafi
+    cap / low: 14
+    cap / regular: 14
+    clearglass / low: 14
+    clearglass / regular: 14
+    mask / low: 14
+    mask / regular: 14
+    mask_clearglass / low: 14
+    mask_clearglass / regular: 14
+    mask_sunglass / low: 14
+    mask_sunglass / regular: 14
+    none / low: 15
+    none / regular: 15
+    sunglass / low: 15
+    sunglass / regular: 15
+  Zobayer
+    cap / low: 14
+    cap / regular: 14
+    clearglass / low: 14
+    clearglass / regular: 14
+    mask / low: 14
+    mask / regular: 14
+    mask_clearglass / low: 14
+    mask_clearglass / regular: 14
+    mask_sunglass / low: 14
+    mask_sunglass / regular: 14
+    none / low: 15
+    none / regular: 15
+    sunglass / low: 15
+    sunglass / regular: 15
+
+[Tahmid]
+  Faisal
+    cap / low: 18
+    cap / regular: 18
+    clearglass / low: 9
+    clearglass / regular: 11
+    mask / low: 19
+    mask / regular: 19
+    mask_clearglass / low: 9
+    mask_clearglass / regular: 9
+    mask_sunglass / low: 10
+    mask_sunglass / regular: 12
+    none / low: 12
+    none / regular: 13
+    scarf / low: 7
+    scarf / regular: 8
+    sunglass / low: 12
+    sunglass / regular: 14
+  Jahid
+    cap / low: 15
+    cap / regular: 15
+    clearglass / low: 11
+    clearglass / regular: 14
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 11
+    mask_clearglass / regular: 13
+    mask_sunglass / low: 9
+    mask_sunglass / regular: 9
+    none / low: 11
+    none / regular: 13
+    scarf / low: 12
+    scarf / regular: 12
+    sunglass / low: 11
+    sunglass / regular: 14
+  Naquib
+    cap / low: 16
+    cap / regular: 15
+    clearglass / low: 8
+    clearglass / regular: 7
+    mask / low: 15
+    mask / regular: 15
+    mask_clearglass / low: 16
+    mask_clearglass / regular: 15
+    mask_sunglass / low: 14
+    mask_sunglass / regular: 14
+    none / low: 8
+    none / regular: 8
+    scarf / low: 12
+    scarf / regular: 11
+    sunglass / low: 13
+    sunglass / regular: 13
+  Rezwan
+    cap / low: 17
+    cap / regular: 22
+    clearglass / low: 8
+    clearglass / regular: 8
+    mask / low: 15
+    mask / regular: 22
+    mask_clearglass / low: 7
+    mask_clearglass / regular: 20
+    mask_sunglass / low: 8
+    mask_sunglass / regular: 8
+    none / low: 6
+    none / regular: 16
+    scarf / low: 8
+    scarf / regular: 8
+    sunglass / low: 7
+    sunglass / regular: 20
+  Tahmid
+    cap / low: 14
+    cap / regular: 14
+    clearglass / low: 6
+    clearglass / regular: 10
+    mask / low: 14
+    mask / regular: 15
+    mask_clearglass / low: 10
+    mask_clearglass / regular: 15
+    mask_sunglass / low: 12
+    mask_sunglass / regular: 12
+    none / low: 15
+    none / regular: 15
+    scarf / low: 12
+    scarf / regular: 12
+    sunglass / low: 9
+    sunglass / regular: 15
+
+======================================================================
+2. Per member / per person / per occlusion (totals)
+======================================================================
+
+[Adiba]
+  Adiba
+    cap: 24
+    clearglass: 24
+    mask: 24
+    mask_clearglass: 24
+    mask_sunglass: 26
+    none: 26
+    scarf: 26
+    sunglass: 26
+  Aunt
+    cap: 24
+    clearglass: 24
+    mask: 24
+    mask_clearglass: 24
+    mask_sunglass: 26
+    none: 26
+    scarf: 26
+    sunglass: 26
+  Khalamony2
+    cap: 24
+    clearglass: 24
+    mask: 24
+    mask_clearglass: 25
+    mask_sunglass: 26
+    none: 26
+    scarf: 25
+    sunglass: 26
+  Nabil
+    cap: 28
+    clearglass: 31
+    mask: 32
+    mask_clearglass: 30
+    mask_sunglass: 29
+    none: 32
+    sunglass: 18
+  Nanu
+    cap: 30
+    mask: 30
+    mask_clearglass: 14
+    mask_sunglass: 30
+    none: 32
+    scarf: 32
+    sunglass: 32
+
+[Arafat]
+  ABRAR
+    cap: 20
+    clearglass: 20
+    mask: 30
+    mask_clearglass: 20
+    mask_sunglass: 30
+    none: 30
+    scarf: 20
+    sunglass: 30
+  ARAFAT
+    cap: 20
+    clearglass: 20
+    mask: 30
+    mask_clearglass: 20
+    mask_sunglass: 30
+    none: 30
+    scarf: 20
+    sunglass: 30
+  JABER
+    cap: 20
+    clearglass: 20
+    mask: 29
+    mask_clearglass: 21
+    mask_sunglass: 30
+    none: 30
+    scarf: 20
+    sunglass: 30
+  MITHUN
+    cap: 20
+    clearglass: 20
+    mask: 30
+    mask_clearglass: 20
+    mask_sunglass: 30
+    none: 30
+    scarf: 20
+    sunglass: 30
+  SAAJ
+    cap: 20
+    clearglass: 20
+    mask: 30
+    mask_clearglass: 20
+    mask_sunglass: 30
+    none: 30
+    scarf: 20
+    sunglass: 30
+
+[Dip]
+  Ansh
+    cap: 21
+    clearglass: 22
+    mask: 25
+    mask_clearglass: 21
+    mask_sunglass: 30
+    none: 30
+    scarf: 21
+    sunglass: 30
+  Ashraful
+    cap: 20
+    clearglass: 20
+    mask: 30
+    mask_clearglass: 20
+    mask_sunglass: 30
+    none: 30
+    scarf: 20
+    sunglass: 30
+  Dip
+    cap: 26
+    clearglass: 23
+    mask: 26
+    mask_clearglass: 23
+    mask_sunglass: 22
+    none: 26
+    scarf: 26
+    sunglass: 28
+  Sayeed
+    cap: 20
+    clearglass: 20
+    mask: 30
+    mask_clearglass: 20
+    mask_sunglass: 30
+    none: 30
+    scarf: 20
+    sunglass: 30
+  Ullash
+    cap: 21
+    clearglass: 20
+    mask: 30
+    mask_clearglass: 20
+    mask_sunglass: 30
+    none: 29
+    scarf: 20
+    sunglass: 30
+
+[Megha]
+  Antu
+    cap: 29
+    clearglass: 30
+    mask: 30
+    mask_clearglass: 30
+    mask_sunglass: 12
+    none: 29
+    scarf: 27
+    sunglass: 13
+  Arpita
+    clearglass: 28
+    mask: 29
+    mask_clearglass: 29
+    mask_sunglass: 30
+    none: 27
+    scarf: 28
+    sunglass: 29
+  Megha
+    cap: 28
+    clearglass: 28
+    mask: 15
+    mask_clearglass: 26
+    mask_sunglass: 15
+    none: 30
+    scarf: 29
+    sunglass: 29
+  Minha
+    cap: 26
+    clearglass: 12
+    mask: 30
+    mask_clearglass: 30
+    mask_sunglass: 30
+    none: 17
+    scarf: 26
+    sunglass: 29
+  Rajorshi
+    cap: 26
+    clearglass: 29
+    mask: 23
+    mask_clearglass: 24
+    mask_sunglass: 23
+    none: 30
+    scarf: 23
+    sunglass: 22
+
+[Rafi]
+  Argho
+    cap: 28
+    clearglass: 28
+    mask: 28
+    mask_clearglass: 28
+    mask_sunglass: 28
+    none: 30
+    sunglass: 30
+  Arif
+    cap: 28
+    clearglass: 28
+    mask: 28
+    mask_clearglass: 28
+    mask_sunglass: 28
+    none: 30
+    sunglass: 30
+  Masum
+    cap: 28
+    clearglass: 28
+    mask: 28
+    mask_clearglass: 28
+    mask_sunglass: 28
+    none: 30
+    sunglass: 30
+  Rafi
+    cap: 28
+    clearglass: 28
+    mask: 28
+    mask_clearglass: 28
+    mask_sunglass: 28
+    none: 30
+    sunglass: 30
+  Zobayer
+    cap: 28
+    clearglass: 28
+    mask: 28
+    mask_clearglass: 28
+    mask_sunglass: 28
+    none: 30
+    sunglass: 30
+
+[Tahmid]
+  Faisal
+    cap: 36
+    clearglass: 20
+    mask: 38
+    mask_clearglass: 18
+    mask_sunglass: 22
+    none: 25
+    scarf: 15
+    sunglass: 26
+  Jahid
+    cap: 30
+    clearglass: 25
+    mask: 30
+    mask_clearglass: 24
+    mask_sunglass: 18
+    none: 24
+    scarf: 24
+    sunglass: 25
+  Naquib
+    cap: 31
+    clearglass: 15
+    mask: 30
+    mask_clearglass: 31
+    mask_sunglass: 28
+    none: 16
+    scarf: 23
+    sunglass: 26
+  Rezwan
+    cap: 39
+    clearglass: 16
+    mask: 37
+    mask_clearglass: 27
+    mask_sunglass: 16
+    none: 22
+    scarf: 16
+    sunglass: 27
+  Tahmid
+    cap: 28
+    clearglass: 16
+    mask: 29
+    mask_clearglass: 25
+    mask_sunglass: 24
+    none: 30
+    scarf: 24
+    sunglass: 24
+
+======================================================================
+3. Per member / per person (totals)
+======================================================================
+
+[Adiba]
+  Adiba: 200
+  Aunt: 200
+  Khalamony2: 200
+  Nabil: 200
+  Nanu: 200
+
+[Arafat]
+  ABRAR: 200
+  ARAFAT: 200
+  JABER: 200
+  MITHUN: 200
+  SAAJ: 200
+
+[Dip]
+  Ansh: 200
+  Ashraful: 200
+  Dip: 200
+  Sayeed: 200
+  Ullash: 200
+
+[Megha]
+  Antu: 200
+  Arpita: 200
+  Megha: 200
+  Minha: 200
+  Rajorshi: 200
+
+[Rafi]
+  Argho: 200
+  Arif: 200
+  Masum: 200
+  Rafi: 200
+  Zobayer: 200
+
+[Tahmid]
+  Faisal: 200
+  Jahid: 200
+  Naquib: 200
+  Rezwan: 200
+  Tahmid: 200
+
+======================================================================
+4. Per member (totals)
+======================================================================
+
+Adiba: 1000
+Arafat: 1000
+Dip: 1000
+Megha: 1000
+Rafi: 1000
+Tahmid: 1000
+
+GRAND TOTAL: 6000

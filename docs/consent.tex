@@ -1,0 +1,138 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[a4paper,margin=0.68in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amssymb}
+\usepackage{titlesec}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+\setlist[itemize]{leftmargin=1.4em,itemsep=1pt,topsep=2pt,parsep=0pt}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{7pt}{2pt}
+
+\newcommand{\checkbox}{$\square$}
+\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+
+\begin{document}
+
+\begin{center}
+    {\Large\textbf{Participant Consent Form}}\\[2pt]
+    {\large\textbf{Occlusion-Robust Face Identification Dataset}}\\[4pt]
+    Department of Computer Science and Engineering, KUET\\
+    Machine Learning Laboratory -- CSE 4112
+\end{center}
+
+\hrule
+\vspace{5pt}
+
+\textbf{Project type:} Academic laboratory project
+
+\textbf{Project team:}\par\vspace{-2pt}
+{\footnotesize
+\begin{tabularx}{\textwidth}{@{}X X X@{}}
+    Adiba Tahsin (2107031) & Arafat Islam (2107044) & Arman Rahman Rafi (2107046) \\
+    Dip Shekhor Datta (2107047) & Megha Tania (2107057) & Farhan Tahmid (2107059)
+\end{tabularx}}
+\vspace{-2pt}
+
+\textbf{Participant ID:} \blank{3cm} \hfill
+\textbf{Date:} \blank{3cm}
+
+\section*{1. Purpose and Participation}
+
+This project develops and evaluates a face-identification system that recognizes enrolled people when their faces are partly obstructed or shown under different poses and lighting. It is an experimental laboratory prototype, not a system for surveillance, law enforcement, attendance, or production security.
+
+If you participate, the team will take approximately \textbf{200 images} of your face in one session. Images may show an unobstructed face; masks, glasses, sunglasses, scarves, or hats; combinations of these items; front, left, right, up, and down poses; and normal or low-light conditions. You may decline any accessory or capture condition and may stop the session at any time.
+
+The images may be used to train, validate, test, and demonstrate machine-learning models for face identification.
+
+\section*{2. Data Labels and Identity}
+
+Your images and filenames will use a pseudonymous participant code (for example, \texttt{p01}) instead of your name, student ID, roll number, phone number, or other direct identifier. The identity-to-code record and signed consent form will be stored separately and will not be included in the published dataset.
+
+However, a face image is biometric data and may identify you by appearance. Pseudonymous labels therefore \textbf{reduce but do not eliminate the possibility of identification}. The team cannot promise complete anonymity once facial images are made public.
+
+\section*{3. Project Use, Lab Presentation, and Public Release}
+
+Your collected facial images may be used for:
+
+\begin{itemize}
+    \item training and testing face-identification models;
+    \item evaluating recognition under obstructions, poses, and lighting conditions;
+    \item producing accuracy, F1-score, confusion matrices, and related results;
+    \item inclusion in the project report and presentation or demonstration in the laboratory; and
+    \item publication as part of a \textbf{publicly accessible research dataset} under your pseudonymous participant code.
+\end{itemize}
+
+Public publication means that the dataset may be uploaded to a public repository or dataset platform. People outside KUET may view, download, copy, analyze, redistribute, or reuse the published images. Such reuse may include purposes not controlled by the project team. Although the team will not publish the separate identity mapping, it cannot control copies made by others or guarantee removal of all copies after release.
+
+\section*{4. Risks and Safeguards}
+
+Possible risks include temporary discomfort from accessories or photography conditions; privacy loss, recognition, copying, or misuse of public facial images; and incorrect identification by an experimental model. Model predictions must not be treated as verified identity decisions outside this project.
+
+Before publication, access will be limited to the project team and necessary academic supervisors using access-controlled storage. Direct identifiers, identity records, and signed forms will remain separate and unpublished. Reasonable safeguards will be used before release. There is no guaranteed payment or personal benefit; the project supports academic learning on recognition under facial obstruction.
+
+\newpage
+
+\section*{5. Voluntary Participation and Withdrawal}
+
+Participation is voluntary. Refusal or withdrawal will not cause any academic, financial, or personal penalty. You may ask questions, refuse a condition, stop photography, or request withdrawal before the deadline below.
+
+\textbf{Withdrawal deadline: 30/08/2026}
+
+If you withdraw by this deadline and before public release, the team will remove your raw and processed images, embeddings, and participant records from the active dataset. A trained model may need retraining to reduce the influence of your images.
+
+After the dataset has been published, the team may remove your data from versions it controls where reasonably possible, but \textbf{cannot guarantee deletion from copies already downloaded, redistributed, archived, or used by others}. Public availability may therefore be effectively permanent.
+
+\section*{6. Processing, Outputs, and Retention}
+
+Processing may create cropped or aligned images, brightness-adjusted images, facial embeddings, prediction scores, trained weights, and evaluation results. These may be used for the same project purposes described above. Public dataset releases may contain collected or processed face images and pseudonymous labels, but will not contain the separate identity mapping or signed consent forms.
+
+The team-controlled working dataset and identity mapping will be retained only as long as needed for the laboratory project, evaluation, publication, and reasonable maintenance of the released dataset. Public copies held by third parties may remain available beyond that period.
+
+\section*{7. Participant Declaration}
+
+By selecting ``I consent'' and signing below, I confirm that:
+
+\begin{itemize}
+    \item I am at least 18 years old and have read and understood this form.
+    \item I understand that facial images are identifiable biometric data.
+    \item I understand what images will be collected and how they may be processed.
+    \item I understand that my images may be shown in the laboratory project report, presentation, and demonstration.
+    \item I understand and agree that my facial images may be published in a publicly accessible dataset under a pseudonymous code.
+    \item I understand that the public may download, copy, redistribute, or reuse the dataset and that complete deletion cannot be guaranteed after publication.
+    \item I understand the withdrawal deadline and have had an opportunity to ask questions.
+\end{itemize}
+
+\vspace{3pt}
+\checkbox\ \textbf{I consent} to the collection, project use, laboratory presentation, and public dataset publication described above.
+
+\checkbox\ \textbf{I do not consent.}
+
+\vspace{4pt}
+
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+    \textbf{Participant Name:} & \textbf{Participant ID:} \\[8pt]
+    \blank{7cm} & \blank{5cm} \\[10pt]
+
+    \textbf{Participant Signature:} & \textbf{Date:} \\[8pt]
+    \blank{7cm} & \blank{5cm} \\[11pt]
+
+    \textbf{Data Collector / Project Member:} & \textbf{Signature:} \\[8pt]
+    \blank{7cm} & \blank{5cm} \\[10pt]
+
+    \textbf{Contact for questions:} & \\[3pt]
+    \multicolumn{2}{l}{Name: \blank{5.5cm} \hspace{0.7cm} Email/Phone: \blank{5.5cm}}
+\end{tabularx}
+
+\vfill
+\begin{center}
+    \small\textit{This form applies to the Occlusion-Robust Face Identification academic laboratory project and its public dataset release.}
+\end{center}
+
+\end{document}

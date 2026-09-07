@@ -1,0 +1,39 @@
+{
+  "mode": "mixed",
+  "test_acc": 0.998997995991984,
+  "test_macro_f1": 0.99915611814346,
+  "per_occlusion": {
+    "cap": {
+      "n": 129,
+      "acc": 1.0
+    },
+    "clearglass": {
+      "n": 108,
+      "acc": 1.0
+    },
+    "mask": {
+      "n": 161,
+      "acc": 0.9937888198757764
+    },
+    "mask_clearglass": {
+      "n": 120,
+      "acc": 1.0
+    },
+    "mask_sunglass": {
+      "n": 133,
+      "acc": 1.0
+    },
+    "none": {
+      "n": 138,
+      "acc": 1.0
+    },
+    "scarf": {
+      "n": 84,
+      "acc": 1.0
+    },
+    "sunglass": {
+      "n": 125,
+      "acc": 1.0
+    }
+  }
+}
