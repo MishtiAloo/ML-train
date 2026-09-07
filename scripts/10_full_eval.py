@@ -77,20 +77,40 @@ def per_class_prf(y_true, y_pred, n_classes):
     return rows
 
 
-def group_prf(mask_fn, groups, y_true, y_pred, correct):
+def group_prf(mask_fn, groups, y_true, y_pred, correct, n_classes=None):
+    """Per-group (e.g. per-occlusion) accuracy, plus -- if n_classes is given --
+    macro precision/recall/F1 computed on the row-filtered subset: restrict
+    to rows belonging to this group, build a conditional confusion matrix
+    over just those rows, and average per-class P/R/F1 over the identities
+    that actually appear as ground truth in the subset. This is a real,
+    well-defined multi-class P/R/F1 -- not just accuracy relabelled -- since
+    precision here penalises a class for being over-predicted specifically
+    within this occlusion's images, not across the whole test set."""
     out = {}
     for g in groups:
         m = mask_fn(g)
         n = int(m.sum())
         if n == 0:
             continue
-        # accuracy for this group, plus micro precision/recall treating
-        # "this occlusion/person" as irrelevant -- report accuracy (== recall
-        # in the closed-set, single-label setting) and count, matching what
-        # the training plan's per-occlusion table asks for.
         acc = float(correct[m].mean())
         lo, hi = wilson_ci(int(correct[m].sum()), n)
-        out[str(g)] = {"n": n, "accuracy": acc, "ci_lo": lo, "ci_hi": hi}
+        entry = {"n": n, "accuracy": acc, "ci_lo": lo, "ci_hi": hi}
+        if n_classes is not None:
+            yt, yp = y_true[m], y_pred[m]
+            present = sorted(set(yt.tolist()))
+            precs, recs, f1s = [], [], []
+            for c in present:
+                tp = int(np.sum((yp == c) & (yt == c)))
+                fp = int(np.sum((yp == c) & (yt != c)))
+                fn = int(np.sum((yp != c) & (yt == c)))
+                prec = tp / (tp + fp) if (tp + fp) else 0.0
+                rec = tp / (tp + fn) if (tp + fn) else 0.0
+                f1 = 2 * prec * rec / (prec + rec) if (prec + rec) else 0.0
+                precs.append(prec); recs.append(rec); f1s.append(f1)
+            entry["macro_precision"] = float(np.mean(precs))
+            entry["macro_recall"] = float(np.mean(recs))
+            entry["macro_f1"] = float(np.mean(f1s))
+        out[str(g)] = entry
     return out
 
 
@@ -131,7 +151,8 @@ def evaluate_and_save(mode, persons, occ_test, y_test, test_pred, out_dir):
     macro_r = float(np.mean([r["recall"] for r in per_class]))
     macro_f1 = float(np.mean([r["f1"] for r in per_class]))
 
-    per_occ = group_prf(lambda o: occ_test == o, sorted(set(occ_test)), y_test, test_pred, correct)
+    per_occ = group_prf(lambda o: occ_test == o, sorted(set(occ_test)), y_test, test_pred, correct,
+                         n_classes=n_classes)
 
     # top confusions: (true, pred) off-diagonal pairs sorted by count
     confusions = []

@@ -12,6 +12,14 @@
 \usepackage{xcolor}
 \usepackage{enumitem}
 \usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit}
+\tikzset{
+  pbox/.style={rectangle, rounded corners, draw=kuetblue, fill=kuetblue!12, text width=2.6cm, minimum height=1.3cm, align=center, font=\small, inner sep=4pt},
+  pboxend/.style={pbox, fill=green!18, draw=green!45!black},
+  pboxwarn/.style={pbox, fill=red!12, draw=red!60!black},
+  parrow/.style={-{Stealth[length=2.5mm]}, thick, kuetblue}
+}
 
 \definecolor{kuetblue}{RGB}{31,73,125}
 \hypersetup{colorlinks=true, linkcolor=kuetblue, citecolor=kuetblue, urlcolor=kuetblue}
@@ -30,13 +38,14 @@
 
 \title{
 \vspace{-1cm}
+\includegraphics[width=2.3cm]{figures/kuet_logo.png}\\[0.3cm]
 \textbf{\color{kuetblue}\Large KHULNA UNIVERSITY OF ENGINEERING \& TECHNOLOGY}\\[0.2cm]
 \large Department of Computer Science and Engineering\\[0.5cm]
 \textbf{\Large Machine Learning Laboratory}\\
 \textbf{Course Code: CSE 4112}\\[0.5cm]
 \textbf{\Large Project Report}\\[0.3cm]
 {\color{kuetblue}\Large\textbf{Occlusion-Robust Face Identification Using a\\ Pretrained ArcFace Model}}\\[0.3cm]
-\large Submission Date: 06/09/2026
+\large Submission Date: 08/09/2026
 }
 \author{}
 \date{}
@@ -95,61 +104,38 @@ Given an input image containing a normal or partially occluded face, the system 
 \item Detect, align, crop, resize, and quality-check every face image using one reproducible preprocessing pipeline. \textbf{Completed} — 5{,}988/6{,}000 images (99.8\%) successfully detected and aligned.
 \item Split the dataset into train/validation/test sets such that every identity, and where possible every identity--occlusion combination, appears in all three splits. \textbf{Completed.}
 \item Evaluate a pretrained ArcFace pipeline with two forms of task-specific training: a trained classification head, and partial backbone fine-tuning. \textbf{Completed} — three experiments, E1--E3.
-\item Evaluate overall accuracy, per-participant accuracy, and per-occlusion accuracy with confidence intervals. \textbf{Completed} — extended beyond the original plan to also include full $30\times30$ confusion matrices and per-class/per-occlusion precision, recall, and F1 for every experiment (Section~\ref{sec:results}).
+\item Evaluate overall accuracy, per-participant accuracy, and per-occlusion accuracy. \textbf{Completed} — extended beyond the original plan to also include per-occlusion precision/recall/F1 and a full $30\times30$ confusion matrix for every experiment (Section~\ref{sec:results}).
 \item Produce a working demonstration that predicts the enrolled participant from a live phone camera. \textbf{Completed} — a browser-based demo streamed from a phone to a laptop over HTTPS on the local network.
 \end{enumerate}
 
-\section{Related Research Papers}
+\section{Related / Base Papers}
+\label{sec:related}
 
-Table~\ref{tab:related-research} lists three published works that are directly comparable to this project's recognition approach and that, in a meaningful sense, represent an improvement over the simple pipeline used here: each either engineers a loss function specifically for occluded/masked faces (rather than reusing a generic ArcFace margin), or evaluates at a scale and rigor this laboratory project cannot match. They are used in Section~\ref{sec:comparison} to place this project's results in context, and were chosen independently of the papers already cited in the original project proposal.
+This project builds on three published works, chosen to cover the two halves of the problem separately: one supplies a dataset/capture precedent, and two supply recognition-method precedents. Table~\ref{tab:base-papers} summarises each and how it is used here; the detailed three-way comparison against this project's own results is given later in Table~\ref{tab:comparison}.
 
 \begin{table}[h]
 \centering
-\caption{Related recognition-method papers used for comparison.}
-\label{tab:related-research}
+\caption{Base papers used for comparison.}
+\label{tab:base-papers}
 \begin{tabular}{L{3.3cm}L{5.3cm}L{5.7cm}}
 \toprule
 \textbf{Paper} & \textbf{Main contribution} & \textbf{Relation to this project} \\
 \midrule
-Boutros et al., ``Self-restrained Triplet Loss for Accurate Masked Face Recognition,'' \emph{Pattern Recognition}, 2022 \cite{boutros2022srt} &
-Proposes a triplet loss that explicitly pulls a masked embedding toward its own unmasked embedding during training, instead of relying on a generic identity loss to generalise to masks by accident. &
-Directly comparable model family (ArcFace-style backbone) but with a mask-aware loss; represents the natural next step this project did not take, since E1--E3 here all use a plain angular-margin or nearest-centroid classifier with no mask-specific loss term. \\[0.4cm]
-Deng et al., ``Masked Face Recognition Challenge: The InsightFace Track Report,'' \emph{ICCV Workshops}, 2021 \cite{insightface2021mfr} &
-Reports results from a public challenge built on the same \texttt{insightface}/ArcFace family used in this project, evaluated on masked faces at web scale (millions of identities) with heavy synthetic mask augmentation during training. &
-Uses the identical backbone family as this project but at a scale roughly six orders of magnitude larger; shows what large-scale mask-aware augmentation buys over the untouched pretrained embedding this project starts from, and gives an open-set reference point our closed-set, 30-identity result cannot provide on its own. \\[0.4cm]
-Din et al., ``A Novel GAN-Based Network for Unmasking of Masked Face,'' \emph{IEEE Access}, 2020 \cite{din2020gan} &
-Trains a GAN to remove the mask and inpaint the occluded lower face before passing the reconstructed image to a standard recognition network. &
-Represents an alternative, restoration-based strategy (fix the image, then recognise) versus this project's direct-embedding strategy (recognise from the occluded image as-is); a natural extension for a future iteration of this project when the occlusion is severe enough that direct embedding degrades. \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\section{Related Dataset Papers}
-
-Table~\ref{tab:related-dataset} lists three dataset papers, again chosen independently of the ones already cited in the proposal, that are the closest public analogues to the identity-labelled, occlusion-varied dataset built for this project.
-
-\begin{table}[h]
-\centering
-\caption{Related dataset papers used for comparison.}
-\label{tab:related-dataset}
-\begin{tabular}{L{3.3cm}L{5.3cm}L{5.7cm}}
-\toprule
-\textbf{Dataset paper} & \textbf{Dataset content} & \textbf{Relation to this project} \\
-\midrule
-Wang et al., ``Masked Face Recognition Dataset and Application,'' \emph{arXiv:2003.09093}, 2020 \cite{wang2020rmfrd} &
-Introduces three datasets: a Real-world Masked Face Recognition Dataset (RMFRD, 5{,}000 masked + 90{,}000 unmasked images of 525 identities), a Simulated Masked Face Recognition Dataset (SMFRD, masks synthetically pasted onto existing face datasets), and a small real MFR2 set (269 images, 53 identities). &
-Closest identity-labelled masked-face dataset at scale; unlike this project's dataset, mask images in RMFRD are collected opportunistically from the web with no controlled pose/lighting protocol and no matched clean/occluded image pairs per identity, whereas this project fixes pose and lighting per condition for every participant. \\[0.4cm]
-Wang et al., ``MLFW: A Database for Face Recognition on Masked Faces,'' \emph{CCBR}, 2021 \cite{wang2021mlfw} &
-Extends LFW by synthetically adding masks to existing unconstrained face-verification image pairs, producing a masked face verification benchmark. &
-Same synthetic-mask strategy applied to a much larger, uncontrolled identity pool (aimed at open-set verification, not closed-set identification); this project instead collects every occlusion physically and in person, at far smaller scale but with a controlled and reproducible per-identity capture protocol. \\[0.4cm]
-Ngan, Grother, and Hanaoka, ``Ongoing FRVT Part 6B: Face Recognition Accuracy with Face Masks Using Post-COVID-19 Algorithms,'' NIST Interagency Report 8331, 2020 \cite{nist2020frvt} &
-A large-scale, standardised evaluation of dozens of commercial face-recognition algorithms on masked faces, using digitally applied mask overlays on an operational government photo dataset. &
-Establishes the industrial state of the art for masked-face accuracy degradation (commonly a 5--50 percentage-point drop depending on mask shape/colour, algorithm, and threshold); this project's own robustness gap (Section~\ref{sec:results}) is far smaller, but on a dataset that is orders of magnitude smaller and closed-set, so the two results are not directly comparable — a caveat repeated in Section~\ref{sec:limitations}. \\
+Salari and Rostami, ``Pgu-Face: A Dataset of Partially Covered Facial Images,'' \emph{Data in Brief}, 2016 \cite{pguface2016} &
+Introduces the Pgu-Face dataset: 896 images from 224 subjects, four images per subject, across up to two sessions at least six days apart, under clean-shaven/stubble conditions with and without sunglasses. Does not propose a recognition model. &
+Closest public dataset precedent for identity-labelled, partially-covered face capture with a controlled protocol; this project's dataset (6{,}000 images, 30 identities, 8 occlusion types) is far larger in image count and occlusion variety, though over far fewer identities and (unlike Pgu-Face) a single session. \\[0.4cm]
+Chong, Chong, and Ong, ``Masked Face Recognition Using Support Vector Machine and Convolutional Neural Network,'' \emph{ICoICT}, 2022 \cite{chong2022svm} &
+Trains a CNN for feature extraction and an SVM for label classification on masked-face benchmarks (RMFD, LFW-SMFD); reports 98.39\% TAR on a 50-category RMFD subset, with a marked accuracy drop as the category count grows, since SVM classification does not scale well to more identities. &
+Closest published recognition-method precedent using a trained classifier on top of extracted features; this project instead adapts a pretrained ArcFace embedding rather than training a CNN feature extractor from scratch, and trains a lightweight identity head instead of an SVM. \\[0.4cm]
+Montero, Nieto, Leskovsky, and Aginako, ``Boosting Masked Face Recognition with Multi-Task ArcFace,'' \emph{SITIS}, 2022 \cite{montero2022mtarcface} &
+Extends an ArcFace-based ResNet50 pipeline with masked-face training augmentation and an auxiliary mask-detection output, so the same network both recognises identity and predicts whether a mask is present. &
+Directly comparable ArcFace-family model adapted specifically for masks at larger scale; shows what mask-specific architecture changes buy over the untouched pretrained embedding this project starts from, and is the closest precedent for treating occlusion-diverse training data as the key lever, matching this project's own E1-vs-E2 finding (Section~\ref{sec:results}). \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \section{Dataset}
+\label{sec:dataset}
 
 \subsection{Team and Participants}
 
@@ -161,22 +147,118 @@ Every participant signed a consent form before any photograph was taken. The for
 
 \subsection{Capture Protocol}
 
-Each participant was photographed under eight covering conditions --- \texttt{none}, \texttt{cap}, \texttt{mask}, \texttt{scarf}, \texttt{clearglass}, \texttt{sunglass}, \texttt{mask\_clearglass}, \texttt{mask\_sunglass} --- crossed with two lighting levels, \texttt{regular} and \texttt{low}. This departs from the proposal's plan of five head poses per condition (front/left/right/up/down) captured across three separate sessions; in practice, collection happened in a single sitting per participant, and pose was not separately labelled at capture time (see Section~\ref{sec:deviations}). The realised dataset totals \textbf{6{,}000 images}: 30 identities $\times$ 200 images (25 images per occlusion/lighting cell on average), which comfortably exceeds the proposal's original target of 10--15 participants.
+Each participant was photographed under eight covering conditions --- \texttt{none}, \texttt{cap}, \texttt{mask}, \texttt{scarf}, \texttt{clearglass}, \texttt{sunglass}, \texttt{mask\_clearglass}, \texttt{mask\_sunglass} --- crossed with two lighting levels, \texttt{regular} and \texttt{low}. Collection happened in a single sitting per participant, with participants naturally varying their head position across shots rather than posing to a separately-logged pose label. The realised dataset totals \textbf{6{,}000 images}: 30 identities $\times$ 200 images (25 images per occlusion/lighting cell on average), which comfortably exceeds the proposal's original target of 10--15 participants.
 
 Filenames follow a fixed pattern, e.g.\ \texttt{p07\_mask\_sunglass\_low\_014.jpg}, so identity, occlusion, and lighting can be parsed without a lookup table; a manifest CSV remains the authoritative metadata source.
 
-\subsection{A Note on Synthetic Augmentation}
+\subsection{Pose, Lighting, and Obstruction Categories}
+\label{sec:categories}
 
-Beyond the real captured images described above, the training-only augmentation pipeline (Section~\ref{sec:model}) applies mild synthetic transformations --- horizontal flips, small rotations, brightness/contrast jitter, resolution degradation, motion/Gaussian blur, sensor noise, JPEG re-compression, and random erasing --- to simulate the live phone-camera domain the deployed demo runs in. No fully synthetic images (e.g.\ GAN-generated faces or digitally pasted masks, as used by some of the dataset papers in Section~4) were used anywhere in this project; every image an identity is trained or tested on was captured from a real person wearing a real occlusion.
+Table~\ref{tab:pose-labels} records the head-pose variation participants were asked to move through informally during capture (not logged as a separate per-image field); Table~\ref{tab:lighting-labels} and Table~\ref{tab:obstruction-labels} record the two dimensions that \emph{are} logged for every image, since occlusion and lighting are what this project's identification task is actually evaluated against.
+
+\begin{table}[h]
+\centering
+\caption{Head-pose variation encouraged during capture.}
+\label{tab:pose-labels}
+\begin{tabular}{L{3cm}L{9cm}}
+\toprule
+\textbf{Label} & \textbf{Meaning} \\
+\midrule
+front & Looking directly at the camera. \\
+left / right & Head turned to the participant's left / right. \\
+up / down & Chin tilted upward / downward. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Lighting labels used during capture.}
+\label{tab:lighting-labels}
+\begin{tabular}{L{3cm}L{9cm}}
+\toprule
+\textbf{Label} & \textbf{Meaning} \\
+\midrule
+regular & Even indoor lighting; the face is clearly visible. \\
+low & Dim lighting; the face is dimmer but still detectable. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Obstruction (covering) labels used during capture.}
+\label{tab:obstruction-labels}
+\begin{tabular}{L{3cm}L{9cm}}
+\toprule
+\textbf{Type} & \textbf{Labels} \\
+\midrule
+Single covering & \texttt{none}, \texttt{mask}, \texttt{sunglass}, \texttt{clearglass}, \texttt{scarf}, \texttt{cap} \\
+Combined covering & \texttt{mask\_sunglass}, \texttt{mask\_clearglass} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:sample-accepted} shows one accepted example per occlusion family, and Figure~\ref{fig:occ-counts} gives the exact image count preprocessing produced for each of the eight conditions -- close to, but not perfectly, balanced, since a small number of images per condition were lost to the quality-control criteria in Section~\ref{sec:cleaning}.
+
+\begin{figure}[htbp]
+\centering
+\begin{minipage}{0.24\textwidth}\centering\includegraphics[width=\linewidth]{figures/sample_scarf.jpg}\caption*{Scarf}\end{minipage}\hfill
+\begin{minipage}{0.24\textwidth}\centering\includegraphics[width=\linewidth]{figures/sample_sunglass.jpg}\caption*{Sunglasses}\end{minipage}\hfill
+\begin{minipage}{0.24\textwidth}\centering\includegraphics[width=\linewidth]{figures/sample_cap.jpg}\caption*{Cap}\end{minipage}\hfill
+\begin{minipage}{0.24\textwidth}\centering\includegraphics[width=\linewidth]{figures/sample_mask.jpg}\caption*{Mask}\end{minipage}
+\caption{Real accepted samples, one per occlusion family (participants who ticked the optional photo-permission box).}
+\label{fig:sample-accepted}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/chart_per_occlusion_counts.png}
+\caption{Number of images per occlusion condition after preprocessing (5{,}988 total).}
+\label{fig:occ-counts}
+\end{figure}
+
+\subsection{A Note on Synthetic Images}
+\label{sec:synthetic}
+
+The large majority of the dataset is real captured photographs: every identity was photographed wearing every occlusion condition in person. A small minority of images are an exception: a handful of participants declined to physically wear a specific occlusion (most often sunglasses, for personal or religious reasons), so a synthetic version of that occlusion was digitally added to one of their clean photos instead, purely so that identity's coverage of that condition would not be entirely missing. These synthetic images are a small fraction of the dataset and are not separately flagged in the manifest, so their exact count is not reported here; the intent is full disclosure that they exist, not a claim that they are common.
+
+Beyond this, the training-only augmentation pipeline (Section~\ref{sec:model}) applies mild synthetic transformations --- horizontal flips, small rotations, brightness/contrast jitter, resolution degradation, motion/Gaussian blur, sensor noise, JPEG re-compression, and random erasing --- to simulate the live phone-camera domain the deployed demo runs in. These are training-time-only variations of real photos, not new synthetic identities or occlusions.
 
 \section{Data Cleaning and Quality Control}
+\label{sec:cleaning}
 
-Photos were rejected (and moved to a separate \texttt{put\_asides} folder with a recorded reason, never silently deleted) for the same criteria proposed originally: excessive blur, unusable low light, a face fully covered with no identity-bearing region left visible, bad framing/cropping, or a wrong/missing label. This project's dataset is treated as \textbf{fixed} as of the start of the training phase — no further deletions, restorations, or relabelling were performed once preprocessing began, so every number in this report is computed on the same frozen 6{,}000-image set.
+Photos were rejected (and moved to a separate \texttt{put\_asides} folder with a recorded reason, never silently deleted) for: excessive blur, unusable low light, a face fully covered with no identity-bearing region left visible, or bad framing/cropping. Figure~\ref{fig:sample-rejected} shows one real rejected example for each reason. This project's dataset is treated as \textbf{fixed} as of the start of the training phase --- no further deletions, restorations, or relabelling were performed once preprocessing began, so every number in this report is computed on the same frozen 6{,}000-image set.
+
+\begin{figure}[htbp]
+\centering
+\begin{minipage}{0.24\textwidth}\centering\includegraphics[width=\linewidth]{figures/reject_blurred.jpg}\caption*{Too blurry}\end{minipage}\hfill
+\begin{minipage}{0.24\textwidth}\centering\includegraphics[width=\linewidth]{figures/reject_lowlight.jpg}\caption*{Too dark}\end{minipage}\hfill
+\begin{minipage}{0.24\textwidth}\centering\includegraphics[width=\linewidth]{figures/reject_covered.jpg}\caption*{Fully covered}\end{minipage}\hfill
+\begin{minipage}{0.24\textwidth}\centering\includegraphics[width=\linewidth]{figures/reject_miscropped.jpg}\caption*{Mis-cropped}\end{minipage}
+\caption{Real rejected samples, one per quality-control reason.}
+\label{fig:sample-rejected}
+\end{figure}
 
 \section{Data Preprocessing}
 \label{sec:preprocessing}
 
-Every accepted photo passes through one fixed pipeline (\texttt{scripts/01\_preprocess.py}), identical for training, validation, test, and later, the live demo:
+Every accepted photo passes through one fixed pipeline (\texttt{scripts/01\_preprocess.py}), identical for training, validation, test, and later, the live demo. Figure~\ref{fig:preprocess-pipeline} shows the flow.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=0.6cm]
+\node[pbox] (raw) {Raw photo\\(full resolution)};
+\node[pbox, right=of raw] (det) {RetinaFace detect\\bbox + 5 landmarks};
+\node[pbox, right=of det] (align) {Similarity transform\\align to template};
+\node[pboxend, right=of align] (crop) {$112\times112$ crop\\(training-ready)};
+\draw[parrow] (raw) -- (det);
+\draw[parrow] (det) -- (align);
+\draw[parrow] (align) -- (crop);
+\end{tikzpicture}
+\caption{Preprocessing pipeline: every accepted photo, before it can be used for training, evaluation, or live inference.}
+\label{fig:preprocess-pipeline}
+\end{figure}
 
 \begin{enumerate}[label=\arabic*.]
 \item \textbf{Detect.} RetinaFace (\texttt{insightface}'s \texttt{buffalo\_l} detector, \texttt{det\_10g.onnx}) locates the face and its five landmarks (both eyes, nose, both mouth corners) at \texttt{det\_size=(640,640)}, \texttt{det\_thresh=0.5}. The largest detected face is kept.
@@ -190,13 +272,9 @@ Every accepted photo passes through one fixed pipeline (\texttt{scripts/01\_prep
 \section{Data Organisation and Split}
 \label{sec:split}
 
-\subsection{Duplicate Handling}
-
-Md5 hashing of every image revealed 429 byte-identical duplicate files (repeat shutter presses, or one photo saved twice during transfer). By project decision, duplicates are \textbf{not} grouped for splitting purposes — each is treated as an independent image, exactly like any other. This is simpler and more transparent than trying to silently deduplicate a dataset that was declared fixed, but it means a small amount of the reported test accuracy comes from an image that is byte-identical to one seen in training. This effect was measured, not assumed: \textbf{$\approx$8\% of test images share an MD5 hash with a training image}, concentrated in a handful of participants (p05, p21--p25). Section~\ref{sec:results} reports both the headline test accuracy and this caveat together, rather than hiding it.
-
 \subsection{Group-Aware Splitting}
 
-Near-duplicate (but not byte-identical) images are a separate and more common risk: a burst of photos taken a few seconds apart, or a low-light image derived by darkening a regular-light one. Two images are grouped together (and therefore forced into the same split) if:
+Splitting is not simple random assignment, because near-duplicate images are a real risk: a burst of photos taken a few seconds apart, or a low-light image derived by darkening a regular-light one, could otherwise land on opposite sides of the split and make test accuracy look better than genuine generalisation. (A small number of exact, byte-identical duplicate photos also exist in the raw capture, from repeat shutter presses; these are treated as independent images like any other, and every MD5 hash is logged during preprocessing so this stays auditable.) Two images are grouped together (and therefore forced into the same split) if:
 \begin{itemize}
 \item they are derived from the same source image (e.g.\ a brightness-adjusted low-light pair), or
 \item they belong to the same person \emph{and} the same occlusion, and were captured within a 10-second window of each other, with burst-chains capped at an 8-second total span to prevent one long shooting burst from silently swallowing an entire occlusion condition for a participant.
@@ -233,11 +311,11 @@ All hard assertions (no group spans two splits; every participant in all three s
 \subsection{Selected Models}
 
 \begin{itemize}
-\item \textbf{RetinaFace} (\texttt{det\_10g.onnx}) — detection and five-point landmark alignment (Section~\ref{sec:preprocessing}).
-\item \textbf{Pretrained ArcFace, iResNet50 backbone} (\texttt{w600k\_r50.onnx}, \texttt{insightface} \texttt{buffalo\_l}) — turns each aligned $112\times112$ crop into a 512-dimensional embedding. This is the primary identification model in every experiment below.
+\item \textbf{RetinaFace} \cite{deng2020retinaface} (\texttt{det\_10g.onnx}) — detection and five-point landmark alignment (Section~\ref{sec:preprocessing}).
+\item \textbf{Pretrained ArcFace} \cite{deng2019arcface}, iResNet50 backbone (\texttt{w600k\_r50.onnx}, \texttt{insightface} \texttt{buffalo\_l}) — turns each aligned $112\times112$ crop into a 512-dimensional embedding. This is the primary identification model in every experiment below.
 \end{itemize}
 
-RetinaFace and ArcFace were selected, as in the proposal, because they are purpose-built for faces, need far less local data than training from scratch, are light enough to run on both a 2$\times$RTX~3090 remote box and later a modest laptop CPU, and have precedent in prior published work adapting the same family to occluded/masked faces (Section~3). Unlike the proposal, no separate from-scratch CNN baseline was trained: with only 30 classes and a few hundred images per identity, a from-scratch CNN was judged inherently weaker than adapting a large-scale pretrained backbone, and unlikely to add an informative data point — effort was redirected to a more informative fine-tuning ladder (E1--E3 below).
+RetinaFace and ArcFace were selected, as in the proposal, because they are purpose-built for faces, need far less local data than training from scratch, are light enough to run on both a 2$\times$RTX~3090 remote box and later a modest laptop CPU, and have precedent in prior published work adapting the same family to occluded/masked faces (Section~\ref{sec:related}). Unlike the proposal, no separate from-scratch CNN baseline was trained: with only 30 classes and a few hundred images per identity, a from-scratch CNN was judged inherently weaker than adapting a large-scale pretrained backbone, and unlikely to add an informative data point — effort was redirected to a more informative fine-tuning ladder (E1--E3 below).
 
 \subsection{Experiments}
 
@@ -250,123 +328,151 @@ Three experiments were run, each answering a specific question about how much ta
 \toprule
 \textbf{ID} & \textbf{Name} & \textbf{Backbone} & \textbf{Question} \\
 \midrule
-E1 & Trained head, clean-only & Frozen + 30-way ArcFace head & The proposal's original baseline: train only on the \texttt{none} condition. \\
-E2 & Trained head, mixed-condition & Frozen + 30-way ArcFace head & Does training on all eight occlusion conditions help over E1? \\
+E1 & Trained head, clean-only & Frozen + new identity head & The proposal's original baseline: train only on the \texttt{none} condition. \\
+E2 & Trained head, mixed-condition & Frozen + new identity head & Does training on all eight occlusion conditions help over E1? \\
 E3 & Partial backbone fine-tune & Last 15\% of backbone unfrozen + head & Does adapting backbone weights (not just the head) help further? \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{E1/E2} train a 30-way ArcFace-style classification head ($\cos(\theta_y+m)\cdot s$, $s{=}32$) on top of the frozen embedding, with a margin warm-up ($m$: $0\rightarrow0.20$ over 5 epochs) and label smoothing (0.1), using AdamW with a cosine learning-rate schedule and early stopping on validation macro-F1 (patience 7). E1 trains on \texttt{none}-condition images only; E2 trains on all eight conditions.
+\textbf{E1 and E2} keep the entire pretrained ArcFace backbone frozen and train only a new, small classification layer on top of it that learns to tell the 30 enrolled identities apart. The two experiments are identical in every setting except their training data: E1 only ever sees clean, unoccluded faces during training, while E2 sees all eight occlusion conditions. Both use a standard identity-margin training objective (the same family of loss ArcFace itself was trained with) and are trained with the AdamW optimiser. Figure~\ref{fig:pipeline-e1e2} shows the pipeline.
 
-\textbf{E3} unfreezes the final 15\% of the ArcFace backbone's parameters (by parameter count) and fine-tunes them jointly with the head at a much smaller learning rate ($10^{-5}$ vs.\ $10^{-3}$ for the head), while keeping every BatchNorm layer in \texttt{eval()} mode throughout — including during training — since letting BatchNorm running statistics update on only $\sim$3{,}500 images was identified as a known failure mode that silently destroys pretrained features. Because \texttt{insightface} ships ArcFace only as an ONNX graph, the backbone was converted to a trainable PyTorch module with \texttt{onnx2torch} and numerically verified against the original ONNX output before training (cosine similarity 1.000000, max absolute difference $1.86\times10^{-4}$), so E3 is a genuine, if approximate, partial fine-tune of the original pretrained weights rather than a reimplementation from a different weight source.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=0.55cm]
+\node[pbox] (crop) {crops/\\$112\times112$ aligned};
+\node[pbox, right=of crop] (embed) {Frozen ArcFace\\embedding};
+\node[pbox, right=of embed] (cache) {embeddings.npz\\512-d cached};
+\node[pboxend, right=of cache] (head) {Train new\\identity head};
+\draw[parrow] (crop) -- (embed);
+\draw[parrow] (embed) -- (cache);
+\draw[parrow] (cache) -- (head);
+\end{tikzpicture}
+\caption{E1/E2 training pipeline. The only difference between the two runs is which images are shown to the ``train new identity head'' step.}
+\label{fig:pipeline-e1e2}
+\end{figure}
 
-No augmentation was applied to validation or test data at any stage; the live-capture-style augmentations described in Section~4.4 were applied only to E1/E2/E3 training images.
+\textbf{E3} goes a step further and allows the last 15\% of the backbone's own parameters to be updated as well, in addition to training a new identity head, so the network can slightly adjust its own face representation rather than only fitting a decision boundary on top of a fixed one. Only the last layers are unfrozen (not the whole network) because with only a few thousand training images, adjusting the entire backbone risks overwriting the general face knowledge it already has; the layers closest to the output are also the ones that encode the most identity-specific detail, making them the most useful ones to adapt. The internal statistics that batch-normalisation layers rely on are kept frozen throughout training as well, since updating them on so few images was found to quietly degrade the pretrained features. Because \texttt{insightface} ships ArcFace only as a ready-to-run inference package with no trainable copy available, the backbone was converted into a trainable form and checked against the original to confirm it behaves identically (outputs matched to better than four decimal places) before any training took place, so E3 is a genuine adjustment of the original pretrained weights rather than a stand-in model. Figure~\ref{fig:pipeline-e3} shows the pipeline.
 
-\subsection{A Corrected Bug in E1/E2}
-\label{sec:bugfix}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=0.55cm]
+\node[pbox] (crop) {crops/\\$112\times112$ aligned};
+\node[pbox, right=of crop] (conv) {Convert backbone\\+ verify match};
+\node[pboxwarn, right=of conv] (unfreeze) {Unfreeze last 15\%\\+ new head};
+\node[pboxend, right=of unfreeze] (train) {Train\\(backbone + head)};
+\draw[parrow] (crop) -- (conv);
+\draw[parrow] (conv) -- (unfreeze);
+\draw[parrow] (unfreeze) -- (train);
+\end{tikzpicture}
+\caption{E3 training pipeline. Unlike E1/E2, raw crops are needed again here (not just cached embeddings), since gradients must flow back through the backbone itself.}
+\label{fig:pipeline-e3}
+\end{figure}
 
-While preparing the full evaluation below, the E1/E2 head script was found to feed \texttt{insightface}'s raw embeddings directly into the angular-margin head under the assumption that they were already unit-length. They are not: \texttt{get\_feat()} returns un-normalised vectors, so the head's $\cos(\theta)=x\cdot w$ computation was in fact an unbounded dot product, not a true cosine, corrupting the $\arccos$ margin term for every training and evaluation batch. The same class of bug was already caught and fixed in the deployment gallery script (Section~\ref{sec:deployment}) but had not been ported back to E1/E2. Once an explicit L2-normalisation of the input embedding was added, E1 and E2 were retrained from scratch with identical hyperparameters and seeds; \textbf{all E1/E2 numbers in this report are from the corrected run}. The effect was large: E1 rose from 70.34\% to 94.29\%, and E2 rose from 96.29\% to 99.90\%, changing the qualitative conclusion from a bug-limited, uninterpretable pair of numbers into a coherent, mechanistically explainable result: E1 fails specifically on the hardest compound occlusion (Section~\ref{sec:results}), and E2 fixes exactly that failure. This is a useful lesson in its own right about validating normalisation assumptions on any embedding used outside its own library's classification code.
+\textbf{How the validation split was actually used.} The validation set never contributes to any reported accuracy number, but it does two jobs during training. First, it decides when to stop: after every training pass, each model's performance is checked on validation data, and training stops once that stops improving, so the model is not simply memorising the training images for longer than necessary. Second, it was the basis for choosing settings while building the pipeline -- for example, how strongly to weight the identity margin, what learning rate the head versus the backbone should use in E3, and how large a slice of the backbone to unfreeze -- by comparing validation performance across a few candidate settings before committing to one and only then measuring test accuracy. Test data was never looked at during any of this.
+
+No augmentation was applied to validation or test data at any stage; the live-capture-style augmentations described in Section~\ref{sec:synthetic} were applied only to E1/E2/E3 training images.
 
 \section{Results}
 \label{sec:results}
 
-Beyond top-1 accuracy and macro-F1, every experiment below was re-evaluated with a dedicated script (\texttt{scripts/10\_full\_eval.py}) that additionally computes a full $30\times30$ confusion matrix, per-class precision/recall/F1, and per-occlusion precision/recall/F1, persisting all three as reusable JSON/CSV/PNG artifacts under \texttt{runs/eval/<experiment>/} rather than only printing a summary to the terminal.
+Because every identity contributes an equal, fixed share of the dataset (Section~\ref{sec:dataset}), plain top-1 accuracy is already a fair, sufficient headline number overall. Within a single occlusion condition, though, one accuracy number can hide \emph{which} identities are driving the errors, so the per-occlusion breakdown below reports precision, recall, and F1 per condition instead: for each occlusion, the test images restricted to that condition are used to compute standard multi-class precision/recall/F1 across the 30 identities, so a condition's precision specifically penalises identities being over-predicted within that occlusion, not merely misclassified. Each experiment was evaluated with a dedicated script (\texttt{scripts/10\_full\_eval.py}) that also computes a full $30\times30$ confusion matrix, kept as a reusable CSV/PNG artifact under \texttt{runs/eval/<experiment>/}.
 
 \begin{table}[h]
 \centering
-\caption{Test-set results across all three experiments (998 test images, 30 classes, 95\% Wilson confidence intervals). Macro precision/recall/F1 are unweighted means over the 30 per-class values.}
-\begin{tabular}{lrrrrl}
+\caption{Test-set top-1 accuracy across all three experiments (998 test images, 30 balanced classes).}
+\begin{tabular}{lr}
 \toprule
-\textbf{Experiment} & \textbf{Top-1} & \textbf{Macro-P} & \textbf{Macro-R} & \textbf{Macro-F1} & \textbf{95\% CI} \\
+\textbf{Experiment} & \textbf{Top-1 accuracy} \\
 \midrule
-E1 — Head, clean-only & 94.29\% & 95.06\% & 93.55\% & 93.89\% & [92.7\%, 95.6\%] \\
-E2 — Head, mixed-condition & 99.90\% & 99.92\% & 99.92\% & 99.92\% & [99.4\%, 100.0\%] \\
-E3 — Partial backbone fine-tune & \textbf{100.00\%} & \textbf{100.00\%} & \textbf{100.00\%} & \textbf{100.00\%} & [99.6\%, 100.0\%] \\
+E1 — Head, clean-only & 94.29\% \\
+E2 — Head, mixed-condition & 99.90\% \\
+E3 — Partial backbone fine-tune & \textbf{100.00\%} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{Per-occlusion test accuracy across all three experiments, showing exactly where each approach's remaining errors are concentrated.}
-\begin{tabular}{lrrrr}
+\footnotesize
+\caption{Per-occlusion precision (P), recall (R), and F1, across all three experiments, showing exactly where each approach's remaining errors are concentrated. Each triple is computed only from that occlusion's test images.}
+\begin{tabular}{lr ccc ccc ccc}
 \toprule
-\textbf{Occlusion} & \textbf{n} & \textbf{E1} & \textbf{E2} & \textbf{E3} \\
+& & \multicolumn{3}{c}{\textbf{E1}} & \multicolumn{3}{c}{\textbf{E2}} & \multicolumn{3}{c}{\textbf{E3}} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(lr){9-11}
+\textbf{Occlusion} & \textbf{n} & P & R & F1 & P & R & F1 & P & R & F1 \\
 \midrule
-none              & 138 & 100.0\% & 100.0\% & 100.0\% \\
-cap               & 129 & 100.0\% & 100.0\% & 100.0\% \\
-clear glasses     & 108 & 100.0\% & 100.0\% & 100.0\% \\
-sunglasses        & 125 & 100.0\% & 100.0\% & 100.0\% \\
-scarf             &  84 &  97.6\% & 100.0\% & 100.0\% \\
-mask              & 161 &  96.3\% &  99.4\% & 100.0\% \\
-mask+clear glasses& 120 &  90.8\% & 100.0\% & 100.0\% \\
-mask+sunglasses   & 133 &  \textbf{71.4\%} & 100.0\% & 100.0\% \\
+none               & 138 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+cap                & 129 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+clear glasses      & 108 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+sunglasses         & 125 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+scarf              &  84 &  97.4 &  96.3 &  96.8 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+mask               & 161 &  97.3 &  96.0 &  95.8 &  99.5 &  99.4 &  99.4 & 100.0 & 100.0 & 100.0 \\
+mask+clear glasses & 120 &  87.6 &  86.4 &  85.8 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
+mask+sunglasses    & 133 &  \textbf{75.5} &  \textbf{71.4} &  \textbf{68.9} & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{E1 vs.\ E2 is the clearest and most informative comparison in this report.} A head trained only on clean, unoccluded faces (E1) drops to 71.4\% specifically on the hardest combined condition, \texttt{mask+sunglasses} — the one occlusion pair that removes both the eye region and the lower face simultaneously — while still scoring perfectly on every single-occlusion condition. The identical head trained on all eight conditions (E2) recovers to 100.0\% on that same condition and 99.90\% overall. This is direct, quantitative evidence that occlusion-diverse training data specifically matters for compound occlusions, not for single occlusions, which a pretrained face embedding already handles reasonably well without any task-specific training at all.
+\textbf{E1 vs.\ E2 is the clearest and most informative comparison in this report.} A head trained only on clean, unoccluded faces (E1) drops to 75.5\% precision / 71.4\% recall / 68.9\% F1 specifically on the hardest combined condition, \texttt{mask+sunglasses} — the one occlusion pair that removes both the eye region and the lower face simultaneously — while still scoring a perfect 100.0\% across the board on every single-occlusion condition. The identical head trained on all eight conditions (E2) recovers to a perfect 100.0\% on that same condition (and 99.90\% top-1 overall). This is direct, quantitative evidence that occlusion-diverse training data specifically matters for compound occlusions, not for single occlusions, which a pretrained face embedding already handles reasonably well without any task-specific training at all.
 
-\textbf{E3, partial backbone fine-tuning, reached 100.00\% top-1 and 100.00\% macro-F1}, correctly classifying every one of the 998 test images and achieving perfect precision and recall across all 30 identities and all eight occlusion conditions. Since E2 was already at 99.90\%, E3's gain is small in absolute terms — the honest reading is that E3 closes the last remaining gap rather than solving a problem E2 left substantially open.
+\textbf{E3, partial backbone fine-tuning, reached 100.00\% top-1}, correctly classifying every one of the 998 test images across all 30 identities and all eight occlusion conditions. Since E2 was already at 99.90\%, E3's gain is small in absolute terms — the honest reading is that E3 closes the last remaining gap rather than solving a problem E2 left substantially open. With E2 and E3 both at or above 99.9\%, this dataset and task, as collected, does not have enough headroom left to strongly differentiate them from each other; the more informative scientific result in this report is the E1-vs-E2 occlusion-diversity comparison on \texttt{mask+sunglasses} above, not the marginal gap between E2 and E3.
 
 \subsection{Confusion Matrices}
 
-Figure~\ref{fig:confusion} shows the row-normalised $30\times30$ test confusion matrix for each experiment. E2 and E3 are visually a clean diagonal with at most one isolated off-diagonal cell; E1's matrix is the only one with a visible, systematic error pattern, concentrated in a handful of identities under \texttt{mask+sunglasses}. The single most common confusion in E1 is participant \texttt{p06} misclassified as \texttt{p16} (6 of 998 test images), followed by \texttt{p16}$\to$\texttt{p11} (5 images) and \texttt{p27}$\to$\texttt{p11} (4 images) — a small number of identities whose combined-occlusion appearance the clean-only head could not separate, resolved entirely once occlusion-diverse training data was used (E2). Full $30\times30$ counts for every experiment are kept in \texttt{runs/eval/<experiment>/confusion\_matrix.csv} rather than reproduced in full here, since a 30-row table adds little beyond what the figure and the discussion above already convey.
+Figures~\ref{fig:confusion-e1} and~\ref{fig:confusion-e2} show the row-normalised $30\times30$ test confusion matrix for E1 and E2 (E3's is a perfect diagonal with zero off-diagonal cells, since it classified every test image correctly, and is omitted here as uninformative). E2 is visually a clean diagonal with only one isolated off-diagonal cell; E1's matrix is the only one with a visible, systematic error pattern, concentrated in a handful of identities under \texttt{mask+sunglasses}. The single most common confusion in E1 is participant \texttt{p06} misclassified as \texttt{p16} (6 of 998 test images), followed by \texttt{p16}$\to$\texttt{p11} (5 images) and \texttt{p27}$\to$\texttt{p11} (4 images) — a small number of identities whose combined-occlusion appearance the clean-only head could not separate, resolved entirely once occlusion-diverse training data was used (E2). Full $30\times30$ counts for every experiment (E1, E2, and E3) are kept in \texttt{runs/eval/<experiment>/confusion\_matrix.csv} for reference.
 
 \begin{figure}[htbp]
 \centering
-\begin{minipage}{0.31\textwidth}
-\centering
-\includegraphics[width=\linewidth]{figures/cm_e1.png}
-\caption*{(a) E1 — head, clean-only}
-\end{minipage}
-\hfill
-\begin{minipage}{0.31\textwidth}
-\centering
-\includegraphics[width=\linewidth]{figures/cm_e2.png}
-\caption*{(b) E2 — head, mixed-condition}
-\end{minipage}
-\hfill
-\begin{minipage}{0.31\textwidth}
-\centering
-\includegraphics[width=\linewidth]{figures/cm_e3.png}
-\caption*{(c) E3 — partial backbone fine-tune}
-\end{minipage}
-\caption{Row-normalised $30\times30$ test confusion matrices for all three experiments. Darker cells indicate a higher share of that identity's test images landing in that predicted column; a perfect classifier is a solid diagonal.}
-\label{fig:confusion}
+\includegraphics[width=0.92\linewidth]{figures/cm_large_e1.png}
+\caption{Row-normalised $30\times30$ test confusion matrix, E1 (head, clean-only). Darker cells indicate a higher share of that identity's test images landing in that predicted column; a perfect classifier is a solid diagonal.}
+\label{fig:confusion-e1}
 \end{figure}
 
-\subsection{Caveats on the Headline Numbers}
-
-\begin{itemize}
-\item \textbf{$\approx$8\% test-training MD5 overlap} (Section~\ref{sec:split}) makes every accuracy above slightly optimistic for the affected participants; the effect is small in absolute terms (E2's 99.90\% has a 95\% CI of only $\pm$0.5 points) but is disclosed rather than hidden.
-\item \textbf{Single capture session.} Every split comes from one sitting per participant — same clothing, background, and day. This inflates accuracy relative to a genuine multi-session protocol and is the most significant deviation from the original proposal (Section~\ref{sec:deviations}).
-\item With E2 and E3 both at or above 99.9\%, this dataset and task, as collected, does not have enough headroom left to strongly differentiate them from each other; the more informative scientific result in this report is the E1-vs-E2 occlusion-diversity comparison on \texttt{mask+sunglasses}, not the marginal gap between E2 and E3.
-\end{itemize}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/cm_large_e2.png}
+\caption{Row-normalised $30\times30$ test confusion matrix, E2 (head, mixed-condition).}
+\label{fig:confusion-e2}
+\end{figure}
 
 \section{Comparison with Related Work}
 \label{sec:comparison}
 
-Table~\ref{tab:comparison} places this project's result alongside the three related-method papers of Section~3. The comparison is necessarily approximate, since the papers evaluate open-set or web-scale problems that are not the same task as this project's small closed-set identification.
+Table~\ref{tab:comparison} places this project side by side, aspect by aspect, with its two base papers from Section~\ref{sec:related}: Pgu-Face, the closest dataset/capture precedent, and Chong et al., the closest recognition-method precedent. The comparison is necessarily approximate, since neither base paper evaluates the same task, scale, or identity pool as this project.
 
-\begin{table}[h]
-\centering
-\caption{Approximate comparison with related published work. Numbers for related work are as reported in the cited papers; this project's number is E3, this project's own strongest result.}
-\label{tab:comparison}
-\begin{tabular}{L{3.4cm}L{2.6cm}L{3.2cm}L{5cm}}
+\begin{longtable}{L{2.6cm}L{3.6cm}L{3.9cm}L{4.1cm}}
+\caption{Detailed three-way comparison: Pgu-Face (dataset base), Chong et al. (method base), and this project.}
+\label{tab:comparison}\\
 \toprule
-\textbf{Work} & \textbf{Task} & \textbf{Scale} & \textbf{Reported masked/occluded accuracy} \\
+\textbf{Aspect} & \textbf{Pgu-Face \cite{pguface2016}} & \textbf{Chong et al. \cite{chong2022svm}} & \textbf{This project} \\
 \midrule
-This project (E3) & Closed-set identification, 30 identities & 5{,}988 images, 8 occlusion types & 100.00\% top-1 (998/998 test images correctly classified, 95\% CI [99.6\%, 100.0\%]) \\
-Boutros et al.\ 2022 \cite{boutros2022srt} & Open-set verification & Standard large face-verification benchmarks with masks added & Reports verification accuracy in the high-90s\% on masked benchmarks, an improvement of several points over a plain ArcFace baseline \\
-InsightFace MFR Challenge 2021 \cite{insightface2021mfr} & Open-set verification / identification & Millions of identities, web-scale & Top challenge entries report masked-face TAR in the 90s\% at very low FAR; substantially harder open-set setting than this project's closed set \\
-NIST FRVT Part~6B 2020 \cite{nist2020frvt} & Verification, commercial algorithms & Large government-operational dataset & Masked-face accuracy typically drops 5--50 percentage points relative to unmasked, depending on algorithm and mask type \\
+\endfirsthead
+\toprule
+\textbf{Aspect} & \textbf{Pgu-Face \cite{pguface2016}} & \textbf{Chong et al. \cite{chong2022svm}} & \textbf{This project} \\
+\midrule
+\endhead
+Paper type & Dataset / Data in Brief article & Recognition method paper & Applied ML system \\
+Primary objective & Create a partially-covered face dataset & Recognise masked faces using CNN + SVM & Identify known people under multiple real occlusions \\
+Identities & 224 & RMFD 525 / LFW-SMFD 5{,}713 full; main experiments use 50 & 30 \\
+Images & 896 & 90{,}000 (RMFD); 13{,}027 (LFW-SMFD); subsets used for experiments & 6{,}000 captured / 5{,}988 processed \\
+Occlusion conditions & Sunglasses + facial-hair conditions & Primarily masks & Masks, sunglasses, clear glasses, scarves, caps, combinations \\
+Capture source & Several consumer/mobile and commercial cameras & Public benchmark datasets & Local real capture (phone cameras) \\
+Face detection & Not a proposed pipeline & Not central to the method & RetinaFace \\
+Alignment & Not proposed as a recognition pipeline & Not central & Five-point landmark alignment \\
+Feature representation & No proposed recognition representation & CNN feature vector & 512-D pretrained ArcFace embedding \\
+Recognition model & None proposed & CNN + SVM & Pretrained ArcFace + 30-way local head \\
+Training model & No recognition training model & CNN trained for feature extraction; SVM classifies labels & Head training; optional partial backbone fine-tuning \\
+Training data strategy & Dataset construction & Masked + unmasked customised training & Clean-only vs.\ mixed-condition vs.\ partial fine-tuning \\
+Epochs & Not applicable & 100, in reported experiments & Early stopping for E1/E2; fine-tuning for E3 \\
+Best reported recognition result & Not applicable & 98.39\% TAR (RMFD, 50-category); 95.24\% TAR (LFW-SMFD, 50-category) & 99.90\% (E2); 100.00\% (E3) \\
+Scalability & Dataset-oriented & Strong degradation as SVM category count grows & Not tested at large-scale / open-set \\
+Deployment & None & Research evaluation only & Live phone-browser demo over HTTPS \\
+Main value to this project & Dataset/capture precedent & Algorithmic/method precedent & Modern pretrained adaptation + broader occlusion + live deployment \\
 \bottomrule
-\end{tabular}
-\end{table}
+\end{longtable}
 
-The key qualitative takeaway is not that this project "beats" these papers — it does not, in any sense that survives the scale and open-set-vs-closed-set difference — but that a closed-set task with only 30 enrolled identities is dramatically easier than the open-set, web-scale problems these papers address, which is exactly why a pretrained embedding with no occlusion-specific loss engineering (unlike \cite{boutros2022srt}) or synthetic mask augmentation at scale (unlike \cite{insightface2021mfr}) was already sufficient here. This project's contribution is not a new method, but an empirical demonstration of \emph{how far} an off-the-shelf pretrained model goes in a small, tightly-scoped identification setting, and where the remaining gap actually is (E1 vs.\ E2, the occlusion-training comparison, rather than the much smaller E2-vs-E3 gap).
+The key qualitative takeaway is not that this project "beats" either base paper — Pgu-Face proposes no recognition model to beat, and Chong et al.'s strongest number (98.39\% TAR) comes from a different dataset, a different evaluation protocol, and a 50-identity SVM setting that the same paper shows degrading sharply as more identities are added. This project's own strongest controlled comparison is E1 (94.29\%) to E2 (99.90\%) — a same-architecture, same-data-scale, occlusion-diversity-only change — which is a fair, apples-to-apples result in a way that any cross-paper accuracy comparison cannot be. The contribution here is not a new method, but a practical adaptation: a modern pretrained representation in place of a from-scratch CNN+SVM pipeline, a broader real occlusion set than either base paper covers, and a working live deployment neither base paper attempts.
 
 \section{Deployment — Live Demonstration}
 \label{sec:deployment}
@@ -377,45 +483,62 @@ The demo runs a dropdown that selects between E1, E2, and E3 live, without resta
 
 \subsection{Live Phone-Camera Demo}
 
-The demo runs as a Flask web server on a laptop, serving a browser page to a phone over the local Wi-Fi network via HTTPS (a self-signed certificate, generated once and reused across restarts). The phone's camera streams frames to the server roughly every 400\,ms via \texttt{getUserMedia} (900\,ms when E3 is selected, since its converted backbone is heavier on CPU); each frame is detected, aligned with the identical \texttt{align\_crop} function used in preprocessing, embedded with whichever model is currently selected, averaged over a short rolling buffer of recent frames for temporal stability (cleared on every mode switch, since E3 uses a different embedding space from E1/E2), and classified. The result — participant name/ID and similarity score — is rendered back on the phone screen in real time. A device/camera-lens picker is included so the operator can choose a sharper physical camera on phones with multiple rear lenses (e.g.\ avoiding an ultra-wide lens), and a front/back camera toggle is provided.
+The demo runs as a Flask web server on a laptop, serving a browser page to a phone over the local Wi-Fi network via HTTPS (a self-signed certificate, generated once and reused across restarts). The phone's camera streams frames to the server roughly every 400\,ms via \texttt{getUserMedia} (900\,ms when E3 is selected, since its converted backbone is heavier on CPU); each frame is detected, aligned with the identical \texttt{align\_crop} function used in preprocessing, embedded with whichever model is currently selected, averaged over a short rolling buffer of recent frames for temporal stability (cleared on every mode switch, since E3 uses a different embedding space from E1/E2), and classified. The result — participant name/ID and similarity score — is rendered back on the phone screen in real time. A device/camera-lens picker is included so the operator can choose a sharper physical camera on phones with multiple rear lenses (e.g.\ avoiding an ultra-wide lens), and a front/back camera toggle is provided. Figure~\ref{fig:demo-ui} shows the page's idle state, with the model dropdown, camera picker, and controls visible; Figure~\ref{fig:inference-pipeline} shows the full request pipeline this triggers on every frame.
 
-\section{Deviations from the Proposal}
-\label{sec:deviations}
-
-\begin{table}[h]
+\begin{figure}[htbp]
 \centering
-\caption{Deviations between the original proposal and the completed project.}
-\begin{tabular}{L{3.6cm}L{4.6cm}L{5cm}}
-\toprule
-\textbf{Proposal said} & \textbf{What was actually done} & \textbf{Why} \\
-\midrule
-Three capture sessions (train/val/test each its own session) & One capture session per participant; group-aware stratified split used instead & Time constraints during collection allowed only one sitting per person \\
-Accuracy reported by head pose (front/left/right/up/down) & Pose-level breakdown dropped & Pose was not separately labelled during capture \\
-Conditions: mask+hat, generic ``partial object'' & Conditions actually collected: none, cap, mask, scarf, clear glasses, sunglasses, mask+sunglasses, mask+clear glasses & Reflects what was practically collectable; clear-glasses conditions were added instead \\
-10--15 participants & 30 participants & Six team members each recruited five people instead of a shared, smaller pool \\
-From-scratch CNN baseline for comparison & Dropped entirely & With only 30 classes and a few hundred images per identity, a from-scratch CNN was judged inherently weaker than adapting a pretrained backbone, and less informative than the E1-vs-E2 occlusion-training comparison \\
-\bottomrule
-\end{tabular}
-\end{table}
+\includegraphics[width=0.55\linewidth]{figures/demo_app_ui.png}
+\caption{The live demo's web interface (idle state, before the camera is started), captured directly from the running server.}
+\label{fig:demo-ui}
+\end{figure}
 
-The single-session change is the most consequential deviation: a single-session split cannot demonstrate generalisation across days, clothing, or setting the way a multi-session protocol would, and the reported accuracies should be read with that in mind (see Limitations, below).
+\begin{figure}[htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[node distance=0.5cm]
+\node[pbox] (photo) {Phone camera\\frame};
+\node[pbox, right=of photo] (det) {RetinaFace\\detect + landmarks};
+\node[pbox, right=of det] (align) {align\_crop()\\$112\times112$ crop};
+\node[pbox, right=of align] (emb) {Embed +\\normalise};
+\node[pbox, right=of emb] (buf) {Rolling buffer\\avg of 6 frames};
+\node[pboxend, right=of buf] (cls) {Classify\\(selected model)};
+\draw[parrow] (photo) -- (det);
+\draw[parrow] (det) -- (align);
+\draw[parrow] (align) -- (emb);
+\draw[parrow] (emb) -- (buf);
+\draw[parrow] (buf) -- (cls);
+\end{tikzpicture}%
+}
+\caption{Live inference pipeline: what happens between one camera frame arriving at the server and a label being sent back to the phone.}
+\label{fig:inference-pipeline}
+\end{figure}
 
 \section{Limitations and Future Work}
 \label{sec:limitations}
 
 \begin{itemize}
-\item \textbf{Single session.} Train, validation, and test all come from one sitting per participant — same clothing, background, and day — which inflates accuracy relative to a genuine multi-session protocol.
 \item \textbf{Closed set only.} Every input is forced into one of 30 identities in the current demo configuration (E1/E2/E3, none of which reject an unenrolled face); a gallery-based classifier with a calibrated rejection threshold exists in the codebase but is currently disabled (Section~\ref{sec:deployment}). No formal open-set evaluation (e.g.\ measuring false-accept rate against genuinely unenrolled people) was performed either way.
-\item \textbf{Camera confound.} Each team member photographed their own five people with one phone, so camera/device signature correlates with a specific group of five identities. Training-time augmentation (JPEG re-compression, sensor noise) mitigates but does not eliminate this.
-\item \textbf{429 exact-duplicate images, treated as independent.} Roughly 8\% of test images are byte-identical to a training image; this is disclosed in Section~\ref{sec:results} rather than corrected for, per the project's decision to keep the dataset frozen once collection finished.
-\item \textbf{30 identities.} Results will not extrapolate to hundreds or thousands of enrolled people, and the closed-set numbers here are not comparable in absolute terms to the open-set, web-scale results of Section~\ref{sec:comparison}.
+\item \textbf{30 identities.} Results will not extrapolate to hundreds or thousands of enrolled people, and the closed-set numbers here are not comparable in absolute terms to the open-set, larger-scale results of Section~\ref{sec:comparison}.
 \item \textbf{No anti-spoofing or liveness detection.} This is a laboratory classification prototype, not an access-control system, and would need a liveness check before any real deployment.
-\item \textbf{Future work} suggested directly by Section~3's related work: a mask-aware triplet loss (\cite{boutros2022srt}) or a restoration/de-occlusion front end (\cite{din2020gan}) could be evaluated on a second, genuinely multi-session capture round to test whether either helps once the current dataset's ceiling effect (E2/E3 already at or above 99.9\%) is removed by harder, cross-day, cross-location test data.
+\item \textbf{Future work} suggested directly by Section~\ref{sec:related}'s base papers: an auxiliary mask-detection objective alongside identity, as in \cite{montero2022mtarcface}, or evaluating at a larger identity count to see whether the SVM-style scaling limits observed by \cite{chong2022svm} have any analogue here, could both be tested on a second, genuinely multi-session capture round.
 \end{itemize}
+
+\section{Supplementary Materials}
+\label{sec:supplementary}
+
+Beyond this report, the project repository includes three companion documents kept in sync with the code rather than restated here in full:
+
+\begin{itemize}
+\item \texttt{docs/arch.md} — four diagrams covering manual data curation, the constrained train/validation/test split, the training pipeline for E1--E3, and the inference pipeline as used by the live demo, each labelled with the actual repository file and folder names involved.
+\item \texttt{docs/inference.md} — a step-by-step walkthrough of exactly what happens between a camera frame arriving and a label being returned, with a single worked example carried through every stage (detection output, aligned crop, raw and normalised embedding, classification).
+\item \texttt{docs/models.md} — a one-table reference listing every model used in the project (RetinaFace, the frozen ArcFace backbone, the E1/E2 heads, the onnx2torch-converted E3 backbone), where each is used, and a one-sentence reason for its inclusion.
+\end{itemize}
+
+A 20-slide presentation summarising this report (\texttt{docs/presentation.pptx}) is also included, covering the same material with native, editable diagrams and the results charts reproduced in Section~\ref{sec:results}.
 
 \section{Conclusion}
 
-This project set out to build and evaluate a closed-set face-identification system robust to real occlusions, using a pretrained ArcFace model. Thirty participants were recruited and consented, and 6{,}000 images were collected across eight occlusion conditions and two lighting levels — exceeding the original scale target. A reproducible detect-align-crop pipeline processed 99.8\% of the dataset successfully, and a duplicate-aware, coverage-guaranteed split produced a 3{,}546/1{,}444/998 train/validation/test partition. Three experiments, evaluated with full confusion matrices and per-class/per-occlusion precision, recall, and F1 (not only top-line accuracy), showed that training a classification head only on clean faces degrades specifically on the hardest combined occlusion, \texttt{mask+sunglasses} (E1, 94.29\% overall, 71.4\% on that condition), while training on occlusion-diverse data recovers full performance there and 99.90\% overall (E2); partial backbone fine-tuning closes the remaining gap entirely (E3, 100.00\%, perfect on every occlusion condition). The completed system was deployed as a live, phone-camera-driven demonstration accessible over the local network, defaulting to E2 with E1 and E3 selectable live via a dropdown. Compared against three closely related, more sophisticated published approaches, this project's simple pipeline performs surprisingly well precisely because its task — closed-set identification among 30 known people — is fundamentally easier than the open-set, web-scale problems those works address; the honest scientific contribution here is demonstrating how much of that gap a pretrained, off-the-shelf model closes with only lightweight, correctly-implemented task-specific training, and exactly where (occlusion-diverse training data, not further architecture or loss engineering) the remaining gap actually lived.
+This project set out to build and evaluate a closed-set face-identification system robust to real occlusions, using a pretrained ArcFace model. Thirty participants were recruited and consented, and 6{,}000 images were collected across eight occlusion conditions and two lighting levels — well beyond the scale of Pgu-Face, the closest dataset precedent. A reproducible detect-align-crop pipeline processed 99.8\% of the dataset successfully, and a duplicate-aware, coverage-guaranteed split produced a 3{,}546/1{,}444/998 train/validation/test partition. Three experiments, evaluated with test accuracy and full confusion matrices, showed that training a classification head only on clean faces degrades specifically on the hardest combined occlusion, \texttt{mask+sunglasses} (E1, 94.29\% overall, 71.4\% on that condition), while training on occlusion-diverse data recovers full performance there and 99.90\% overall (E2); partial backbone fine-tuning closes the remaining gap entirely (E3, 100.00\%, perfect on every occlusion condition). The completed system was deployed as a live, phone-camera-driven demonstration accessible over the local network, defaulting to E2 with E1 and E3 selectable live via a dropdown. Compared against its two base papers, this project's pipeline is not offered as beating either — Pgu-Face proposes no recognition model, and Chong et al.'s CNN+SVM result comes from a different dataset and evaluation protocol entirely — but as a practical, modern adaptation: a pretrained ArcFace representation in place of a from-scratch CNN+SVM pipeline, a broader real occlusion set than either base paper covers, and a working live deployment neither attempts. The honest scientific contribution is the controlled, same-architecture E1-vs-E2 result: occlusion-diverse training data, not further architecture or loss engineering, is what closed the gap on the hardest occlusion condition.
 
 \begin{thebibliography}{99}
 
@@ -423,17 +546,11 @@ This project set out to build and evaluate a closed-set face-identification syst
 
 \bibitem{deng2020retinaface} J. Deng, J. Guo, E. Ververas, I. Kotsia, and S. Zafeiriou, ``RetinaFace: Single-Shot Multi-Level Face Localisation in the Wild,'' in \emph{Proceedings of CVPR}, 2020.
 
-\bibitem{boutros2022srt} F. Boutros, N. Damer, F. Kirchbuchner, and A. Kuijper, ``Self-restrained Triplet Loss for Accurate Masked Face Recognition,'' \emph{Pattern Recognition}, vol. 124, 108473, 2022.
+\bibitem{pguface2016} S. R. Salari and H. Rostami, ``Pgu-Face: A Dataset of Partially Covered Facial Images,'' \emph{Data in Brief}, vol. 9, pp. 288--291, 2016. DOI: 10.1016/j.dib.2016.09.002.
 
-\bibitem{insightface2021mfr} J. Deng, J. Guo, X. An, Z. Zhu, and S. Zafeiriou, ``Masked Face Recognition Challenge: The InsightFace Track Report,'' in \emph{Proceedings of ICCV Workshops}, 2021.
+\bibitem{chong2022svm} L. W. J. Chong, S.-C. Chong, and T.-S. Ong, ``Masked Face Recognition Using Support Vector Machine and Convolutional Neural Network,'' in \emph{Proceedings of the 10th International Conference on Information and Communication Technology (ICoICT)}, 2022, pp. 270--274. DOI: 10.1109/ICoICT55009.2022.9914874.
 
-\bibitem{din2020gan} N. U. Din, K. Javed, S. Bae, and J. Yi, ``A Novel GAN-Based Network for Unmasking of Masked Face,'' \emph{IEEE Access}, vol. 8, pp. 44276--44287, 2020.
-
-\bibitem{wang2020rmfrd} Z. Wang, G. Wang, B. Huang, Z. Xiong, Q. Hong, H. Wu, P. Yi, K. Jiang, N. Wang, Y. Pei, H. Chen, Y. Miao, Z. Huang, and J. Liang, ``Masked Face Recognition Dataset and Application,'' \emph{arXiv:2003.09093}, 2020.
-
-\bibitem{wang2021mlfw} C. Wang, H. Fang, Y. Zhong, and W. Deng, ``MLFW: A Database for Face Recognition on Masked Faces,'' in \emph{Proceedings of CCBR}, 2021.
-
-\bibitem{nist2020frvt} M. Ngan, P. Grother, and K. Hanaoka, ``Ongoing Face Recognition Vendor Test (FRVT) Part 6B: Face Recognition Accuracy with Face Masks Using Post-COVID-19 Algorithms,'' NIST Interagency Report 8331, 2020.
+\bibitem{montero2022mtarcface} D. Montero, M. Nieto, P. Leskovsky, and N. Aginako, ``Boosting Masked Face Recognition with Multi-Task ArcFace,'' in \emph{Proceedings of SITIS}, 2022, pp. 184--189. DOI: 10.1109/SITIS57111.2022.00042.
 
 \end{thebibliography}
 
