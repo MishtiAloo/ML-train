@@ -1,7 +1,20 @@
 """Local demo server: runs on the laptop, serves a web page a phone opens
 over the LAN. The phone's camera captures frames in the browser and
-POSTs them here; this runs detect -> align -> embed -> gallery match ->
-UNKNOWN rejection and returns the result as JSON.
+POSTs them here; this runs detect -> align -> embed -> classify and
+returns the result as JSON.
+
+A dropdown on the page lets you switch between all four experiments
+live, without restarting the server:
+    gallery  E0-style nearest-centroid on frozen embeddings (the only
+             mode with a calibrated UNKNOWN-rejection threshold)
+    e1       trained head, clean-faces-only (94.29% test acc)
+    e2       trained head, mixed-condition (99.90% test acc)
+    e3       partial backbone fine-tune (100.00% test acc; runs its own
+             onnx2torch-converted backbone, loaded lazily on first
+             selection since it's ~166MB and slower on CPU)
+Every mode except gallery is closed-set only: it always names one of
+the 30 enrolled people, with no "this might be a stranger" rejection,
+because E1/E2/E3 were never calibrated with a rejection threshold.
 
 Uses the IDENTICAL align_crop() from common.py that built the training
 crops -- required so predictions here match what was measured in
@@ -56,12 +69,15 @@ app = Flask(__name__)
 
 STATE = {
     "det": None,
-    "rec": None,
-    "centroids": None,
-    "persons": None,
-    "threshold": None,
+    "rec": None,               # frozen ArcFace recognizer -- used by gallery/e1/e2
+    "gallery": None,           # {"centroids", "persons", "threshold"}
+    "heads": {},                # {"e1": {"weight", "persons"}, "e2": {...}}
+    "e3": None,                  # lazily built: {"embed_fn", "weight", "persons"}
+    "e3_checkpoint_path": None,
     "names": {},
     "emb_buffer": deque(maxlen=6),
+    "active_mode": "gallery",
+    "available_modes": [],      # [(value, label, rejects_unknown), ...]
 }
 
 
@@ -127,6 +143,59 @@ def load_gallery(path):
     return data["centroids"], list(data["persons"]), float(data["threshold"])
 
 
+def load_head(path: str) -> dict:
+    """Load an E1/E2 trained head (scripts/05_train_head.py) -- just a
+    512x30 weight matrix. Normalized once here so /predict is a single
+    matmul + argmax, matching what 10_full_eval.py measured."""
+    import torch
+
+    ckpt = torch.load(path, map_location="cpu", weights_only=False)
+    weight = ckpt["state_dict"]["weight"].numpy().astype(np.float64)
+    weight = weight / (np.linalg.norm(weight, axis=1, keepdims=True) + 1e-9)
+    return {"weight": weight, "persons": ckpt["persons"]}
+
+
+def build_e3(checkpoint_path: str) -> dict:
+    """Lazily build the E3 model: the onnx2torch-converted, partially
+    fine-tuned ArcFace backbone (scripts/06_e3_finetune.py) plus its own
+    head. Distinct embedding space from the frozen `rec` model used by
+    gallery/e1/e2 -- never mix embeddings across modes."""
+    import onnx
+    import torch
+    import torch.nn.functional as F
+    from onnx2torch import convert
+
+    # onnx2torch's convert(path) shape-infers via a NamedTemporaryFile in
+    # the model's own directory, which onnx.load() then can't re-open on
+    # Windows (the handle is still exclusively locked) -- PermissionError.
+    # Passing an already-loaded ModelProto instead routes through an
+    # in-memory shape-inference path with no temp file at all.
+    model_proto = onnx.load(default_rec_model_path())
+    backbone = convert(model_proto)
+    backbone.eval()
+
+    ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    state_dict = ckpt["state_dict"]
+    backbone_sd = {k[len("backbone."):]: v for k, v in state_dict.items() if k.startswith("backbone.")}
+    backbone.load_state_dict(backbone_sd)
+
+    weight = state_dict["weight"].numpy().astype(np.float64)
+    weight = weight / (np.linalg.norm(weight, axis=1, keepdims=True) + 1e-9)
+
+    def embed_fn(crop_bgr: np.ndarray) -> np.ndarray:
+        img = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2RGB).astype(np.float32)
+        img = (img - 127.5) / 127.5
+        x = torch.tensor(np.transpose(img, (2, 0, 1))[None], dtype=torch.float32)
+        with torch.no_grad():
+            out = backbone(x)
+            if isinstance(out, (tuple, list)):
+                out = out[0]
+            emb = F.normalize(out, dim=1).numpy()[0].astype(np.float64)
+        return emb
+
+    return {"embed_fn": embed_fn, "weight": weight, "persons": ckpt["persons"]}
+
+
 def load_display_names(mapping_path):
     names = {}
     if not mapping_path or not Path(mapping_path).exists():
@@ -165,8 +234,11 @@ PAGE = """
   .unknown { color:#ff5252; }
   .none { color:#888; }
   #score { font-size:0.9em; color:#aaa; }
+  #modelNote { font-size:0.8em; color:#888; margin-top:2px; }
   button { font-size:1.1em; padding:10px 24px; margin:8px; border-radius:8px; border:none; background:#2979ff; color:#fff; }
   button:disabled { background:#555; }
+  select { font-size:1em; padding:6px; margin:6px; max-width:90%; }
+  select:disabled { opacity:0.6; }
 </style>
 </head>
 <body>
@@ -177,7 +249,11 @@ PAGE = """
 <div id="result" class="none">Press Start</div>
 <div id="score"></div>
 <div>
-  <select id="camSelect" style="font-size:1em; padding:6px; margin:6px; max-width:90%;"></select>
+  <select id="modelSelect">{{ model_options|safe }}</select>
+</div>
+<div id="modelNote"></div>
+<div>
+  <select id="camSelect"></select>
 </div>
 <div>
   <button id="startBtn">Start</button>
@@ -192,9 +268,43 @@ const canvas = document.getElementById('canvas');
 const resultEl = document.getElementById('result');
 const scoreEl = document.getElementById('score');
 const camSelect = document.getElementById('camSelect');
+const modelSelect = document.getElementById('modelSelect');
+const modelNoteEl = document.getElementById('modelNote');
 let running = false;
 let stream = null;
 let facingMode = 'environment'; // toggled by Switch Camera when no specific device is chosen
+let frameIntervalMs = 400; // slower for E3 (CPU-heavy, converted PyTorch graph)
+
+async function switchModel() {
+  const mode = modelSelect.value;
+  modelSelect.disabled = true;
+  const wasRunning = running;
+  running = false; // pause the capture loop while the model swaps
+  modelNoteEl.textContent = mode === 'e3'
+    ? 'Loading E3 (fine-tuned model)... first switch can take 10-30s on CPU.'
+    : 'Switching model...';
+  try {
+    const res = await fetch('/set_model', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode })
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      modelNoteEl.textContent = 'Error: ' + data.error;
+    } else {
+      frameIntervalMs = (mode === 'e3') ? 900 : 400;
+      const opt = modelSelect.options[modelSelect.selectedIndex];
+      modelNoteEl.textContent = opt.dataset.rejectsUnknown === '1'
+        ? 'This mode rejects unenrolled faces as UNKNOWN.'
+        : 'Closed-set: always names one of the 30 enrolled people (no UNKNOWN rejection).';
+    }
+  } catch (e) {
+    modelNoteEl.textContent = 'Error switching model: ' + e;
+  }
+  modelSelect.disabled = false;
+  if (wasRunning) { running = true; loop(); }
+}
 
 function currentVideoConstraints() {
   // Prefer an explicit device pick (lets you avoid a blurry ultra-wide lens);
@@ -316,7 +426,7 @@ async function loop() {
         resultEl.className = 'unknown';
         resultEl.textContent = 'Error: ' + e;
       }
-      if (running) setTimeout(loop, 400);
+      if (running) setTimeout(loop, frameIntervalMs);
     }, 'image/jpeg', 0.85);
   } else {
     if (running) setTimeout(loop, 200);
@@ -328,20 +438,31 @@ function render(data) {
     resultEl.className = 'none';
     resultEl.textContent = 'No face detected';
     scoreEl.textContent = '';
-  } else if (data.label === 'UNKNOWN') {
+    return;
+  }
+  const thresholdTxt = (data.threshold !== null && data.threshold !== undefined)
+    ? ' / threshold ' + data.threshold.toFixed(3) : '';
+  if (data.label === 'UNKNOWN') {
     resultEl.className = 'unknown';
     resultEl.textContent = 'UNKNOWN';
-    scoreEl.textContent = 'score ' + data.score.toFixed(3) + ' / threshold ' + data.threshold.toFixed(3);
+    scoreEl.textContent = 'score ' + data.score.toFixed(3) + thresholdTxt;
   } else {
     resultEl.className = 'ok';
     resultEl.textContent = data.display_name || data.label;
-    scoreEl.textContent = 'score ' + data.score.toFixed(3) + ' / threshold ' + data.threshold.toFixed(3);
+    scoreEl.textContent = '[' + data.mode + ']  score ' + data.score.toFixed(3) + thresholdTxt;
   }
 }
 
 document.getElementById('startBtn').onclick = start;
 document.getElementById('stopBtn').onclick = stop;
 document.getElementById('switchBtn').onclick = switchCamera;
+modelSelect.onchange = switchModel;
+if (modelSelect.options.length) {
+  const opt = modelSelect.options[modelSelect.selectedIndex];
+  modelNoteEl.textContent = opt.dataset.rejectsUnknown === '1'
+    ? 'This mode rejects unenrolled faces as UNKNOWN.'
+    : 'Closed-set: always names one of the 30 enrolled people (no UNKNOWN rejection).';
+}
 if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
   refreshDeviceList();
 }
@@ -353,7 +474,49 @@ if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
 
 @app.route("/")
 def index():
-    return render_template_string(PAGE)
+    options_html = "\n".join(
+        f'<option value="{value}" data-rejects-unknown="{1 if rejects else 0}">{label}</option>'
+        for value, label, rejects in STATE["available_modes"]
+    )
+    return render_template_string(PAGE, model_options=options_html)
+
+
+@app.route("/set_model", methods=["POST"])
+def set_model():
+    payload = request.get_json(force=True, silent=True) or {}
+    mode = payload.get("mode")
+    valid = {v for v, _, _ in STATE["available_modes"]}
+    if mode not in valid:
+        return jsonify({"ok": False, "error": f"mode '{mode}' not available"}), 400
+
+    load_ms = 0
+    if mode == "e3" and STATE["e3"] is None:
+        t0 = time.time()
+        try:
+            STATE["e3"] = build_e3(STATE["e3_checkpoint_path"])
+        except Exception as e:  # noqa: BLE001 -- report any load failure to the page, not a 500 traceback
+            return jsonify({"ok": False, "error": f"failed to load E3: {e}"}), 500
+        load_ms = int((time.time() - t0) * 1000)
+
+    STATE["active_mode"] = mode
+    STATE["emb_buffer"].clear()  # different mode = a different (incompatible) embedding space
+    return jsonify({"ok": True, "mode": mode, "load_ms": load_ms})
+
+
+def classify(mode: str, avg_emb: np.ndarray):
+    """Returns (label, score, threshold_or_None)."""
+    if mode == "gallery":
+        g = STATE["gallery"]
+        sims = g["centroids"] @ avg_emb
+        best = int(sims.argmax())
+        score = float(sims[best])
+        label = g["persons"][best] if score >= g["threshold"] else "UNKNOWN"
+        return label, score, g["threshold"]
+
+    h = STATE["heads"][mode] if mode in STATE["heads"] else STATE["e3"]
+    sims = h["weight"] @ avg_emb
+    best = int(sims.argmax())
+    return h["persons"][best], float(sims[best]), None
 
 
 @app.route("/predict", methods=["POST"])
@@ -367,60 +530,81 @@ def predict():
     if img is None:
         return jsonify({"error": "decode failed"}), 400
 
+    mode = STATE["active_mode"]
+
     faces = STATE["det"].get(img)
     face = pick_best_face(faces)
     if face is None:
         STATE["emb_buffer"].clear()
-        return jsonify({"face_found": False})
+        return jsonify({"face_found": False, "mode": mode})
 
     crop = align_crop(img, face.kps, image_size=112)
-    feat = STATE["rec"].get_feat([crop])[0]
-    feat = feat / (np.linalg.norm(feat) + 1e-9)
 
-    STATE["emb_buffer"].append(feat)
+    if mode == "e3":
+        if STATE["e3"] is None:
+            return jsonify({"error": "E3 not loaded yet -- select it from the dropdown first"}), 400
+        emb = STATE["e3"]["embed_fn"](crop)
+    else:
+        emb = STATE["rec"].get_feat([crop])[0]
+        emb = emb / (np.linalg.norm(emb) + 1e-9)
+
+    STATE["emb_buffer"].append(emb)
     avg = np.mean(STATE["emb_buffer"], axis=0)
     avg = avg / (np.linalg.norm(avg) + 1e-9)
 
-    sims = STATE["centroids"] @ avg
-    best = int(sims.argmax())
-    score = float(sims[best])
-    persons = STATE["persons"]
-    threshold = STATE["threshold"]
-
-    if score < threshold:
-        label = "UNKNOWN"
-        display_name = "UNKNOWN"
-    else:
-        label = persons[best]
-        display_name = STATE["names"].get(label, label)
+    label, score, threshold = classify(mode, avg)
+    display_name = "UNKNOWN" if label == "UNKNOWN" else STATE["names"].get(label, label)
 
     x1, y1, x2, y2 = [float(v) for v in face.bbox]
     return jsonify({
         "face_found": True,
+        "mode": mode,
         "label": label,
         "display_name": display_name,
         "score": score,
         "threshold": threshold,
+        "rejects_unknown": mode == "gallery",
         "bbox": [x1, y1, x2, y2],
     })
 
 
 def main():
+    runs_dir = Path(__file__).resolve().parent.parent / "runs"
     ap = argparse.ArgumentParser()
-    ap.add_argument("--gallery", default=str(Path(__file__).resolve().parent.parent / "runs" / "gallery.npz"))
+    ap.add_argument("--gallery", default=str(runs_dir / "gallery.npz"))
     ap.add_argument("--names", default=str(Path(__file__).resolve().parent.parent / "metadata" / "person_id_mapping.txt"))
     ap.add_argument("--port", type=int, default=5000)
     ap.add_argument("--threshold", type=float, default=None, help="override calibrated threshold")
     ap.add_argument("--show-names", action="store_true", help="show real member/person names instead of p## IDs")
+    ap.add_argument("--e1-head", default=str(runs_dir / "e1_head.pt"), help="path to E1 head checkpoint (skip if missing)")
+    ap.add_argument("--e2-head", default=str(runs_dir / "e2_head.pt"), help="path to E2 head checkpoint (skip if missing)")
+    ap.add_argument("--e3-checkpoint", default=str(runs_dir / "e3_model.pt"), help="path to E3 checkpoint (skip if missing; loaded lazily on first selection)")
     args = ap.parse_args()
 
     centroids, persons, threshold = load_gallery(args.gallery)
     if args.threshold is not None:
         threshold = args.threshold
-    STATE["centroids"] = centroids
-    STATE["persons"] = persons
-    STATE["threshold"] = threshold
+    STATE["gallery"] = {"centroids": centroids, "persons": persons, "threshold": threshold}
     STATE["names"] = load_display_names(args.names) if args.show_names else {}
+
+    STATE["available_modes"] = [("gallery", "Gallery -- E0 nearest-centroid (99.6%, UNKNOWN-aware)", True)]
+
+    for mode, path, label in [
+        ("e1", args.e1_head, "E1 -- head, clean-only (94.3%)"),
+        ("e2", args.e2_head, "E2 -- head, mixed-condition (99.9%)"),
+    ]:
+        if Path(path).exists():
+            print(f"Loading {mode} head: {path}")
+            STATE["heads"][mode] = load_head(path)
+            STATE["available_modes"].append((mode, label, False))
+        else:
+            print(f"Skipping {mode}: {path} not found")
+
+    if Path(args.e3_checkpoint).exists():
+        STATE["e3_checkpoint_path"] = args.e3_checkpoint
+        STATE["available_modes"].append(("e3", "E3 -- fine-tuned backbone (100.0%, loads on first use)", False))
+    else:
+        print(f"Skipping e3: {args.e3_checkpoint} not found")
 
     STATE["det"], STATE["rec"] = build_models()
 
@@ -435,6 +619,8 @@ def main():
         s.close()
 
     print(f"\nGallery: {len(persons)} people, threshold={threshold:.4f}")
+    mode_names = ", ".join(v for v, _, _ in STATE["available_modes"])
+    print(f"Modes available in the dropdown: {mode_names}")
     print(f"\nOn your phone (same WiFi), open:\n\n    https://{lan_ip}:{args.port}\n")
     print("Your browser will warn about the self-signed certificate -- this is")
     print("expected. Tap through it (Advanced -> Proceed / Visit Website).\n")
