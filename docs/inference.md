@@ -23,13 +23,9 @@ flowchart TD
     D2 --> E["Step 4: rolling buffer<br/>deque(maxlen=6), average + re-normalize"]
     E --> E1["smoothed embedding<br/>(512,), unit length"]
     E1 --> F{"Step 5: classify<br/>(depends on active mode)"}
-    F -->|gallery| G1["cosine similarity vs<br/>runs/gallery.npz centroids (30x512)"]
-    G1 --> G2{"best score >= 0.3179?"}
-    G2 -->|yes| G3["label = closest person"]
-    G2 -->|no| G4["UNKNOWN"]
-    F -->|e1 / e2 / e3| H1["argmax vs a learned head<br/>runs/e1_head.pt, e2_head.pt, or e3_model.pt"]
-    H1 --> H2["label -- always one of 30<br/>(no UNKNOWN for these modes)"]
-    G3 & G4 & H2 --> I["Step 6: JSON response<br/>label, display_name, score, threshold, bbox"]
+    F -->|"e1 / e2 / e3<br/>(dropdown selection)"| H1["argmax vs a learned head<br/>runs/e1_head.pt, e2_head.pt, or e3_model.pt"]
+    H1 --> H2["label -- always one of 30<br/>(closed-set: no UNKNOWN in any current mode)"]
+    H2 --> I["Step 6: JSON response<br/>label, display_name, score, mode, bbox"]
     I --> J[Phone browser renders the name on screen]
 
     style A fill:#5a4a1f,color:#fff
@@ -85,14 +81,14 @@ avg = avg / (np.linalg.norm(avg) + 1e-9)
 Averages out per-frame noise (blur, blink, momentary bad angle) over roughly the last 2 seconds of frames (6 x ~400ms).
 
 ### Step 5 -- classify
-**Gallery mode** (the deployed default, E0-style):
+**E2 mode** (the deployed default):
 ```python
-sims = STATE["gallery"]["centroids"] @ avg   # (30, 512) @ (512,) -> (30,) cosine similarities
+sims = STATE["heads"]["e2"]["weight"] @ avg   # (30, 512) @ (512,) -> (30,) similarity scores
 best = int(sims.argmax())
 score = float(sims[best])
-label = persons[best] if score >= 0.3179 else "UNKNOWN"
+label = persons[best]
 ```
-`centroids` is a `(30, 512)` matrix, one row per enrolled person -- each row is that person's *average* normalized embedding across the whole dataset. The dot product of two unit vectors is their cosine similarity: how close in angle `avg` is to each person's typical direction.
+`weight` is a `(30, 512)` matrix, one row per enrolled person -- but unlike a simple average, each row was *learned* by gradient descent to best separate the 30 identities (Section 9.2 of the report). The dot product of two unit vectors is still a cosine-similarity-like score: how close in angle `avg` is to each person's learned direction.
 
 Example scores for the mask photo:
 ```
@@ -101,19 +97,19 @@ p14: 0.22
 p03: 0.19
 ...
 ```
-0.81 >= 0.3179 -> **label = p07**.
+argmax -> **label = p07**.
 
-**E1/E2/E3 modes** replace the centroid lookup with `argmax` against a learned `(30, 512)` weight matrix (`runs/e1_head.pt`, `e2_head.pt`, or `e3_model.pt`'s head) instead of real averaged embeddings -- fit by gradient descent, not averaging. No calibrated threshold exists for these, so they always return one of the 30 names. E3 additionally swaps step 3's model: the crop goes through E3's own fine-tuned backbone (a different embedding space) instead of the frozen `w600k_r50.onnx`.
+**E1 and E3 modes** work identically, just against a different learned `(30, 512)` weight matrix (`runs/e1_head.pt` or `e3_model.pt`'s head). None of the three currently active modes has a calibrated rejection threshold, so all of them always return one of the 30 names -- there is currently no "this might be a stranger" path in the live demo. E3 additionally swaps step 3's model: the crop goes through E3's own fine-tuned backbone (a different embedding space) instead of the frozen `w600k_r50.onnx`.
 
 ### Step 6 -- response
 ```json
 {
   "face_found": true,
-  "mode": "gallery",
+  "mode": "e2",
   "label": "p07",
   "display_name": "Tahmid/Rezwan",
   "score": 0.81,
-  "threshold": 0.3179,
+  "threshold": null,
   "bbox": [1120, 1429, 2376, 3031]
 }
 ```
@@ -130,11 +126,11 @@ sequenceDiagram
     Phone->>Phone: capture video frame (canvas.toBlob)
     Phone->>Server: POST /predict (JPEG blob)
     Server->>Server: detect -> align -> embed -> buffer -> classify
-    Server-->>Phone: JSON {label, score, threshold, bbox}
+    Server-->>Phone: JSON {label, score, mode, bbox}
     Phone->>Phone: render name on screen
     Note over Phone,Server: repeats every ~400ms (900ms in e3 mode)
 ```
 
 ---
 
-**One-sentence summary:** pixels -> find the face -> warp it onto a fixed geometric template -> turn it into a 512-number fingerprint -> smooth that fingerprint over a few frames -> compare it to known fingerprints (or a learned decision boundary) -> threshold or argmax -> name.
+**One-sentence summary:** pixels -> find the face -> warp it onto a fixed geometric template -> turn it into a 512-number fingerprint -> smooth that fingerprint over a few frames -> compare it against a learned decision boundary -> argmax -> name.

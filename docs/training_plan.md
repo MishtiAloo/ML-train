@@ -165,19 +165,14 @@ No augmentation on val or test, ever.
 
 ## 5. Experiments
 
-Four runs. Each is minutes on a 3090.
+Three runs, plus one contingent. Each is minutes on a 3090.
 
 | # | Name | Backbone | Train data | Answers |
 |---|---|---|---|---|
-| **E0** | Nearest-centroid probe | frozen, no training | all conditions | What do the pretrained embeddings already do? |
 | **E1** | Normal-only | frozen + head | `none` condition only | The proposal's baseline |
 | **E2** | Mixed-condition | frozen + head | all conditions | Does seeing real occlusion help? |
 | **E3** | Partial fine-tune | last stage unfrozen | all conditions | Does adapting the backbone help further? |
 | **E4** *(contingent)* | Live-adapted | best of E2/E3 | all + rehearsal frames | Only if the live rehearsal score falls short |
-
-**Run E0 first.** Extract embeddings once, average them per identity, classify test images by cosine similarity to the 30 centroids. Zero training, ~10 minutes.
-
-E0 is not a formality — it decides what the project is about. If nearest-centroid already reaches ~99% top-1, then the headline accuracy is saturated and no amount of fine-tuning will produce an interesting number. The real finding then becomes **the per-occlusion breakdown** — which occlusions still break a strong pretrained face model — and the report should be written around that. If E0 lands nearer 85–92%, there is genuine headroom and E1→E2→E3 becomes the story. Either way you learn it on day one instead of week three.
 
 **E1 vs E2 is the headline comparison** the proposal promised. E1 trains only on `none` images (~15 per person after splitting — small, so expect noise) and is tested on everything. Expect E2 to win clearly on occluded conditions and roughly tie on `none`.
 
@@ -261,7 +256,7 @@ D:\ML train\
 ├── scripts/
 │   ├── 01_preprocess.py     detect, align, crop, build manifest
 │   ├── 02_split.py          group-aware stratified split
-│   ├── 03_train.py          E0/E1/E2/E3 driven by a config flag
+│   ├── 03_train.py          E1/E2/E3 driven by a config flag
 │   ├── 04_evaluate.py       metrics, CIs, confusion matrices
 │   └── 05_demo.py           still-image / live-phone inference
 ├── runs/                    checkpoints, logs, results per experiment
@@ -278,15 +273,14 @@ D:\ML train\
 2. Hash all files, record md5 (preprocessing plan §B1).
 3. Run detection/alignment/cropping; check the detection-failure log before anything else.
 4. Build the split; run the assertions in Section 3.
-5. **Run E0.** Read the result. Decide whether the report's story is "accuracy" or "per-occlusion breakdown."
-6. Train E1 and E2; compare on validation only.
-7. Train E3.
-8. **Collect the live rehearsal set** (preprocessing plan §B5) while training runs — real demo phone, different room.
-9. Score E2/E3 on it. Run E4 only if live accuracy fell short.
-10. Freeze hyperparameters. Evaluate on test **once**.
-11. Build the demo: identical `align_crop`, gallery + head, frame averaging, rejection threshold.
-12. Rehearse end-to-end on the real phone with the real accessories.
-13. Write up, including the deviations table from Section 0.
+5. Train E1 and E2; compare on validation only.
+6. Train E3.
+7. **Collect the live rehearsal set** (preprocessing plan §B5) while training runs — real demo phone, different room.
+8. Score E2/E3 on it. Run E4 only if live accuracy fell short.
+9. Freeze hyperparameters. Evaluate on test **once**.
+10. Build the demo: identical `align_crop`, gallery + head, frame averaging, rejection threshold.
+11. Rehearse end-to-end on the real phone with the real accessories.
+12. Write up, including the deviations table from Section 0.
 
 ---
 

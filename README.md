@@ -3,20 +3,24 @@
 CSE 4112 Machine Learning Laboratory project (KUET) — closed-set face identification
 of 30 enrolled people under masks, sunglasses, scarves, caps, and combined occlusions,
 using a pretrained ArcFace (`buffalo_l`, iResNet50) embedding model and a RetinaFace
-detector, with no training required to reach ~99.5% test accuracy and a partial
+detector, with no training required to reach ~99.6% test accuracy and a partial
 backbone fine-tune reaching 100%.
 
 Full write-up: [`docs/final_report.tex`](docs/final_report.tex) / `docs/final_report.pdf`.
 Design docs: [`docs/training_plan.md`](docs/training_plan.md), [`docs/preprocessing_plan.md`](docs/preprocessing_plan.md).
+Diagrams: [`docs/arch.md`](docs/arch.md) (data curation, split, training, inference),
+[`docs/inference.md`](docs/inference.md) (step-by-step: image in, label out, worked example).
+Reference: [`docs/models.md`](docs/models.md) (every model used, where, and why).
 
 ## Results at a glance
 
 | Experiment | Description | Test top-1 |
 |---|---|---|
-| E0 | Pretrained embedding, nearest-centroid, **no training** | 99.50% |
-| E1 | Trained 30-way head, clean faces only | 70.34% |
-| E2 | Trained 30-way head, all 8 occlusion conditions | 96.29% |
+| E1 | Trained 30-way head, clean faces only | 94.29% |
+| E2 | Trained 30-way head, all 8 occlusion conditions | 99.90% |
 | E3 | Partial backbone fine-tune (last 15%), all conditions | **100.00%** |
+
+All three are selectable live in the demo's dropdown — see "Running the live phone demo" below.
 
 30 identities, 6,000 raw images, 5,988 successfully preprocessed (99.8% detection rate),
 split 3,546 / 1,444 / 998 (train/val/test) with group-aware deduplication and a hard
@@ -42,20 +46,25 @@ D:\ML train\
 │   ├── 01_preprocess.py     detect, align, crop -> crops/ + preprocess_log.csv
 │   ├── 02_split.py          group-aware stratified split -> manifest.csv
 │   ├── 03_embed.py          extract 512-D ArcFace embeddings -> embeddings.npz
-│   ├── 04_e0_probe.py       E0: nearest-centroid, zero training
 │   ├── 05_train_head.py     E1/E2: trained ArcFace head (--mode normal|mixed)
 │   ├── 06_e3_finetune.py    E3: partial backbone fine-tune (onnx2torch)
-│   ├── 07_build_gallery.py  builds the deployed gallery + calibrates the UNKNOWN threshold
+│   ├── 07_build_gallery.py  nearest-centroid gallery + UNKNOWN threshold (used by 08_demo.py; not in the live-demo dropdown, see below)
 │   ├── 08_demo.py           CLI demo: still image or OpenCV desktop webcam loop
 │   ├── 09_server.py         the live demo: Flask+HTTPS server + phone-browser frontend
 │   └── 10_full_eval.py      confusion matrix + per-class/per-occlusion P/R/F1 for any experiment
 ├── runs/
-│   ├── gallery.npz           deployed centroids (30x512) + persons + threshold
+│   ├── gallery.npz           nearest-centroid gallery (30x512) + threshold, used by 08_demo.py (not the live-demo dropdown)
 │   ├── gallery_meta.json
+│   ├── e1_head.pt / e1_head_results.json   E1 trained head, used by "e1" mode (gitignored)
+│   ├── e2_head.pt / e2_head_results.json   E2 trained head, used by "e2" mode (gitignored)
+│   ├── e3_model.pt            E3 fine-tuned backbone + head, used by "e3" mode (~166MB, gitignored)
 │   ├── eval/                  per-experiment metrics.json + confusion_matrix.csv/.png (10_full_eval.py)
 │   └── certs/                 self-signed HTTPS cert/key for 09_server.py (auto-generated, gitignored)
 └── docs/
     ├── final_report.tex / .pdf   the project report
+    ├── arch.md                    diagrams: data curation, split, training, inference (E1-E3)
+    ├── inference.md               step-by-step: image in -> label out, with a worked example
+    ├── models.md                  every model used, where, and why (one table)
     ├── training_plan.md
     ├── preprocessing_plan.md
     └── latest_report_compressed (2).pdf   original proposal
@@ -65,7 +74,7 @@ D:\ML train\
 
 Python 3.10+. Two environments are used in this project:
 
-- **Remote GPU box** (training: preprocessing, splitting, embedding, E0–E3) — 2x RTX 3090.
+- **Remote GPU box** (training: preprocessing, splitting, embedding, E1–E3) — 2x RTX 3090.
 - **Local laptop** (deployment: the live demo) — CPU only, no GPU required.
 
 ```bash
@@ -103,24 +112,26 @@ python scripts/01_preprocess.py
 # 2. Build the group-aware train/val/test split -> metadata/manifest.csv
 python scripts/02_split.py
 
-# 3. Extract ArcFace embeddings for every crop -> runs/embeddings.npz
+# 3. Extract ArcFace embeddings for every crop -> metadata/embeddings.npz
 python scripts/03_embed.py
 
-# 4. E0 — nearest-centroid probe (no training)
-python scripts/04_e0_probe.py
-
-# 5. E1 / E2 — trained ArcFace head
+# 4. E1 / E2 — trained ArcFace head
 python scripts/05_train_head.py --mode normal   # E1: clean-only
 python scripts/05_train_head.py --mode mixed    # E2: all occlusions
 
-# 6. E3 — partial backbone fine-tune (needs a CUDA GPU; verifies onnx2torch fidelity first)
+# 5. E3 — partial backbone fine-tune (needs a CUDA GPU; verifies onnx2torch fidelity first)
 python scripts/06_e3_finetune.py
 
-# 7. Build the deployment gallery (centroids from ALL data) + calibrate the UNKNOWN threshold
+# 6. Optional: build the nearest-centroid gallery (used by 08_demo.py; not the live-demo dropdown)
 python scripts/07_build_gallery.py
 
-# 8. Try it on a single image
+# 7. Try it on a single image
 python scripts/08_demo.py --gallery runs/gallery.npz --image path/to/photo.jpg
+
+# 8. Optional: confusion matrix + per-class/per-occlusion P/R/F1 for any experiment
+python scripts/10_full_eval.py --mode e1 --head runs/e1_head.pt
+python scripts/10_full_eval.py --mode e2 --head runs/e2_head.pt
+python scripts/10_full_eval.py --mode e3
 ```
 
 Each script is idempotent and re-reads the previous step's output — re-running an
@@ -132,7 +143,7 @@ The demo is a Flask server on your laptop; your phone connects to it over the sa
 Wi-Fi network as a browser page and uses its camera.
 
 ```bash
-python scripts/09_server.py --gallery runs/gallery.npz [--show-names] [--port 5000]
+python scripts/09_server.py --show-names [--port 5000]
 ```
 
 The server prints your laptop's LAN IP and starts an HTTPS server (self-signed
@@ -155,15 +166,47 @@ On your phone (same Wi-Fi network):
 `localhost` — which is why this demo requires HTTPS even on a local network; a plain
 `http://<ip>` page will not even prompt for camera permission on a phone browser.
 
+### Switching between experiments live
+
+A second dropdown on the page lists every experiment whose checkpoint was found on
+disk at startup — only modes with an actual file present are shown, and the demo
+defaults to **E2** on launch:
+
+| Mode | Backing file | UNKNOWN rejection? |
+|---|---|---|
+| **E1** (clean-only head) | `runs/e1_head.pt` | No — closed-set, always names one of the 30 |
+| **E2** (mixed-condition head, default) | `runs/e2_head.pt` | No — closed-set |
+| **E3** (fine-tuned backbone) | `runs/e3_model.pt` | No — closed-set |
+
+A nearest-centroid gallery classifier with a calibrated `UNKNOWN`-rejection
+threshold is implemented (`scripts/07_build_gallery.py`, `runs/gallery.npz`) but
+is currently **suppressed from the dropdown** — flip `SHOW_GALLERY_MODE = True`
+near the top of `09_server.py` to bring it back. Until then, all three active
+modes are closed-set: every detected face is named as one of the 30, with no
+"this might be a stranger" path.
+
+Switching modes clears the rolling embedding buffer (E3 runs its own fine-tuned
+backbone, a different — and incompatible — embedding space from the frozen one
+E1/E2 share, so their embeddings must never be averaged together).
+**E3 loads lazily** on first selection (onnx2torch-converts the backbone in memory,
+~1–3s) rather than at server startup, since most of a demo session won't use it and
+it's the heaviest of the three (~166MB). E3 frames are also throttled to ~900ms
+apart client-side (vs. ~400ms for the others), since it runs on CPU here.
+
+See `docs/inference.md` for exactly what happens internally for each mode, and
+`docs/models.md` for what each backing file actually is.
+
 Flags:
 
 | Flag | Purpose |
 |---|---|
-| `--gallery` | path to a `gallery.npz` built by `07_build_gallery.py` (default: `runs/gallery.npz`) |
+| `--gallery` | path to a `gallery.npz` built by `07_build_gallery.py` (only used if `SHOW_GALLERY_MODE` is re-enabled) |
+| `--e1-head` / `--e2-head` | path to the E1/E2 head checkpoint (default: `runs/e1_head.pt` / `e2_head.pt`; that mode is simply omitted from the dropdown if missing) |
+| `--e3-checkpoint` | path to the E3 checkpoint (default: `runs/e3_model.pt`; omitted from the dropdown if missing) |
 | `--names` | path to `metadata/person_id_mapping.txt`, used only with `--show-names` |
 | `--show-names` | display real member/person names instead of raw `p##` IDs |
 | `--port` | server port (default `5000`) |
-| `--threshold` | override the calibrated UNKNOWN-rejection threshold |
+| `--threshold` | override the calibrated UNKNOWN-rejection threshold (only relevant if `SHOW_GALLERY_MODE` is re-enabled) |
 
 ## Key design notes (see `docs/training_plan.md` for full detail)
 
@@ -181,10 +224,15 @@ Flags:
 - **Embeddings are NOT pre-normalized** by `insightface`'s `get_feat()`. Always
   L2-normalize before computing cosine similarity or a threshold — this was the
   cause of a real bug during development (see `docs/final_report.pdf`, Results).
-- **Gallery over trained head for deployment.** The live demo uses per-identity
-  mean-embedding centroids (rebuilt from all data) rather than a fixed classifier
-  head, because it scored at least as well (E0/E3) and lets a new example be added
-  to a participant's centroid without retraining.
+- **E2 is the demo's default, not necessarily the most accurate mode.** It's close
+  to E3's accuracy (99.90% vs. 100.00%) without needing E3's heavier CPU-converted
+  backbone loaded first. All three (E1/E2/E3) are selectable live via the demo's
+  dropdown — see "Switching between experiments live" above.
+- **A normalization bug was found and fixed in E1/E2's training script** (it fed
+  un-normalized embeddings into a head that assumed unit length, corrupting the
+  angular-margin math). The numbers in this README are post-fix. See
+  `docs/final_report.tex` §9.3 for the full story — it's a useful debugging
+  case study, not just a footnote.
 
 ## Privacy / consent
 

@@ -1,7 +1,7 @@
 # Architecture
 
 Four diagrams: manual data curation, the constrained train/val/test split,
-the training pipeline for each experiment (E0-E3), and the inference
+the training pipeline for each experiment (E1-E3), and the inference
 pipeline for each experiment as used by the live demo. File/folder names
 match the actual repo layout (see `README.md`).
 
@@ -66,12 +66,12 @@ flowchart TD
 
 ---
 
-## 3. Training pipelines (E0-E3)
+## 3. Training pipelines (E1-E3)
 
-E0-E2 share one automated preprocessing + embedding-extraction stage and
-never touch raw pixels again after that. E3 is the exception -- it needs
-raw pixels to backpropagate through the backbone, so it branches off
-before embedding extraction.
+E1 and E2 share one automated preprocessing + embedding-extraction stage
+and never touch raw pixels again after that. E3 is the exception -- it
+needs raw pixels to backpropagate through the backbone, so it branches
+off before embedding extraction.
 
 ```mermaid
 flowchart TD
@@ -79,9 +79,6 @@ flowchart TD
     B --> C["crops/p01..p30/*.jpg<br/>112x112 aligned"]
     C --> D["03_embed.py<br/>frozen ArcFace (models/buffalo_l/w600k_r50.onnx)"]
     D --> E["metadata/embeddings.npz<br/>512-d embeddings + person_id + occlusion + split"]
-
-    E --> F["04_e0_probe.py<br/>mean L2-normalized embedding<br/>per person, from TRAIN split only"]
-    F --> F1["E0: in-memory centroids<br/>(not saved as a checkpoint --<br/>see runs/gallery.npz for the deployed version)"]
 
     E --> G["05_train_head.py --mode normal<br/>30-way ArcFace head, TRAIN=none-occlusion only"]
     G --> G1["runs/e1_head.pt<br/>runs/e1_head_results.json"]
@@ -92,8 +89,8 @@ flowchart TD
     C --> I["06_e3_finetune.py<br/>onnx2torch-convert w600k_r50.onnx (verified numerically identical)<br/>unfreeze last 15% of backbone + new head, BatchNorm frozen"]
     I --> I1["runs/e3_model.pt<br/>(fine-tuned backbone weights + head, ~166MB)"]
 
-    F1 & G1 & H1 & I1 --> J["10_full_eval.py<br/>per experiment: confusion matrix,<br/>per-class + per-occlusion P/R/F1"]
-    J --> K["runs/eval/e0../e3/<br/>metrics.json, confusion_matrix.csv/.png"]
+    G1 & H1 & I1 --> J["10_full_eval.py<br/>per experiment: confusion matrix,<br/>per-class + per-occlusion P/R/F1"]
+    J --> K["runs/eval/e1../e3/<br/>metrics.json, confusion_matrix.csv/.png"]
 
     style E fill:#1f4e7d,color:#fff
     style C fill:#1f4e7d,color:#fff
@@ -102,12 +99,12 @@ flowchart TD
 
 ---
 
-## 4. Inference pipelines (E0-E3, as used by the live demo)
+## 4. Inference pipelines (E1-E3, as used by the live demo)
 
-`scripts/09_server.py` loads all four at startup (E3 lazily, on first
-selection) and switches between them via a dropdown, without restarting
-the server. Detection and alignment are shared; only the embedding
-source and the classifier differ per mode.
+`scripts/09_server.py` loads E1/E2 at startup and E3 lazily (on first
+selection), switching between them via a dropdown without restarting the
+server. Detection and alignment are shared; only the embedding source
+and the classifier differ per mode.
 
 ```mermaid
 flowchart TD
@@ -115,14 +112,7 @@ flowchart TD
     B --> C["align_crop() -- common.py<br/>112x112 aligned crop<br/>(same function used to build training crops)"]
     C --> D{"active_mode<br/>(dropdown)"}
 
-    D -->|gallery| GalEmb["Frozen ArcFace (w600k_r50.onnx)<br/>get_feat() + L2 normalize"]
-    GalEmb --> GalBuf["rolling buffer, avg of last 6 frames"]
-    GalBuf --> GalSim["cosine similarity vs<br/>runs/gallery.npz centroids"]
-    GalSim --> GalThr{"score >= threshold<br/>(0.3179)?"}
-    GalThr -->|yes| GalOut["label = closest person"]
-    GalThr -->|no| GalUnk["UNKNOWN<br/>(only mode with rejection)"]
-
-    D -->|e1| M1Emb["same frozen ArcFace embedding"]
+    D -->|e1| M1Emb["Frozen ArcFace (w600k_r50.onnx)<br/>get_feat() + L2 normalize"]
     M1Emb --> M1Buf["rolling buffer avg"]
     M1Buf --> M1Cls["argmax vs runs/e1_head.pt<br/>(30x512 weight matrix)"]
     M1Cls --> M1Out["label -- always one of 30,<br/>no UNKNOWN (closed-set only)"]
@@ -137,11 +127,11 @@ flowchart TD
     M3Emb --> M3Cls["argmax vs e3_model.pt head weight"]
     M3Cls --> M3Out["label -- closed-set only"]
 
-    GalOut & GalUnk & M1Out & M2Out & M3Out --> J["JSON: label, display_name, score,<br/>threshold (gallery only), mode, bbox"]
+    M1Out & M2Out & M3Out --> J["JSON: label, display_name, score, mode, bbox<br/>(no UNKNOWN in any currently active mode)"]
     J --> K[Phone browser renders result]
 
     style C fill:#1f4e7d,color:#fff
     style J fill:#2d5a2d,color:#fff
 ```
 
-**Note:** switching modes clears the rolling embedding buffer, since E3's fine-tuned backbone produces a different (incompatible) embedding space from the one E0/gallery/E1/E2 share.
+**Note:** switching modes clears the rolling embedding buffer, since E3's fine-tuned backbone produces a different (incompatible) embedding space from the one E1/E2 share.

@@ -76,7 +76,7 @@ STATE = {
     "e3_checkpoint_path": None,
     "names": {},
     "emb_buffer": deque(maxlen=6),
-    "active_mode": "gallery",
+    "active_mode": None,  # set in main() to the best available mode once loaded
     "available_modes": [],      # [(value, label, rejects_unknown), ...]
 }
 
@@ -475,7 +475,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
 @app.route("/")
 def index():
     options_html = "\n".join(
-        f'<option value="{value}" data-rejects-unknown="{1 if rejects else 0}">{label}</option>'
+        f'<option value="{value}" data-rejects-unknown="{1 if rejects else 0}"'
+        f'{" selected" if value == STATE["active_mode"] else ""}>{label}</option>'
         for value, label, rejects in STATE["available_modes"]
     )
     return render_template_string(PAGE, model_options=options_html)
@@ -568,6 +569,13 @@ def predict():
     })
 
 
+# Gallery (nearest-centroid on the frozen backbone) is suppressed from the
+# demo for now -- flip back to True to re-enable it. The code, weights, and
+# --gallery/--threshold flags are untouched; this only controls whether it's
+# registered as a selectable mode at startup.
+SHOW_GALLERY_MODE = False
+
+
 def main():
     runs_dir = Path(__file__).resolve().parent.parent / "runs"
     ap = argparse.ArgumentParser()
@@ -581,13 +589,15 @@ def main():
     ap.add_argument("--e3-checkpoint", default=str(runs_dir / "e3_model.pt"), help="path to E3 checkpoint (skip if missing; loaded lazily on first selection)")
     args = ap.parse_args()
 
-    centroids, persons, threshold = load_gallery(args.gallery)
-    if args.threshold is not None:
-        threshold = args.threshold
-    STATE["gallery"] = {"centroids": centroids, "persons": persons, "threshold": threshold}
-    STATE["names"] = load_display_names(args.names) if args.show_names else {}
+    STATE["available_modes"] = []
 
-    STATE["available_modes"] = [("gallery", "Gallery -- E0 nearest-centroid (99.6%, UNKNOWN-aware)", True)]
+    if SHOW_GALLERY_MODE and Path(args.gallery).exists():
+        centroids, persons, threshold = load_gallery(args.gallery)
+        if args.threshold is not None:
+            threshold = args.threshold
+        STATE["gallery"] = {"centroids": centroids, "persons": persons, "threshold": threshold}
+        STATE["available_modes"].append(("gallery", "Gallery -- nearest-centroid (UNKNOWN-aware)", True))
+    STATE["names"] = load_display_names(args.names) if args.show_names else {}
 
     for mode, path, label in [
         ("e1", args.e1_head, "E1 -- head, clean-only (94.3%)"),
@@ -606,6 +616,16 @@ def main():
     else:
         print(f"Skipping e3: {args.e3_checkpoint} not found")
 
+    if not STATE["available_modes"]:
+        raise RuntimeError(
+            "No experiment checkpoints found (gallery.npz / e1_head.pt / e2_head.pt / "
+            "e3_model.pt) -- nothing for the demo to serve. Build at least one first."
+        )
+    # Default to e2 (best accuracy that doesn't need E3's lazy CPU-heavy load);
+    # fall back to whatever else was found.
+    available = {v for v, _, _ in STATE["available_modes"]}
+    STATE["active_mode"] = "e2" if "e2" in available else STATE["available_modes"][0][0]
+
     STATE["det"], STATE["rec"] = build_models()
 
     import socket
@@ -618,9 +638,8 @@ def main():
     finally:
         s.close()
 
-    print(f"\nGallery: {len(persons)} people, threshold={threshold:.4f}")
     mode_names = ", ".join(v for v, _, _ in STATE["available_modes"])
-    print(f"Modes available in the dropdown: {mode_names}")
+    print(f"\nModes available in the dropdown: {mode_names} (default: {STATE['active_mode']})")
     print(f"\nOn your phone (same WiFi), open:\n\n    https://{lan_ip}:{args.port}\n")
     print("Your browser will warn about the self-signed certificate -- this is")
     print("expected. Tap through it (Advanced -> Proceed / Visit Website).\n")
