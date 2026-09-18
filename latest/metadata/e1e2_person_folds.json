@@ -1,0 +1,655 @@
+{
+  "seed": 42,
+  "manifest": "/home/tahmid/metadata/manifest.csv",
+  "benchmarks": "/home/tahmid/runs/e1e2/person_benchmarks.npz",
+  "folds": [
+    {
+      "fold": 1,
+      "train": [
+        "p01",
+        "p02",
+        "p03",
+        "p04",
+        "p05",
+        "p08",
+        "p09",
+        "p10",
+        "p14",
+        "p17",
+        "p18",
+        "p19",
+        "p21",
+        "p22",
+        "p24",
+        "p25",
+        "p26",
+        "p28",
+        "p29",
+        "p30"
+      ],
+      "val": [
+        "p06",
+        "p07",
+        "p12",
+        "p13",
+        "p16"
+      ],
+      "test": [
+        "p11",
+        "p15",
+        "p20",
+        "p23",
+        "p27"
+      ]
+    },
+    {
+      "fold": 2,
+      "train": [
+        "p01",
+        "p02",
+        "p03",
+        "p04",
+        "p05",
+        "p08",
+        "p09",
+        "p11",
+        "p14",
+        "p15",
+        "p18",
+        "p19",
+        "p20",
+        "p21",
+        "p23",
+        "p24",
+        "p25",
+        "p27",
+        "p28",
+        "p29"
+      ],
+      "val": [
+        "p10",
+        "p17",
+        "p22",
+        "p26",
+        "p30"
+      ],
+      "test": [
+        "p06",
+        "p07",
+        "p12",
+        "p13",
+        "p16"
+      ]
+    },
+    {
+      "fold": 3,
+      "train": [
+        "p01",
+        "p04",
+        "p05",
+        "p06",
+        "p07",
+        "p08",
+        "p09",
+        "p11",
+        "p12",
+        "p13",
+        "p15",
+        "p16",
+        "p18",
+        "p20",
+        "p21",
+        "p23",
+        "p24",
+        "p25",
+        "p27",
+        "p29"
+      ],
+      "val": [
+        "p02",
+        "p03",
+        "p14",
+        "p19",
+        "p28"
+      ],
+      "test": [
+        "p10",
+        "p17",
+        "p22",
+        "p26",
+        "p30"
+      ]
+    },
+    {
+      "fold": 4,
+      "train": [
+        "p01",
+        "p04",
+        "p06",
+        "p07",
+        "p09",
+        "p10",
+        "p11",
+        "p12",
+        "p13",
+        "p15",
+        "p16",
+        "p17",
+        "p20",
+        "p21",
+        "p22",
+        "p23",
+        "p24",
+        "p26",
+        "p27",
+        "p30"
+      ],
+      "val": [
+        "p05",
+        "p08",
+        "p18",
+        "p25",
+        "p29"
+      ],
+      "test": [
+        "p02",
+        "p03",
+        "p14",
+        "p19",
+        "p28"
+      ]
+    },
+    {
+      "fold": 5,
+      "train": [
+        "p02",
+        "p03",
+        "p06",
+        "p07",
+        "p10",
+        "p11",
+        "p12",
+        "p13",
+        "p14",
+        "p15",
+        "p16",
+        "p17",
+        "p19",
+        "p20",
+        "p22",
+        "p23",
+        "p26",
+        "p27",
+        "p28",
+        "p30"
+      ],
+      "val": [
+        "p01",
+        "p04",
+        "p09",
+        "p21",
+        "p24"
+      ],
+      "test": [
+        "p05",
+        "p08",
+        "p18",
+        "p25",
+        "p29"
+      ]
+    },
+    {
+      "fold": 6,
+      "train": [
+        "p02",
+        "p03",
+        "p05",
+        "p06",
+        "p07",
+        "p08",
+        "p10",
+        "p12",
+        "p13",
+        "p14",
+        "p16",
+        "p17",
+        "p18",
+        "p19",
+        "p22",
+        "p25",
+        "p26",
+        "p28",
+        "p29",
+        "p30"
+      ],
+      "val": [
+        "p11",
+        "p15",
+        "p20",
+        "p23",
+        "p27"
+      ],
+      "test": [
+        "p01",
+        "p04",
+        "p09",
+        "p21",
+        "p24"
+      ]
+    }
+  ],
+  "benchmark_photo": {
+    "p01": {
+      "crop_path": "/home/tahmid/crops/p01/p01_none_regular_009.jpg",
+      "group_id": "g56",
+      "md5": "88b5d3c531a55904abaec057e4664432",
+      "lighting": "regular"
+    },
+    "p02": {
+      "crop_path": "/home/tahmid/crops/p02/p02_none_regular_013.jpg",
+      "group_id": "g226",
+      "md5": "be418e59d52f699d36ce089c52dcb599",
+      "lighting": "regular"
+    },
+    "p03": {
+      "crop_path": "/home/tahmid/crops/p03/p03_none_regular_003.jpg",
+      "group_id": "g416",
+      "md5": "69ddd77a30e1b492cda7350e0016b1dc",
+      "lighting": "regular"
+    },
+    "p04": {
+      "crop_path": "/home/tahmid/crops/p04/p04_none_regular_001.jpg",
+      "group_id": "g526",
+      "md5": "6e3738772dae0b3069cea3c410e24f51",
+      "lighting": "regular"
+    },
+    "p05": {
+      "crop_path": "/home/tahmid/crops/p05/p05_none_regular_002.jpg",
+      "group_id": "g614",
+      "md5": "85d5e09d7518da69361fb943e9ff1cb9",
+      "lighting": "regular"
+    },
+    "p06": {
+      "crop_path": "/home/tahmid/crops/p06/p06_none_regular_009.jpg",
+      "group_id": "g692",
+      "md5": "512a752dd4ff71b557c6accd86da67a7",
+      "lighting": "regular"
+    },
+    "p07": {
+      "crop_path": "/home/tahmid/crops/p07/p07_none_regular_003.jpg",
+      "group_id": "g735",
+      "md5": "5d355ac2be373e92c30459a608f8e354",
+      "lighting": "regular"
+    },
+    "p08": {
+      "crop_path": "/home/tahmid/crops/p08/p08_none_regular_008.jpg",
+      "group_id": "g777",
+      "md5": "274d762475f973376987076314a3da94",
+      "lighting": "regular"
+    },
+    "p09": {
+      "crop_path": "/home/tahmid/crops/p09/p09_none_regular_002.jpg",
+      "group_id": "g808",
+      "md5": "41c344cf1821ecd6bcce5a8c0a15250d",
+      "lighting": "regular"
+    },
+    "p10": {
+      "crop_path": "/home/tahmid/crops/p10/p10_none_regular_010.jpg",
+      "group_id": "g843",
+      "md5": "02fbdfecc0bf647f0bfb9639ab1ddd7f",
+      "lighting": "regular"
+    },
+    "p11": {
+      "crop_path": "/home/tahmid/crops/p11/p11_none_regular_006.jpg",
+      "group_id": "g945",
+      "md5": "8c5b71a25134e68200283c6399bc6a05",
+      "lighting": "regular"
+    },
+    "p12": {
+      "crop_path": "/home/tahmid/crops/p12/p12_none_regular_001.jpg",
+      "group_id": "g1014",
+      "md5": "e20d2809b205e98915a4b8cabb69f95e",
+      "lighting": "regular"
+    },
+    "p13": {
+      "crop_path": "/home/tahmid/crops/p13/p13_none_regular_003.jpg",
+      "group_id": "g1169",
+      "md5": "6de8c9b16c57e071e5b37bf08f03d9a9",
+      "lighting": "regular"
+    },
+    "p14": {
+      "crop_path": "/home/tahmid/crops/p14/p14_none_regular_002.jpg",
+      "group_id": "g1257",
+      "md5": "9177cc108a20af7543718e37f4c9b6a0",
+      "lighting": "regular"
+    },
+    "p15": {
+      "crop_path": "/home/tahmid/crops/p15/p15_none_regular_003.jpg",
+      "group_id": "g1409",
+      "md5": "c0567917dcd6ebfdb0d9c4db775c0e06",
+      "lighting": "regular"
+    },
+    "p16": {
+      "crop_path": "/home/tahmid/crops/p16/p16_none_regular_012.jpg",
+      "group_id": "g1625",
+      "md5": "9ec927b1f8962cca1b2d5ec2965efa2f",
+      "lighting": "regular"
+    },
+    "p17": {
+      "crop_path": "/home/tahmid/crops/p17/p17_none_regular_011.jpg",
+      "group_id": "g1797",
+      "md5": "d4b7e4541871c79a6d795e86bef677e2",
+      "lighting": "regular"
+    },
+    "p18": {
+      "crop_path": "/home/tahmid/crops/p18/p18_none_regular_001.jpg",
+      "group_id": "g1960",
+      "md5": "bcba7777ca28516bc7bd7840226ea2cd",
+      "lighting": "regular"
+    },
+    "p19": {
+      "crop_path": "/home/tahmid/crops/p19/p19_none_regular_001.jpg",
+      "group_id": "g2156",
+      "md5": "525c114e020af0815eb11559fc7df00b",
+      "lighting": "regular"
+    },
+    "p20": {
+      "crop_path": "/home/tahmid/crops/p20/p20_none_regular_015.jpg",
+      "group_id": "g2366",
+      "md5": "d8e49156a9299e044f89618a24227d57",
+      "lighting": "regular"
+    },
+    "p21": {
+      "crop_path": "/home/tahmid/crops/p21/p21_none_regular_001.jpg",
+      "group_id": "g2421",
+      "md5": "118cf902d5a980c71ca2a183ba4483e1",
+      "lighting": "regular"
+    },
+    "p22": {
+      "crop_path": "/home/tahmid/crops/p22/p22_none_regular_001.jpg",
+      "group_id": "g2443",
+      "md5": "530302f6339deed6d01c768122d015f2",
+      "lighting": "regular"
+    },
+    "p23": {
+      "crop_path": "/home/tahmid/crops/p23/p23_none_regular_004.jpg",
+      "group_id": "g2466",
+      "md5": "e1142e6d6b5754c135acd917fefb329a",
+      "lighting": "regular"
+    },
+    "p24": {
+      "crop_path": "/home/tahmid/crops/p24/p24_none_regular_002.jpg",
+      "group_id": "g2487",
+      "md5": "8bcfbd6521c9734bcf64435866465860",
+      "lighting": "regular"
+    },
+    "p25": {
+      "crop_path": "/home/tahmid/crops/p25/p25_none_regular_007.jpg",
+      "group_id": "g2510",
+      "md5": "8561e9ed20a094fd21eafaa400ce811c",
+      "lighting": "regular"
+    },
+    "p26": {
+      "crop_path": "/home/tahmid/crops/p26/p26_none_regular_003.jpg",
+      "group_id": "g2531",
+      "md5": "885379350e368731a78912086eacaeeb",
+      "lighting": "regular"
+    },
+    "p27": {
+      "crop_path": "/home/tahmid/crops/p27/p27_none_regular_013.jpg",
+      "group_id": "g2555",
+      "md5": "e9eb1f078684785087305d789ea026de",
+      "lighting": "regular"
+    },
+    "p28": {
+      "crop_path": "/home/tahmid/crops/p28/p28_none_regular_003.jpg",
+      "group_id": "g2571",
+      "md5": "b3cbfb55ab741d32b20ba8ddc44ce082",
+      "lighting": "regular"
+    },
+    "p29": {
+      "crop_path": "/home/tahmid/crops/p29/p29_none_regular_005.jpg",
+      "group_id": "g2593",
+      "md5": "96df24c2072ac6f076c11a7a71e24db0",
+      "lighting": "regular"
+    },
+    "p30": {
+      "crop_path": "/home/tahmid/crops/p30/p30_none_regular_002.jpg",
+      "group_id": "g2618",
+      "md5": "eb2b45d2462824b0c96eb5accc09baa8",
+      "lighting": "regular"
+    }
+  },
+  "excluded": {
+    "p01": [
+      "/home/tahmid/crops/p01/p01_none_regular_008.jpg",
+      "/home/tahmid/crops/p01/p01_none_regular_009.jpg"
+    ],
+    "p02": [
+      "/home/tahmid/crops/p02/p02_none_regular_013.jpg"
+    ],
+    "p03": [
+      "/home/tahmid/crops/p03/p03_none_regular_003.jpg"
+    ],
+    "p04": [
+      "/home/tahmid/crops/p04/p04_none_regular_001.jpg",
+      "/home/tahmid/crops/p04/p04_none_regular_002.jpg",
+      "/home/tahmid/crops/p04/p04_none_regular_003.jpg"
+    ],
+    "p05": [
+      "/home/tahmid/crops/p05/p05_none_regular_002.jpg"
+    ],
+    "p06": [
+      "/home/tahmid/crops/p06/p06_none_regular_007.jpg",
+      "/home/tahmid/crops/p06/p06_none_regular_008.jpg",
+      "/home/tahmid/crops/p06/p06_none_regular_009.jpg",
+      "/home/tahmid/crops/p06/p06_none_regular_010.jpg",
+      "/home/tahmid/crops/p06/p06_none_regular_011.jpg",
+      "/home/tahmid/crops/p06/p06_none_regular_012.jpg"
+    ],
+    "p07": [
+      "/home/tahmid/crops/p07/p07_none_regular_001.jpg",
+      "/home/tahmid/crops/p07/p07_none_regular_002.jpg",
+      "/home/tahmid/crops/p07/p07_none_regular_003.jpg"
+    ],
+    "p08": [
+      "/home/tahmid/crops/p08/p08_none_regular_001.jpg",
+      "/home/tahmid/crops/p08/p08_none_regular_002.jpg",
+      "/home/tahmid/crops/p08/p08_none_regular_003.jpg",
+      "/home/tahmid/crops/p08/p08_none_regular_004.jpg",
+      "/home/tahmid/crops/p08/p08_none_regular_005.jpg",
+      "/home/tahmid/crops/p08/p08_none_regular_006.jpg",
+      "/home/tahmid/crops/p08/p08_none_regular_007.jpg",
+      "/home/tahmid/crops/p08/p08_none_regular_008.jpg",
+      "/home/tahmid/crops/p08/p08_none_regular_009.jpg"
+    ],
+    "p09": [
+      "/home/tahmid/crops/p09/p09_none_regular_001.jpg",
+      "/home/tahmid/crops/p09/p09_none_regular_002.jpg",
+      "/home/tahmid/crops/p09/p09_none_regular_003.jpg",
+      "/home/tahmid/crops/p09/p09_none_regular_004.jpg",
+      "/home/tahmid/crops/p09/p09_none_regular_005.jpg",
+      "/home/tahmid/crops/p09/p09_none_regular_006.jpg"
+    ],
+    "p10": [
+      "/home/tahmid/crops/p10/p10_none_regular_007.jpg",
+      "/home/tahmid/crops/p10/p10_none_regular_008.jpg",
+      "/home/tahmid/crops/p10/p10_none_regular_009.jpg",
+      "/home/tahmid/crops/p10/p10_none_regular_010.jpg",
+      "/home/tahmid/crops/p10/p10_none_regular_011.jpg",
+      "/home/tahmid/crops/p10/p10_none_regular_012.jpg"
+    ],
+    "p11": [
+      "/home/tahmid/crops/p11/p11_none_regular_004.jpg",
+      "/home/tahmid/crops/p11/p11_none_regular_005.jpg",
+      "/home/tahmid/crops/p11/p11_none_regular_006.jpg"
+    ],
+    "p12": [
+      "/home/tahmid/crops/p12/p12_none_regular_001.jpg",
+      "/home/tahmid/crops/p12/p12_none_regular_002.jpg"
+    ],
+    "p13": [
+      "/home/tahmid/crops/p13/p13_none_regular_003.jpg"
+    ],
+    "p14": [
+      "/home/tahmid/crops/p14/p14_none_low_001.jpg",
+      "/home/tahmid/crops/p14/p14_none_low_002.jpg",
+      "/home/tahmid/crops/p14/p14_none_low_003.jpg",
+      "/home/tahmid/crops/p14/p14_none_regular_001.jpg",
+      "/home/tahmid/crops/p14/p14_none_regular_002.jpg",
+      "/home/tahmid/crops/p14/p14_none_regular_003.jpg"
+    ],
+    "p15": [
+      "/home/tahmid/crops/p15/p15_none_regular_003.jpg"
+    ],
+    "p16": [
+      "/home/tahmid/crops/p16/p16_none_regular_012.jpg"
+    ],
+    "p17": [
+      "/home/tahmid/crops/p17/p17_none_regular_011.jpg"
+    ],
+    "p18": [
+      "/home/tahmid/crops/p18/p18_none_regular_001.jpg"
+    ],
+    "p19": [
+      "/home/tahmid/crops/p19/p19_none_regular_001.jpg"
+    ],
+    "p20": [
+      "/home/tahmid/crops/p20/p20_none_regular_015.jpg"
+    ],
+    "p21": [
+      "/home/tahmid/crops/p21/p21_none_low_001.jpg",
+      "/home/tahmid/crops/p21/p21_none_low_002.jpg",
+      "/home/tahmid/crops/p21/p21_none_low_003.jpg",
+      "/home/tahmid/crops/p21/p21_none_low_004.jpg",
+      "/home/tahmid/crops/p21/p21_none_low_008.jpg",
+      "/home/tahmid/crops/p21/p21_none_low_009.jpg",
+      "/home/tahmid/crops/p21/p21_none_low_010.jpg",
+      "/home/tahmid/crops/p21/p21_none_low_011.jpg",
+      "/home/tahmid/crops/p21/p21_none_regular_001.jpg",
+      "/home/tahmid/crops/p21/p21_none_regular_002.jpg",
+      "/home/tahmid/crops/p21/p21_none_regular_003.jpg",
+      "/home/tahmid/crops/p21/p21_none_regular_004.jpg",
+      "/home/tahmid/crops/p21/p21_none_regular_011.jpg",
+      "/home/tahmid/crops/p21/p21_none_regular_012.jpg",
+      "/home/tahmid/crops/p21/p21_none_regular_013.jpg"
+    ],
+    "p22": [
+      "/home/tahmid/crops/p22/p22_none_low_001.jpg",
+      "/home/tahmid/crops/p22/p22_none_low_002.jpg",
+      "/home/tahmid/crops/p22/p22_none_low_003.jpg",
+      "/home/tahmid/crops/p22/p22_none_low_004.jpg",
+      "/home/tahmid/crops/p22/p22_none_low_010.jpg",
+      "/home/tahmid/crops/p22/p22_none_low_011.jpg",
+      "/home/tahmid/crops/p22/p22_none_regular_001.jpg",
+      "/home/tahmid/crops/p22/p22_none_regular_002.jpg",
+      "/home/tahmid/crops/p22/p22_none_regular_008.jpg",
+      "/home/tahmid/crops/p22/p22_none_regular_009.jpg",
+      "/home/tahmid/crops/p22/p22_none_regular_010.jpg"
+    ],
+    "p23": [
+      "/home/tahmid/crops/p23/p23_none_low_007.jpg",
+      "/home/tahmid/crops/p23/p23_none_low_008.jpg",
+      "/home/tahmid/crops/p23/p23_none_low_014.jpg",
+      "/home/tahmid/crops/p23/p23_none_regular_004.jpg",
+      "/home/tahmid/crops/p23/p23_none_regular_005.jpg",
+      "/home/tahmid/crops/p23/p23_none_regular_006.jpg",
+      "/home/tahmid/crops/p23/p23_none_regular_012.jpg",
+      "/home/tahmid/crops/p23/p23_none_regular_013.jpg"
+    ],
+    "p24": [
+      "/home/tahmid/crops/p24/p24_none_low_001.jpg",
+      "/home/tahmid/crops/p24/p24_none_low_002.jpg",
+      "/home/tahmid/crops/p24/p24_none_low_003.jpg",
+      "/home/tahmid/crops/p24/p24_none_low_009.jpg",
+      "/home/tahmid/crops/p24/p24_none_low_010.jpg",
+      "/home/tahmid/crops/p24/p24_none_low_011.jpg",
+      "/home/tahmid/crops/p24/p24_none_regular_001.jpg",
+      "/home/tahmid/crops/p24/p24_none_regular_002.jpg",
+      "/home/tahmid/crops/p24/p24_none_regular_003.jpg",
+      "/home/tahmid/crops/p24/p24_none_regular_004.jpg",
+      "/home/tahmid/crops/p24/p24_none_regular_009.jpg",
+      "/home/tahmid/crops/p24/p24_none_regular_010.jpg",
+      "/home/tahmid/crops/p24/p24_none_regular_011.jpg"
+    ],
+    "p25": [
+      "/home/tahmid/crops/p25/p25_none_low_007.jpg",
+      "/home/tahmid/crops/p25/p25_none_low_008.jpg",
+      "/home/tahmid/crops/p25/p25_none_low_014.jpg",
+      "/home/tahmid/crops/p25/p25_none_low_015.jpg",
+      "/home/tahmid/crops/p25/p25_none_regular_005.jpg",
+      "/home/tahmid/crops/p25/p25_none_regular_006.jpg",
+      "/home/tahmid/crops/p25/p25_none_regular_007.jpg",
+      "/home/tahmid/crops/p25/p25_none_regular_014.jpg",
+      "/home/tahmid/crops/p25/p25_none_regular_015.jpg"
+    ],
+    "p26": [
+      "/home/tahmid/crops/p26/p26_none_low_001.jpg",
+      "/home/tahmid/crops/p26/p26_none_low_002.jpg",
+      "/home/tahmid/crops/p26/p26_none_low_003.jpg",
+      "/home/tahmid/crops/p26/p26_none_regular_001.jpg",
+      "/home/tahmid/crops/p26/p26_none_regular_002.jpg",
+      "/home/tahmid/crops/p26/p26_none_regular_003.jpg"
+    ],
+    "p27": [
+      "/home/tahmid/crops/p27/p27_none_low_006.jpg",
+      "/home/tahmid/crops/p27/p27_none_low_007.jpg",
+      "/home/tahmid/crops/p27/p27_none_low_008.jpg",
+      "/home/tahmid/crops/p27/p27_none_low_009.jpg",
+      "/home/tahmid/crops/p27/p27_none_low_010.jpg",
+      "/home/tahmid/crops/p27/p27_none_low_011.jpg",
+      "/home/tahmid/crops/p27/p27_none_regular_007.jpg",
+      "/home/tahmid/crops/p27/p27_none_regular_008.jpg",
+      "/home/tahmid/crops/p27/p27_none_regular_009.jpg",
+      "/home/tahmid/crops/p27/p27_none_regular_010.jpg",
+      "/home/tahmid/crops/p27/p27_none_regular_011.jpg",
+      "/home/tahmid/crops/p27/p27_none_regular_012.jpg",
+      "/home/tahmid/crops/p27/p27_none_regular_013.jpg"
+    ],
+    "p28": [
+      "/home/tahmid/crops/p28/p28_none_low_001.jpg",
+      "/home/tahmid/crops/p28/p28_none_low_002.jpg",
+      "/home/tahmid/crops/p28/p28_none_low_003.jpg",
+      "/home/tahmid/crops/p28/p28_none_low_004.jpg",
+      "/home/tahmid/crops/p28/p28_none_low_005.jpg",
+      "/home/tahmid/crops/p28/p28_none_low_006.jpg",
+      "/home/tahmid/crops/p28/p28_none_low_007.jpg",
+      "/home/tahmid/crops/p28/p28_none_regular_001.jpg",
+      "/home/tahmid/crops/p28/p28_none_regular_002.jpg",
+      "/home/tahmid/crops/p28/p28_none_regular_003.jpg",
+      "/home/tahmid/crops/p28/p28_none_regular_004.jpg",
+      "/home/tahmid/crops/p28/p28_none_regular_005.jpg",
+      "/home/tahmid/crops/p28/p28_none_regular_006.jpg"
+    ],
+    "p29": [
+      "/home/tahmid/crops/p29/p29_none_low_001.jpg",
+      "/home/tahmid/crops/p29/p29_none_low_002.jpg",
+      "/home/tahmid/crops/p29/p29_none_low_003.jpg",
+      "/home/tahmid/crops/p29/p29_none_low_004.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_001.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_002.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_003.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_004.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_005.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_006.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_007.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_008.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_009.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_010.jpg",
+      "/home/tahmid/crops/p29/p29_none_regular_011.jpg"
+    ],
+    "p30": [
+      "/home/tahmid/crops/p30/p30_none_low_001.jpg",
+      "/home/tahmid/crops/p30/p30_none_low_002.jpg",
+      "/home/tahmid/crops/p30/p30_none_low_003.jpg",
+      "/home/tahmid/crops/p30/p30_none_low_004.jpg",
+      "/home/tahmid/crops/p30/p30_none_low_005.jpg",
+      "/home/tahmid/crops/p30/p30_none_regular_001.jpg",
+      "/home/tahmid/crops/p30/p30_none_regular_002.jpg",
+      "/home/tahmid/crops/p30/p30_none_regular_003.jpg",
+      "/home/tahmid/crops/p30/p30_none_regular_004.jpg",
+      "/home/tahmid/crops/p30/p30_none_regular_005.jpg",
+      "/home/tahmid/crops/p30/p30_none_regular_006.jpg"
+    ]
+  }
+}

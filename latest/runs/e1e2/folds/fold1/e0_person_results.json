@@ -1,0 +1,141 @@
+{
+  "exp": "e0",
+  "unfreeze": "e0",
+  "best_epoch": 0,
+  "accept_threshold": 0.3,
+  "fold": 1,
+  "train_people": [
+    "p01",
+    "p02",
+    "p03",
+    "p04",
+    "p05",
+    "p08",
+    "p09",
+    "p10",
+    "p14",
+    "p17",
+    "p18",
+    "p19",
+    "p21",
+    "p22",
+    "p24",
+    "p25",
+    "p26",
+    "p28",
+    "p29",
+    "p30"
+  ],
+  "val_people": [
+    "p06",
+    "p07",
+    "p12",
+    "p13",
+    "p16"
+  ],
+  "test_people": [
+    "p11",
+    "p15",
+    "p20",
+    "p23",
+    "p27"
+  ],
+  "test_n": 974,
+  "test_correct_n": 822,
+  "test_acc": 0.8439425051334702,
+  "test_acc_ci": [
+    0.8198043629398133,
+    0.8653781860538069
+  ],
+  "test_gap": 0.3456926643848419,
+  "test_raw_acc": 0.9866529774127311,
+  "test_rejected_correct": 0.14271047227926079,
+  "test_rejected_correct_n": 139,
+  "test_misidentified_accepted": 0.0,
+  "test_misidentified_accepted_n": 0,
+  "per_occlusion": {
+    "cap": {
+      "n": 126,
+      "correct_n": 125,
+      "acc": 0.9920634920634921,
+      "rejected_correct_n": 1,
+      "rejected_correct": 0.007936507936507936
+    },
+    "clearglass": {
+      "n": 124,
+      "correct_n": 124,
+      "acc": 1.0,
+      "rejected_correct_n": 0,
+      "rejected_correct": 0.0
+    },
+    "mask": {
+      "n": 136,
+      "correct_n": 133,
+      "acc": 0.9779411764705882,
+      "rejected_correct_n": 3,
+      "rejected_correct": 0.022058823529411766
+    },
+    "mask_clearglass": {
+      "n": 117,
+      "correct_n": 65,
+      "acc": 0.5555555555555556,
+      "rejected_correct_n": 49,
+      "rejected_correct": 0.4188034188034188
+    },
+    "mask_sunglass": {
+      "n": 129,
+      "correct_n": 35,
+      "acc": 0.2713178294573643,
+      "rejected_correct_n": 84,
+      "rejected_correct": 0.6511627906976745
+    },
+    "none": {
+      "n": 117,
+      "correct_n": 117,
+      "acc": 1.0,
+      "rejected_correct_n": 0,
+      "rejected_correct": 0.0
+    },
+    "scarf": {
+      "n": 88,
+      "correct_n": 88,
+      "acc": 1.0,
+      "rejected_correct_n": 0,
+      "rejected_correct": 0.0
+    },
+    "sunglass": {
+      "n": 137,
+      "correct_n": 135,
+      "acc": 0.9854014598540146,
+      "rejected_correct_n": 2,
+      "rejected_correct": 0.014598540145985401
+    }
+  },
+  "per_person": {
+    "p11": {
+      "n": 197,
+      "correct_n": 180,
+      "acc": 0.9137055837563451
+    },
+    "p15": {
+      "n": 199,
+      "correct_n": 157,
+      "acc": 0.7889447236180904
+    },
+    "p20": {
+      "n": 199,
+      "correct_n": 154,
+      "acc": 0.7738693467336684
+    },
+    "p23": {
+      "n": 192,
+      "correct_n": 165,
+      "acc": 0.859375
+    },
+    "p27": {
+      "n": 187,
+      "correct_n": 166,
+      "acc": 0.8877005347593583
+    }
+  }
+}

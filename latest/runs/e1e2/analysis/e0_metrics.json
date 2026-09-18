@@ -1,0 +1,281 @@
+{
+  "exp": "e0",
+  "accept_threshold": 0.3,
+  "overall": {
+    "n": 5818,
+    "accuracy": 0.8497765555173599,
+    "macro_precision": 1.0,
+    "macro_recall": 0.8511810634454889,
+    "macro_f1": 0.916663402014453,
+    "per_person": [
+      {
+        "person": "p01",
+        "support": 198,
+        "precision": 1.0,
+        "recall": 0.7474747474747475,
+        "f1": 0.8554913294797689
+      },
+      {
+        "person": "p02",
+        "support": 199,
+        "precision": 1.0,
+        "recall": 0.7587939698492462,
+        "f1": 0.8628571428571429
+      },
+      {
+        "person": "p03",
+        "support": 198,
+        "precision": 1.0,
+        "recall": 0.7222222222222222,
+        "f1": 0.8387096774193548
+      },
+      {
+        "person": "p04",
+        "support": 197,
+        "precision": 1.0,
+        "recall": 0.7309644670050761,
+        "f1": 0.844574780058651
+      },
+      {
+        "person": "p05",
+        "support": 199,
+        "precision": 1.0,
+        "recall": 0.7286432160804021,
+        "f1": 0.8430232558139535
+      },
+      {
+        "person": "p06",
+        "support": 194,
+        "precision": 1.0,
+        "recall": 0.7268041237113402,
+        "f1": 0.8417910447761193
+      },
+      {
+        "person": "p07",
+        "support": 196,
+        "precision": 1.0,
+        "recall": 0.8112244897959183,
+        "f1": 0.895774647887324
+      },
+      {
+        "person": "p08",
+        "support": 191,
+        "precision": 1.0,
+        "recall": 0.9528795811518325,
+        "f1": 0.9758713136729222
+      },
+      {
+        "person": "p09",
+        "support": 194,
+        "precision": 1.0,
+        "recall": 0.9020618556701031,
+        "f1": 0.948509485094851
+      },
+      {
+        "person": "p10",
+        "support": 194,
+        "precision": 1.0,
+        "recall": 0.7835051546391752,
+        "f1": 0.8786127167630058
+      },
+      {
+        "person": "p11",
+        "support": 197,
+        "precision": 1.0,
+        "recall": 0.9137055837563451,
+        "f1": 0.9549071618037135
+      },
+      {
+        "person": "p12",
+        "support": 198,
+        "precision": 1.0,
+        "recall": 0.8787878787878788,
+        "f1": 0.9354838709677419
+      },
+      {
+        "person": "p13",
+        "support": 199,
+        "precision": 1.0,
+        "recall": 0.9396984924623115,
+        "f1": 0.9689119170984456
+      },
+      {
+        "person": "p14",
+        "support": 190,
+        "precision": 1.0,
+        "recall": 0.7210526315789474,
+        "f1": 0.8379204892966361
+      },
+      {
+        "person": "p15",
+        "support": 199,
+        "precision": 1.0,
+        "recall": 0.7889447236180904,
+        "f1": 0.8820224719101123
+      },
+      {
+        "person": "p16",
+        "support": 198,
+        "precision": 1.0,
+        "recall": 0.6767676767676768,
+        "f1": 0.8072289156626505
+      },
+      {
+        "person": "p17",
+        "support": 199,
+        "precision": 1.0,
+        "recall": 0.7839195979899497,
+        "f1": 0.8788732394366198
+      },
+      {
+        "person": "p18",
+        "support": 194,
+        "precision": 1.0,
+        "recall": 0.8814432989690721,
+        "f1": 0.936986301369863
+      },
+      {
+        "person": "p19",
+        "support": 199,
+        "precision": 1.0,
+        "recall": 0.8844221105527639,
+        "f1": 0.9386666666666666
+      },
+      {
+        "person": "p20",
+        "support": 199,
+        "precision": 1.0,
+        "recall": 0.7738693467336684,
+        "f1": 0.8725212464589235
+      },
+      {
+        "person": "p21",
+        "support": 185,
+        "precision": 1.0,
+        "recall": 0.9405405405405406,
+        "f1": 0.9693593314763231
+      },
+      {
+        "person": "p22",
+        "support": 189,
+        "precision": 1.0,
+        "recall": 0.9735449735449735,
+        "f1": 0.9865951742627346
+      },
+      {
+        "person": "p23",
+        "support": 192,
+        "precision": 1.0,
+        "recall": 0.859375,
+        "f1": 0.9243697478991597
+      },
+      {
+        "person": "p24",
+        "support": 187,
+        "precision": 1.0,
+        "recall": 0.9411764705882353,
+        "f1": 0.9696969696969697
+      },
+      {
+        "person": "p25",
+        "support": 191,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      {
+        "person": "p26",
+        "support": 194,
+        "precision": 1.0,
+        "recall": 0.9484536082474226,
+        "f1": 0.9735449735449735
+      },
+      {
+        "person": "p27",
+        "support": 187,
+        "precision": 1.0,
+        "recall": 0.8877005347593583,
+        "f1": 0.9405099150141643
+      },
+      {
+        "person": "p28",
+        "support": 187,
+        "precision": 1.0,
+        "recall": 0.9411764705882353,
+        "f1": 0.9696969696969697
+      },
+      {
+        "person": "p29",
+        "support": 185,
+        "precision": 1.0,
+        "recall": 0.9891891891891892,
+        "f1": 0.9945652173913043
+      },
+      {
+        "person": "p30",
+        "support": 189,
+        "precision": 1.0,
+        "recall": 0.9470899470899471,
+        "f1": 0.9728260869565218
+      }
+    ]
+  },
+  "per_occlusion": {
+    "cap": {
+      "n": 751,
+      "accuracy": 0.9547270306258322,
+      "macro_precision": 0.9666666666666667,
+      "macro_recall": 0.924926424150562,
+      "macro_f1": 0.9421975527892277
+    },
+    "clearglass": {
+      "n": 667,
+      "accuracy": 1.0,
+      "macro_precision": 0.9666666666666667,
+      "macro_recall": 0.9666666666666667,
+      "macro_f1": 0.9666666666666667
+    },
+    "mask": {
+      "n": 853,
+      "accuracy": 0.9015240328253223,
+      "macro_precision": 1.0,
+      "macro_recall": 0.8930824366951862,
+      "macro_f1": 0.9343965430020369
+    },
+    "mask_clearglass": {
+      "n": 726,
+      "accuracy": 0.6845730027548209,
+      "macro_precision": 0.9666666666666667,
+      "macro_recall": 0.6743491669915959,
+      "macro_f1": 0.757738785725588
+    },
+    "mask_sunglass": {
+      "n": 777,
+      "accuracy": 0.3564993564993565,
+      "macro_precision": 0.8,
+      "macro_recall": 0.3668440775912041,
+      "macro_f1": 0.45898405291604827
+    },
+    "none": {
+      "n": 667,
+      "accuracy": 1.0,
+      "macro_precision": 1.0,
+      "macro_recall": 1.0,
+      "macro_f1": 1.0
+    },
+    "scarf": {
+      "n": 551,
+      "accuracy": 0.9727767695099818,
+      "macro_precision": 0.8,
+      "macro_recall": 0.7774976258309592,
+      "macro_f1": 0.7878392076286814
+    },
+    "sunglass": {
+      "n": 826,
+      "accuracy": 0.9854721549636803,
+      "macro_precision": 1.0,
+      "macro_recall": 0.9854640235243683,
+      "macro_f1": 0.992294470422698
+    }
+  }
+}

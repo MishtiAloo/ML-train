@@ -1,0 +1,210 @@
+device=cuda  exp=e0  unfreeze=e0
+[0;93m2026-09-18 19:14:41.957563915 [W:onnxruntime:, execution_frame.cc:870 VerifyOutputSizes] Expected shape from model of {1,512} does not match actual shape of {2,512} for output 683[m
+Conversion check: mean cosine sim=1.000000
+fold 1: test=['p11', 'p15', 'p20', 'p23', 'p27']  val=['p06', 'p07', 'p12', 'p13', 'p16']  train=20 people
+train people=20 (3990 photos)  val people=5 (985 query photos)  test people=5 (974 query photos)  gallery=30
+Loading crops into memory...
+Unfrozen backbone tensors: []
+Unfrozen backbone parameters: 0
+  epoch   0 (untrained)  val_acc=80.71%  val_gap=0.3250
+Best epoch: 0  val_acc=80.71%  val_gap=0.3250
+Saved: runs/e1e2/folds/fold1/e0_person_model.pt
+
+=== TEST [e0] unseen people ['p11', 'p15', 'p20', 'p23', 'p27'] (n=974)  accept-threshold=0.3 ===
+Top-1 accuracy (accepted AND correct): 84.39%  (95% CI: 82.0-86.5%)
+  of which: correct-but-rejected (score < 0.3) = 14.27%  misidentified-and-accepted = 0.00%
+Plain argmax accuracy (no threshold): 98.67%
+Benchmark gap (mean): 0.3457
+
+Per-occlusion accuracy (accepted AND correct):
+  cap                  n= 126  acc= 99.2%  (CI 95.6-99.9%)  rejected= 0.8%
+  clearglass           n= 124  acc=100.0%  (CI 97.0-100.0%)  rejected= 0.0%
+  mask                 n= 136  acc= 97.8%  (CI 93.7-99.2%)  rejected= 2.2%
+  mask_clearglass      n= 117  acc= 55.6%  (CI 46.5-64.2%)  rejected=41.9%
+  mask_sunglass        n= 129  acc= 27.1%  (CI 20.2-35.4%)  rejected=65.1%
+  none                 n= 117  acc=100.0%  (CI 96.8-100.0%)  rejected= 0.0%
+  scarf                n=  88  acc=100.0%  (CI 95.8-100.0%)  rejected= 0.0%
+  sunglass             n= 137  acc= 98.5%  (CI 94.8-99.6%)  rejected= 1.5%
+
+Per-person accuracy (test people, accepted AND correct):
+  p11  n= 197  acc= 91.4%
+  p15  n= 199  acc= 78.9%
+  p20  n= 199  acc= 77.4%
+  p23  n= 192  acc= 85.9%
+  p27  n= 187  acc= 88.8%
+Saved: runs/e1e2/folds/fold1/e0_person_results.json
+device=cuda  exp=e0  unfreeze=e0
+[0;93m2026-09-18 19:14:46.555841495 [W:onnxruntime:, execution_frame.cc:870 VerifyOutputSizes] Expected shape from model of {1,512} does not match actual shape of {2,512} for output 683[m
+Conversion check: mean cosine sim=1.000000
+fold 2: test=['p06', 'p07', 'p12', 'p13', 'p16']  val=['p10', 'p17', 'p22', 'p26', 'p30']  train=20 people
+train people=20 (3990 photos)  val people=5 (965 query photos)  test people=5 (985 query photos)  gallery=30
+Loading crops into memory...
+Unfrozen backbone tensors: []
+Unfrozen backbone parameters: 0
+  epoch   0 (untrained)  val_acc=88.60%  val_gap=0.3393
+Best epoch: 0  val_acc=88.60%  val_gap=0.3393
+Saved: runs/e1e2/folds/fold2/e0_person_model.pt
+
+=== TEST [e0] unseen people ['p06', 'p07', 'p12', 'p13', 'p16'] (n=985)  accept-threshold=0.3 ===
+Top-1 accuracy (accepted AND correct): 80.71%  (95% CI: 78.1-83.1%)
+  of which: correct-but-rejected (score < 0.3) = 14.52%  misidentified-and-accepted = 0.00%
+Plain argmax accuracy (no threshold): 95.23%
+Benchmark gap (mean): 0.3250
+
+Per-occlusion accuracy (accepted AND correct):
+  cap                  n= 115  acc= 98.3%  (CI 93.9-99.5%)  rejected= 1.7%
+  clearglass           n= 113  acc=100.0%  (CI 96.7-100.0%)  rejected= 0.0%
+  mask                 n= 145  acc= 86.9%  (CI 80.4-91.4%)  rejected= 6.9%
+  mask_clearglass      n= 113  acc= 44.2%  (CI 35.4-53.4%)  rejected=40.7%
+  mask_sunglass        n= 123  acc= 22.0%  (CI 15.5-30.1%)  rejected=61.0%
+  none                 n= 132  acc=100.0%  (CI 97.2-100.0%)  rejected= 0.0%
+  scarf                n= 113  acc= 91.2%  (CI 84.5-95.1%)  rejected= 8.8%
+  sunglass             n= 131  acc=100.0%  (CI 97.2-100.0%)  rejected= 0.0%
+
+Per-person accuracy (test people, accepted AND correct):
+  p06  n= 194  acc= 72.7%
+  p07  n= 196  acc= 81.1%
+  p12  n= 198  acc= 87.9%
+  p13  n= 199  acc= 94.0%
+  p16  n= 198  acc= 67.7%
+Saved: runs/e1e2/folds/fold2/e0_person_results.json
+device=cuda  exp=e0  unfreeze=e0
+[0;93m2026-09-18 19:14:51.492859199 [W:onnxruntime:, execution_frame.cc:870 VerifyOutputSizes] Expected shape from model of {1,512} does not match actual shape of {2,512} for output 683[m
+Conversion check: mean cosine sim=1.000000
+fold 3: test=['p10', 'p17', 'p22', 'p26', 'p30']  val=['p02', 'p03', 'p14', 'p19', 'p28']  train=20 people
+train people=20 (3993 photos)  val people=5 (973 query photos)  test people=5 (965 query photos)  gallery=30
+Loading crops into memory...
+Unfrozen backbone tensors: []
+Unfrozen backbone parameters: 0
+  epoch   0 (untrained)  val_acc=80.47%  val_gap=0.3155
+Best epoch: 0  val_acc=80.47%  val_gap=0.3155
+Saved: runs/e1e2/folds/fold3/e0_person_model.pt
+
+=== TEST [e0] unseen people ['p10', 'p17', 'p22', 'p26', 'p30'] (n=965)  accept-threshold=0.3 ===
+Top-1 accuracy (accepted AND correct): 88.60%  (95% CI: 86.4-90.5%)
+  of which: correct-but-rejected (score < 0.3) = 9.53%  misidentified-and-accepted = 0.00%
+Plain argmax accuracy (no threshold): 98.13%
+Benchmark gap (mean): 0.3393
+
+Per-occlusion accuracy (accepted AND correct):
+  cap                  n= 112  acc=100.0%  (CI 96.7-100.0%)  rejected= 0.0%
+  clearglass           n= 112  acc=100.0%  (CI 96.7-100.0%)  rejected= 0.0%
+  mask                 n= 154  acc= 92.9%  (CI 87.7-96.0%)  rejected= 7.1%
+  mask_clearglass      n= 120  acc= 80.0%  (CI 72.0-86.2%)  rejected=16.7%
+  mask_sunglass        n= 134  acc= 44.0%  (CI 35.9-52.5%)  rejected=45.5%
+  none                 n= 107  acc=100.0%  (CI 96.5-100.0%)  rejected= 0.0%
+  scarf                n=  87  acc=100.0%  (CI 95.8-100.0%)  rejected= 0.0%
+  sunglass             n= 139  acc=100.0%  (CI 97.3-100.0%)  rejected= 0.0%
+
+Per-person accuracy (test people, accepted AND correct):
+  p10  n= 194  acc= 78.4%
+  p17  n= 199  acc= 78.4%
+  p22  n= 189  acc= 97.4%
+  p26  n= 194  acc= 94.8%
+  p30  n= 189  acc= 94.7%
+Saved: runs/e1e2/folds/fold3/e0_person_results.json
+device=cuda  exp=e0  unfreeze=e0
+[0;93m2026-09-18 19:14:56.189779851 [W:onnxruntime:, execution_frame.cc:870 VerifyOutputSizes] Expected shape from model of {1,512} does not match actual shape of {2,512} for output 683[m
+Conversion check: mean cosine sim=1.000000
+fold 4: test=['p02', 'p03', 'p14', 'p19', 'p28']  val=['p05', 'p08', 'p18', 'p25', 'p29']  train=20 people
+train people=20 (3998 photos)  val people=5 (960 query photos)  test people=5 (973 query photos)  gallery=30
+Loading crops into memory...
+Unfrozen backbone tensors: []
+Unfrozen backbone parameters: 0
+  epoch   0 (untrained)  val_acc=90.83%  val_gap=0.3842
+Best epoch: 0  val_acc=90.83%  val_gap=0.3842
+Saved: runs/e1e2/folds/fold4/e0_person_model.pt
+
+=== TEST [e0] unseen people ['p02', 'p03', 'p14', 'p19', 'p28'] (n=973)  accept-threshold=0.3 ===
+Top-1 accuracy (accepted AND correct): 80.47%  (95% CI: 77.9-82.8%)
+  of which: correct-but-rejected (score < 0.3) = 14.90%  misidentified-and-accepted = 0.00%
+Plain argmax accuracy (no threshold): 95.38%
+Benchmark gap (mean): 0.3155
+
+Per-occlusion accuracy (accepted AND correct):
+  cap                  n= 125  acc= 91.2%  (CI 84.9-95.0%)  rejected= 8.8%
+  clearglass           n=  95  acc=100.0%  (CI 96.1-100.0%)  rejected= 0.0%
+  mask                 n= 137  acc= 78.8%  (CI 71.3-84.8%)  rejected=13.9%
+  mask_clearglass      n= 130  acc= 70.0%  (CI 61.6-77.2%)  rejected=23.8%
+  mask_sunglass        n= 136  acc= 25.0%  (CI 18.5-32.9%)  rejected=55.1%
+  none                 n=  93  acc=100.0%  (CI 96.0-100.0%)  rejected= 0.0%
+  scarf                n= 120  acc= 97.5%  (CI 92.9-99.1%)  rejected= 2.5%
+  sunglass             n= 137  acc= 95.6%  (CI 90.8-98.0%)  rejected= 4.4%
+
+Per-person accuracy (test people, accepted AND correct):
+  p02  n= 199  acc= 75.9%
+  p03  n= 198  acc= 72.2%
+  p14  n= 190  acc= 72.1%
+  p19  n= 199  acc= 88.4%
+  p28  n= 187  acc= 94.1%
+Saved: runs/e1e2/folds/fold4/e0_person_results.json
+device=cuda  exp=e0  unfreeze=e0
+[0;93m2026-09-18 19:15:01.107832547 [W:onnxruntime:, execution_frame.cc:870 VerifyOutputSizes] Expected shape from model of {1,512} does not match actual shape of {2,512} for output 683[m
+Conversion check: mean cosine sim=1.000000
+fold 5: test=['p05', 'p08', 'p18', 'p25', 'p29']  val=['p01', 'p04', 'p09', 'p21', 'p24']  train=20 people
+train people=20 (3993 photos)  val people=5 (961 query photos)  test people=5 (960 query photos)  gallery=30
+Loading crops into memory...
+Unfrozen backbone tensors: []
+Unfrozen backbone parameters: 0
+  epoch   0 (untrained)  val_acc=85.02%  val_gap=0.3319
+Best epoch: 0  val_acc=85.02%  val_gap=0.3319
+Saved: runs/e1e2/folds/fold5/e0_person_model.pt
+
+=== TEST [e0] unseen people ['p05', 'p08', 'p18', 'p25', 'p29'] (n=960)  accept-threshold=0.3 ===
+Top-1 accuracy (accepted AND correct): 90.83%  (95% CI: 88.8-92.5%)
+  of which: correct-but-rejected (score < 0.3) = 8.96%  misidentified-and-accepted = 0.00%
+Plain argmax accuracy (no threshold): 99.79%
+Benchmark gap (mean): 0.3842
+
+Per-occlusion accuracy (accepted AND correct):
+  cap                  n= 145  acc= 91.0%  (CI 85.3-94.7%)  rejected= 9.0%
+  clearglass           n=  92  acc=100.0%  (CI 96.0-100.0%)  rejected= 0.0%
+  mask                 n= 139  acc= 95.7%  (CI 90.9-98.0%)  rejected= 4.3%
+  mask_clearglass      n= 116  acc= 80.2%  (CI 72.0-86.4%)  rejected=19.0%
+  mask_sunglass        n= 114  acc= 61.4%  (CI 52.2-69.8%)  rejected=37.7%
+  none                 n= 109  acc=100.0%  (CI 96.6-100.0%)  rejected= 0.0%
+  scarf                n=  97  acc=100.0%  (CI 96.2-100.0%)  rejected= 0.0%
+  sunglass             n= 148  acc= 98.6%  (CI 95.2-99.6%)  rejected= 1.4%
+
+Per-person accuracy (test people, accepted AND correct):
+  p05  n= 199  acc= 72.9%
+  p08  n= 191  acc= 95.3%
+  p18  n= 194  acc= 88.1%
+  p25  n= 191  acc=100.0%
+  p29  n= 185  acc= 98.9%
+Saved: runs/e1e2/folds/fold5/e0_person_results.json
+device=cuda  exp=e0  unfreeze=e0
+[0;93m2026-09-18 19:15:05.717082910 [W:onnxruntime:, execution_frame.cc:870 VerifyOutputSizes] Expected shape from model of {1,512} does not match actual shape of {2,512} for output 683[m
+Conversion check: mean cosine sim=1.000000
+fold 6: test=['p01', 'p04', 'p09', 'p21', 'p24']  val=['p11', 'p15', 'p20', 'p23', 'p27']  train=20 people
+train people=20 (3988 photos)  val people=5 (974 query photos)  test people=5 (961 query photos)  gallery=30
+Loading crops into memory...
+Unfrozen backbone tensors: []
+Unfrozen backbone parameters: 0
+  epoch   0 (untrained)  val_acc=84.39%  val_gap=0.3457
+Best epoch: 0  val_acc=84.39%  val_gap=0.3457
+Saved: runs/e1e2/folds/fold6/e0_person_model.pt
+
+=== TEST [e0] unseen people ['p01', 'p04', 'p09', 'p21', 'p24'] (n=961)  accept-threshold=0.3 ===
+Top-1 accuracy (accepted AND correct): 85.02%  (95% CI: 82.6-87.1%)
+  of which: correct-but-rejected (score < 0.3) = 12.70%  misidentified-and-accepted = 0.00%
+Plain argmax accuracy (no threshold): 97.71%
+Benchmark gap (mean): 0.3319
+
+Per-occlusion accuracy (accepted AND correct):
+  cap                  n= 128  acc= 94.5%  (CI 89.1-97.3%)  rejected= 3.9%
+  clearglass           n= 131  acc=100.0%  (CI 97.2-100.0%)  rejected= 0.0%
+  mask                 n= 142  acc= 88.7%  (CI 82.5-92.9%)  rejected= 9.2%
+  mask_clearglass      n= 130  acc= 78.5%  (CI 70.6-84.7%)  rejected=16.2%
+  mask_sunglass        n= 141  acc= 36.9%  (CI 29.4-45.1%)  rejected=56.0%
+  none                 n= 109  acc=100.0%  (CI 96.6-100.0%)  rejected= 0.0%
+  scarf                n=  46  acc= 95.7%  (CI 85.5-98.8%)  rejected= 4.3%
+  sunglass             n= 134  acc= 98.5%  (CI 94.7-99.6%)  rejected= 1.5%
+
+Per-person accuracy (test people, accepted AND correct):
+  p01  n= 198  acc= 74.7%
+  p04  n= 197  acc= 73.1%
+  p09  n= 194  acc= 90.2%
+  p21  n= 185  acc= 94.1%
+  p24  n= 187  acc= 94.1%
+Saved: runs/e1e2/folds/fold6/e0_person_results.json

@@ -1,0 +1,73 @@
+{
+  "best_epoch": 0,
+  "history": [
+    {
+      "epoch": 0,
+      "margin": 0.0,
+      "train_loss": null,
+      "train_acc": null,
+      "val_acc": 0.8047276464542652,
+      "val_gap": 0.3155243992805481
+    },
+    {
+      "epoch": 1,
+      "margin": 0.0,
+      "train_loss": 0.7930970517668902,
+      "train_acc": 0.9932381667918858,
+      "val_acc": 0.750256937307297,
+      "val_gap": 0.0685579925775528
+    },
+    {
+      "epoch": 2,
+      "margin": 0.0,
+      "train_loss": 0.6211129860145956,
+      "train_acc": 1.0,
+      "val_acc": 0.6998972250770812,
+      "val_gap": 0.05054518207907677
+    },
+    {
+      "epoch": 3,
+      "margin": 0.05,
+      "train_loss": 0.6328904707868267,
+      "train_acc": 1.0,
+      "val_acc": 0.7564234326824255,
+      "val_gap": 0.07162325084209442
+    },
+    {
+      "epoch": 4,
+      "margin": 0.1,
+      "train_loss": 0.6383912418977139,
+      "train_acc": 0.9992486851990984,
+      "val_acc": 0.774922918807811,
+      "val_gap": 0.08467304706573486
+    },
+    {
+      "epoch": 5,
+      "margin": 0.15000000000000002,
+      "train_loss": 0.6540559574144393,
+      "train_acc": 0.9967443025294265,
+      "val_acc": 0.7697841726618705,
+      "val_gap": 0.08829710632562637
+    }
+  ],
+  "args": {
+    "exp": "e2",
+    "setup": "metadata/e1e2_person_folds.json",
+    "fold": 3,
+    "manifest": "/home/tahmid/metadata/manifest.csv",
+    "out_dir": "runs/e1e2/folds",
+    "onnx_path": null,
+    "epochs": 20,
+    "lr": 3e-05,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "eval_batch_size": 64,
+    "margin": 0.2,
+    "warmup_epochs": 2,
+    "ramp_epochs": 4,
+    "scale": 32.0,
+    "patience": 5,
+    "seed": 42,
+    "accept_threshold": 0.3
+  }
+}

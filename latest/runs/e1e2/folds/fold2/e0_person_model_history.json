@@ -1,0 +1,33 @@
+{
+  "best_epoch": 0,
+  "history": [
+    {
+      "epoch": 0,
+      "margin": 0.0,
+      "train_loss": null,
+      "train_acc": null,
+      "val_acc": 0.8860103626943006,
+      "val_gap": 0.3393478989601135
+    }
+  ],
+  "args": {
+    "exp": "e0",
+    "setup": "metadata/e1e2_person_folds.json",
+    "fold": 2,
+    "manifest": "/home/tahmid/metadata/manifest.csv",
+    "out_dir": "runs/e1e2/folds",
+    "onnx_path": null,
+    "epochs": 0,
+    "lr": 3e-05,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "eval_batch_size": 64,
+    "margin": 0.2,
+    "warmup_epochs": 2,
+    "ramp_epochs": 4,
+    "scale": 32.0,
+    "patience": 5,
+    "seed": 42,
+    "accept_threshold": 0.3
+  }
+}
