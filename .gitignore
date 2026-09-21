@@ -1,6 +1,7 @@
 # === Raw / intermediate dataset (huge, and restricted by the consent form to
 # the six project members -- never publish these outside the group) ===
 processed_data/
+tahmid/
 put_asides/
 crops/
 _scratch/
