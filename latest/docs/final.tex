@@ -29,6 +29,7 @@
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\datasetlink}{\href{https://drive.google.com/drive/u/1/folders/1XN55OGpozy5Rhbs5QRFMatlCMTAo8sPu}{Dataset folder on Google Drive}}
+\newcommand{\codeurl}{\url{https://github.com/MishtiAloo/ML-train.git}}
 \newcommand{\cont}[1]{\par{\sffamily\bfseries #1}\par}
 \newenvironment{datatable}[2]{\begin{center}\begin{minipage}{\linewidth}\setstretch{1}\small\captionof{table}{#1}\label{#2}\vspace{2pt}\renewcommand{\arraystretch}{1.18}}{\end{minipage}\end{center}}
 \newcommand{\fig}[4]{\begin{center}\includegraphics[width=#2\linewidth]{#1}\captionof{figure}{#3}\label{#4}\end{center}}
@@ -54,9 +55,10 @@
 \end{center}
 \begin{datatable}{Submission and dataset identification.}{tab:cover}
 \begin{tabularx}{\linewidth}{L{26mm}Y L{28mm}Y}\toprule
-Group No. & Not reported & Dataset version & Final six-fold study\\
-Students (rolls) & \multicolumn{3}{l}{2107031, 2107044, 2107046, 2107047, 2107057, 2107059}\\
-Submission date & 08/09/2026 (original) & Repository & \datasetlink\\\bottomrule
+Group No. & 5 & Dataset version & 1\\
+Students & \multicolumn{3}{p{139mm}}{Adiba Tahsin (2107031), Arafat Islam (2107044), Arman Rahman Rafi (2107046), Dip Shekhor Datta (2107047), Megha Tania (2107057), Farhan Tahmid (2107059)}\\
+Submission date & \multicolumn{3}{l}{22/09/2026}\\
+Repository & \multicolumn{3}{p{139mm}}{\url{https://drive.google.com/drive/u/1/folders/1XN55OGpozy5Rhbs5QRFMatlCMTAo8sPu}}\\\bottomrule
 \end{tabularx}
 \end{datatable}
 \cont{(a) Framework illustrating the practical application of the data}
@@ -102,12 +104,13 @@ Table~\ref{tab:article} identifies the dataset and its documented access status.
 \begin{datatable}{Dataset article information. Missing administrative facts are stated explicitly.}{tab:article}
 \begin{tabularx}{\linewidth}{L{40mm}Y}\toprule
 Dataset/report title & Occlusion-Robust Face Identification Dataset: Evaluation with a Partially Fine-Tuned ArcFace Model\\
-Group and students & Six students: rolls 2107031, 2107044, 2107046, 2107047, 2107057, 2107059. Group number and student names are not reported in the supplied sources.\\
+Group and students & Group 5: Adiba Tahsin (2107031), Arafat Islam (2107044), Arman Rahman Rafi (2107046), Dip Shekhor Datta (2107047), Megha Tania (2107057), Farhan Tahmid (2107059).\\
 Affiliation & Department of Computer Science and Engineering, KUET, Khulna-9203, Bangladesh\\
-Corresponding student & Name and institutional email not reported\\
+Student emails & \nolinkurl{tahsin2107031@stud.kuet.ac.bd}; \nolinkurl{islam2107044@stud.kuet.ac.bd}; \nolinkurl{rafi2107046@stud.kuet.ac.bd}; \nolinkurl{datta2107047@stud.kuet.ac.bd}; \nolinkurl{tania2107057@stud.kuet.ac.bd}; \nolinkurl{tahmid2107059@stud.kuet.ac.bd}\\
+Corresponding student & Not supplied\\
 Keywords & Facial occlusion; enrollment; person-disjoint evaluation; angular-margin learning; benchmark embeddings; dataset curation\\
-Dataset version & Final technical-report snapshot; formal release tag not reported\\
-Repository / persistent ID & \datasetlink; DOI not assigned in the supplied record\\
+Dataset version & 1; submission date: 22/09/2026; release date: not supplied\\
+Repository / persistent ID & \datasetlink\\
 License & Restricted academic use under participant consent; no public redistribution license documented\\
 Related article / source & Primary project collection; final technical report is the authoritative experiment record. Related published work is discussed in Section 5.\\\bottomrule
 \end{tabularx}
@@ -130,9 +133,9 @@ Type of data & Primary facial photographs, aligned crops, metadata, and derived 
 File formats & JPEG images; CSV manifest and confusion matrices; JSON fold definitions and metrics; NPZ benchmark embeddings; PT checkpoints; ONNX pretrained models\\
 Unit of observation & One face photograph / aligned crop linked to one participant and one occlusion--lighting condition\\
 Data collection / source & Primary phone-camera collection by six team members; convenience sample of themselves and consenting relatives/acquaintances\\
-Instrument / software & Phone cameras (models unreported); InsightFace \code{buffalo\_l}; RetinaFace \code{det\_10g.onnx}; ArcFace \code{w600k\_r50.onnx}; PyTorch, ONNX Runtime and onnx2torch (versions unreported)\\
-Data source location & Indoor capture; KUET-affiliated project, Bangladesh. Exact capture sites not reported.\\
-Collection period & Exact start/end dates not reported; original report submitted 08/09/2026\\
+Instrument / software & Phone cameras (models: not supplied); InsightFace \code{buffalo\_l}; RetinaFace \code{det\_10g.onnx}; ArcFace \code{w600k\_r50.onnx}; PyTorch, ONNX Runtime and onnx2torch (versions: not supplied)\\
+Data source location & Indoor capture; KUET-affiliated project, Bangladesh. Exact capture sites: not supplied.\\
+Collection period & Start/end dates: not supplied\\
 Dataset size & 30 identities; 6,000 raw photographs; 5,988 aligned crops; 8 occlusion categories; 2 lighting labels; 5,818 pooled evaluation queries\\
 Target / labels & Pseudonymous identity \code{p01}--\code{p30}; occlusion and lighting are condition labels\\
 Accessibility & \datasetlink; access is governed by the folder's sharing permissions and participant consent\\
@@ -172,11 +175,11 @@ Montero et al. (2022)~\cite{montero} & Multi-task ArcFace approach combining ide
 \nextpage
 \section{Data Acquisition / Experimental Design, Materials and Methods}
 \subsection{Data source and sampling strategy}
-Thirty identities (\code{p01}--\code{p30}) were enrolled. Each of six team members recruited and photographed five people: themselves and four consenting relatives or acquaintances. This is a convenience sample, not a representative demographic sample. The participant-to-photographer mapping was kept internally in \path{metadata/person_id_mapping.txt}, as described in the previous report. No demographic sampling quotas are documented.
+Thirty identities (\code{p01}--\code{p30}) were enrolled. Each of six team members recruited, photographed and annotated five people: themselves and four consenting relatives or acquaintances. This is a convenience sample, not a representative demographic sample. The participant-to-photographer mapping was kept internally in \path{metadata/person_id_mapping.txt}, as described in the previous report. The age distribution is 26 participants aged 23--24 years and one each aged 28, 39, 44 and 78 years.
 \subsection{Collection setting, period and location}
-Each participant was photographed in one sitting under regular and low indoor illumination, using a phone camera. The capture plan targeted 200 images per participant, totaling 6,000 images. Exact sites, acquisition dates, camera distances and exposure settings are not recorded in the supplied report. The original submission date was 08/09/2026. Head positions varied naturally rather than through a logged per-image pose label.
+Each participant was photographed in one sitting under regular and low indoor illumination, using a phone camera. The capture plan targeted 200 images per participant, totaling 6,000 images. Exact sites, acquisition dates, camera distances and exposure settings: not supplied. Head positions varied naturally rather than through a logged per-image pose label.
 \subsection{Instruments, hardware, software and versions}
-Phone camera models and capture-app versions are unreported. Preprocessing uses the project's RetinaFace detection and five-landmark alignment stage, \code{det\_10g.onnx}, within InsightFace's \code{buffalo\_l} package. Recognition uses \code{w600k\_r50.onnx} (IResNet-50). ONNX Runtime, onnx2torch and PyTorch support conversion and fine-tuning. The training record describes an RTX 3090 machine; exact package versions are not supplied.
+Phone camera models and capture-app versions: not supplied. Preprocessing uses the project's RetinaFace detection and five-landmark alignment stage, \code{det\_10g.onnx}, within InsightFace's \code{buffalo\_l} package. Recognition uses \code{w600k\_r50.onnx} (IResNet-50). ONNX Runtime, onnx2torch and PyTorch support conversion and fine-tuning. The training record describes an RTX 3090 machine; exact package versions: not supplied.
 \subsection{Variables, measurements and metadata}
 Recorded fields include participant identity, occlusion, lighting, source/crop paths, source stem, MD5, burst group, detector status, confidence and bounding-box area fraction. Table~\ref{tab:conditions} defines the capture categories. Detector confidence is a model score, not a calibrated probability of image quality.
 \begin{datatable}{Capture categories. Only lighting and covering are recorded as per-image condition labels.}{tab:conditions}
@@ -189,9 +192,9 @@ Combined covering & \code{mask\_sunglass}, \code{mask\_clearglass}\\\bottomrule
 \end{tabularx}
 \end{datatable}
 \subsection{Annotation / labeling protocol}
-Capture filenames encode identity, occlusion and lighting, for example \code{p07\_mask\_sunglass\_low\_014.jpg}. The manifest is the authoritative metadata source. Labels describe known capture conditions; a separate blind annotation study, adjudication process and inter-rater agreement are not reported.
+Capture filenames encode identity, occlusion and lighting, for example \code{p07\_mask\_sunglass\_low\_014.jpg}. The manifest is the authoritative metadata source. Each student annotated their own five participants' data. Labels describe known capture conditions, and inter-rater agreement checking was completed. Agreement method, coefficient and adjudication details: not supplied.
 \subsection{Provenance, versioning and raw-data preservation}
-The previous report describes retaining rejected photographs in \code{put\_asides/}, with reasons, and freezing the accepted capture set before training. The final records link raw files to crops and source stems and retain hashes. A formal release identifier and change log are not supplied. Paths recorded on the training machine must be remapped when the project is moved.
+The previous report describes retaining rejected photographs in \code{put\_asides/}, with reasons, and freezing the accepted capture set before training. The final records link raw files to crops and source stems and retain hashes. Dataset version 1 is documented for the 22/09/2026 submission; the documentation revision is recorded in \path{docs/FINAL_README.txt}. Paths recorded on the training machine must be remapped when the project is moved.
 
 % PAGE 6
 \nextpage
@@ -272,11 +275,11 @@ Table~\ref{tab:quality} separates data checks from recognition results. Figure~\
 Quality dimension & Evidence / checks performed\\\midrule
 Completeness & 5,988/6,000 detections (99.8\%); 13 populated fields; all 5,988 crops present\\
 Consistency & 8 coverings, 2 lighting labels, 30 IDs; exclusions leave 5,818 queries\\
-Label quality & Capture labels and manual quality review; inter-rater agreement unreported\\
-Measurement quality & Fixed alignment; 12 detector failures; camera calibration unreported\\
-Integrity & Recorded hashes identify 429 duplicate occurrences; independent raw-hash audit not supplied\\
-Representativeness / bias & Single-sitting convenience sample; scarf covers 24 people; demographics unreported\\
-Reproducibility & Seed 42, folds, scripts and histories supplied; exact software versions missing\\\bottomrule
+Label quality & Capture labels, manual quality review and completed inter-rater agreement checking; agreement method and coefficient: not supplied\\
+Measurement quality & Fixed alignment; 12 detector failures; calibration details: not supplied\\
+Integrity & Recorded hashes identify 429 duplicate occurrences\\
+Representativeness / bias & Single-sitting convenience sample; scarf covers 24 people. Ages: 23--24 years (26 people); 28, 39, 44 and 78 years (one each). The collection is strongly concentrated in young adults.\\
+Reproducibility & \codeurl; seed 42; saved folds/scripts/histories. Software versions: not supplied.\\\bottomrule
 \end{tabularx}
 \end{datatable}
 \cont{RetinaFace failure cases: rejected raw photographs}
@@ -505,7 +508,7 @@ Figure~\ref{fig:inference} shows the complete inference route. The threshold rem
 The final source reports seed 42 for the fold shuffle and training randomness. Before fine-tuning, converted recognizer output is checked against ONNX Runtime on random inputs, requiring cosine similarity at least 0.999. The original results were produced on the GPU system; the later CPU prediction export can move one threshold-borderline image across 0.3. Tables in this report retain the original pooled GPU counts and explicitly distinguish confusion-derived artifacts.
 
 \cont{Reproduction and file index}
-Use the files in Table~\ref{tab:files}, then run the following sequence from \code{scripts/}. Exact environment versions and machine-specific paths must be resolved before retraining.
+Obtain the code from \codeurl\ and the dataset from \datasetlink. Follow \path{docs/FINAL_README.txt}, use the files in Table~\ref{tab:files}, then run the following sequence from \code{scripts/}. Exact environment versions and machine-specific paths must be resolved before retraining.
 \begin{enumerate}[label=\arabic*.,itemsep=1pt]
 \item \path{20_e1e2_person_folds.py}: prepare gallery, exclusions and folds.
 \item \path{19_e1e2_person_finetune.py}: all six folds and E0/E1/E2; maximum epochs 0/20/20, acceptance threshold 0.3.
@@ -582,55 +585,55 @@ Obtain the authorized dataset files from the \datasetlink. Load \code{manifest.c
 
 For recognition studies, use the aligned crops and fixed RGB normalization. For detector studies, request access to raw photographs, including failures; retained crops alone cannot measure detector recall. Suitable reuse includes occlusion-conditioned retrieval, feature analysis, threshold sensitivity on enrolled people, and alternative partial fine-tuning scopes. A new unknown-person cohort is required for open-set rejection evaluation. Preserve subject grouping when extending the collection or comparing models.
 \section{Limitations and Known Biases}
-The 30-person convenience sample and single-sitting capture limit demographic, geographic and temporal generalization. Camera settings and exact acquisition periods are undocumented. Scarf appears for only 24 participants, and condition coverage is uneven. Burst correlation and 429 repeated MD5 occurrences reduce independence; image count is not an effective independent-sample count. Pose is not labeled, and regular/low lighting categories do not measure illumination quantitatively. The previous report discloses a small unflagged subset of digitally added coverings, so a strictly real-only analysis cannot be reconstructed. The 12 detector failures are absent from recognition metrics, biasing those metrics toward detectable faces. All queries belong to enrolled identities, so rejection performance for strangers is unknown. Consent records, package versions, a release tag and detailed contributor assignments are not included in the supplied report package. These limitations constrain reuse and interpretation, even when the saved experiments can be inspected.
+The 30-person convenience sample and single-sitting capture limit demographic, geographic and temporal generalization. Twenty-six participants are aged 23--24 years; ages 28, 39, 44 and 78 have only one participant each. Scarf appears for only 24 participants, and condition coverage is uneven. Burst correlation and 429 repeated MD5 occurrences reduce independence; image count is not an effective independent-sample count. Pose is not labeled, and regular/low lighting categories do not measure illumination quantitatively. Some synthetic content was added, including digitally added coverings; without per-image flags, a strictly real-only analysis cannot be reconstructed. The 12 detector failures are absent from recognition metrics, biasing those metrics toward detectable faces. All queries belong to enrolled identities, so rejection performance for strangers is unknown. These limitations constrain reuse and interpretation, even when the saved experiments can be inspected.
 \section{Ethics, Privacy and Responsible Data Use}
 Table~\ref{tab:ethics} records the documented conditions and remaining provenance gaps.
 \begin{datatable}{Ethics and data-use record. Unreported approvals or permissions are not assumed.}{tab:ethics}
 \begin{tabularx}{\linewidth}{L{40mm}Y}\toprule
 Item & Documentation / constraint\\\midrule
-Human participants / consent & Previous report states every participant signed consent before photography; participation was voluntary and withdrawable. Approval body/protocol and age/guardian details are unreported.\\
+Human participants / consent & Every participant signed consent before photography; participation was voluntary and withdrawable. All participants are adults (23--78 years). Approval body/protocol: not supplied.\\
 Privacy / de-identification & Participant codes replace names, but faces remain identifiable. Raw images and identity mapping are restricted to the six members. Recognizable report/demo photographs require separate optional permission.\\
-Web / social-media data & No such primary image source is reported.\\
+Web / social-media data & Not applicable; primary in-person collection.\\
 Copyright / third-party data & Published works are attributed. Pretrained models originate from InsightFace; model redistribution terms must accompany any future release. No public dataset license is documented.\\
-AI-generated / synthetic content & No generative-AI collection or annotation is documented. Earlier report discloses some digitally added coverings with unknown count/provenance; final training also uses the explicit image augmentations in Section 8.\\\bottomrule
+AI-generated / synthetic content & Some synthetic content was added, including digitally added coverings. Generation method and proportion: not supplied. Training also uses the explicit image augmentations in Section 8.\\\bottomrule
 \end{tabularx}
 \end{datatable}
 
 % PAGE 17
 \nextpage
 \section{Data and Code Availability}
-Table~\ref{tab:availability} describes the available local artifacts and missing release details. This report does not establish public access to identifiable images.
+Table~\ref{tab:availability} records availability; identifiable images remain access-controlled.
 \begin{datatable}{Availability record for this submission.}{tab:availability}
 \begin{tabularx}{\linewidth}{L{44mm}Y}\toprule
 Item & Details\\\midrule
 Repository name & Project dataset on Google Drive: \datasetlink\\
-Dataset DOI / persistent identifier & Not reported\\
+Dataset DOI / persistent identifier & Not supplied\\
 Direct dataset URL & \url{https://drive.google.com/drive/u/1/folders/1XN55OGpozy5Rhbs5QRFMatlCMTAo8sPu}\\
-Access instructions & Open the dataset folder; if Drive requests permission, request access from its owner. Follow participant consent conditions. Sharing permissions have not been independently tested.\\
+Access instructions & Open the Drive folder and request owner permission if prompted. Follow participant consent conditions.\\
 Dataset license & Academic/non-commercial participant consent; no public release license supplied\\
-Code / notebook URL & Separate code URL not supplied; local \code{scripts/} files listed in Section 10.6\\
-Code version / commit / release & Commit hash and release tag not reported\\
-README \& environment & Technical report and companion metrics/epoch documents supplied; exact dependency lockfile and public release README not supplied\\\bottomrule
+Code / notebook URL & \codeurl; \code{scripts/} files listed in Section 10.6\\
+Code version / commit / release & Not supplied\\
+README \& environment & \path{docs/FINAL_README.txt} covers files, variables, setup and reuse. Exact dependency versions / lockfile: not supplied.\\\bottomrule
 \end{tabularx}
 \end{datatable}
 \section{Student Contributions (CRediT-style)}
-Each team member recruited and photographed five participants (previous report, Section 4.1). Table~\ref{tab:contributions} records this shared role; names, percentage shares and individual file ownership are unreported.
-\begin{datatable}{Supported student contributions; NR means not reported, not zero contribution.}{tab:contributions}
-\begin{tabularx}{\linewidth}{L{23mm}L{17mm}L{24mm}Y L{32mm}}\toprule
-Roll & Student & Overall share & Main contributions & Evidence / files owned\\\midrule
-2107031 & NR & NR & Investigation: recruitment and capture & Prior report, Sec. 4.1\\
-2107044 & NR & NR & Investigation: recruitment and capture & Prior report, Sec. 4.1\\
-2107046 & NR & NR & Investigation: recruitment and capture & Prior report, Sec. 4.1\\
-2107047 & NR & NR & Investigation: recruitment and capture & Prior report, Sec. 4.1\\
-2107057 & NR & NR & Investigation: recruitment and capture & Prior report, Sec. 4.1\\
-2107059 & NR & NR & Investigation: recruitment and capture & Prior report, Sec. 4.1\\\bottomrule
+Each student captured and annotated their own five participants; all other roles are shared equally. Declared figures total 120\%, not a normalized 100\%. Shared evidence E1--E6 and role details are in \path{docs/CONTRIBUTIONS.md}; artifacts do not establish exclusive authorship.
+\begin{datatable}{Student contributions and shared evidence.}{tab:contributions}
+\begin{tabularx}{\linewidth}{L{20mm}L{31mm}L{17mm}Y L{29mm}}\toprule
+Roll & Student & Reported (\%) & Main contributions & Evidence / files\\\midrule
+2107031 & Adiba Tahsin & 21 & Own-five capture/annotation; equal shared roles & E1--E6\\
+2107044 & Arafat Islam & 19 & Own-five capture/annotation; equal shared roles & E1--E6\\
+2107046 & Arman Rahman Rafi & 20 & Own-five capture/annotation; equal shared roles & E1--E6\\
+2107047 & Dip Shekhor Datta & 19 & Own-five capture/annotation; equal shared roles & E1--E6\\
+2107057 & Megha Tania & 20 & Own-five capture/annotation; equal shared roles & E1--E6\\
+2107059 & Farhan Tahmid & 21 & Own-five capture/annotation; equal shared roles & E1--E6\\\bottomrule
 \end{tabularx}
 \end{datatable}
 \section{Acknowledgements, Funding and Competing Interests}
 \subsection{Acknowledgements / Funding}
-The report acknowledges the consenting participants and course instructors Dr. Muhammad Aminul Haque Akhand and Nabil Faiyaz Sadi. Funding information is not reported in the source documents; no funding declaration is inferred.
+The report acknowledges the consenting participants and course instructors Dr. Muhammad Aminul Haque Akhand and Nabil Faiyaz Sadi. Funding declaration: not supplied.
 \subsection{Declaration of Competing Interests}
-A competing-interests declaration is not provided in the supplied sources. This field requires an author declaration before any formal public release.
+Competing-interests declaration: not supplied.
 
 % PAGE 18
 \nextpage
@@ -691,18 +694,18 @@ Table~\ref{tab:fair} assesses the evidence supplied with this project. ``No'' de
 \begin{datatable}{Dataset release and FAIR-readiness checklist, following the supplied template.}{tab:fair}
 \begin{tabularx}{\linewidth}{L{31mm}Y L{12mm}Y}\toprule
 Checklist item & Criterion & Yes/No & Evidence / note\\\midrule
-Findable & Repository URL; meaningful names; searchable metadata & Yes & Dataset folder URL supplied; meaningful filenames and CSV metadata exist. A DOI is not supplied.\\
+Findable & Repository URL; meaningful names; searchable metadata & Yes & Dataset and code URLs supplied; meaningful filenames and CSV metadata exist.\\
 Accessible & Working access instructions and justified restrictions & No & Drive folder and permission-request route supplied; access permissions not independently tested. Consent restrictions apply.\\
 Interoperable & Common formats; documented labels and schema & Yes & JPEG, CSV and JSON with fields documented in Section 7 and Appendix A. Model binaries require their frameworks.\\
-Reusable & Explicit license, README, provenance, limitations and citation & No & Limitations/provenance described; public license, release README and persistent citation missing.\\
+Reusable & Explicit license, README, provenance, limitations and citation & No & README, citation guidance, provenance and limitations supplied; public redistribution license: not supplied. Consent restrictions apply.\\
 Raw + processed separation & Original observations preserved separately from derived data & Yes & Source scripts and reports distinguish raw \code{processed\_data/} from aligned \code{crops/}.\\
-Versioning & Version/date and change history recorded & No & Final experiment snapshot identifiable; no formal dataset release tag or change log supplied.\\
+Versioning & Version/date and change history recorded & Yes & Dataset version 1; submission 22/09/2026; documentation change record in \path{docs/FINAL_README.txt}.\\
 Integrity & Duplicate/corruption/schema checks; useful checksums & No & Hashes, duplicate count and populated fields available; a complete raw-file checksum/corruption audit is not supplied.\\
 Leakage safety & Related subjects/augmentations stay within partitions & Yes & Six-fold identity roles; benchmark and burst exclusions; training-only augmentation.\\
 Reproducible processing & Code recreates processed data and baseline from released inputs & No & Scripts and histories exist, but exact environment and full authorized raw-data release are not supplied.\\
 Ethics/privacy & Consent/approval/licensing requirements satisfied & No & Signed consent and access controls reported; approval details and complete release permissions are not independently available.\\
-Documentation & README covers files, variables, setup and reuse & No & This report and companion documents cover these topics; a complete release README/environment is absent.\\
-Team accountability & All six students' contributions recorded & No & Rolls and shared collection role recorded; names, percentages and individual file ownership unreported.\\\bottomrule
+Documentation & README covers files, variables, setup and reuse & Yes & \path{docs/FINAL_README.txt} covers the file structure, 13 metadata fields, setup, reproduction and reuse precautions.\\
+Team accountability & All six students' contributions recorded & Yes & Section 15 and \path{docs/CONTRIBUTIONS.md}: names, rolls, declared figures, own-five-person capture/annotation and equally shared responsibilities with artifact references.\\\bottomrule
 \end{tabularx}
 \end{datatable}
 \textbf{Evidence hierarchy for this report.} Experiment definitions, model scopes, split rules and metrics follow the final technical report and its saved results. The prior report supplies submission details, base papers, participant recruitment, consent, capture categories and historical quality control. Its earlier experiment labels and image-level split results are superseded. Additional manifest checks and redrawn plots use the supplied local records; no recognition model was retrained for this document.

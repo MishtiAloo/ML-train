@@ -1,6 +1,28 @@
+Update in all the places where applicable.
+Places where info mandatory but not given, just write as not supplied. If not mandatory, dont even mention it.
+
+
 front page:
 grp num: 5,
 dataset version: 1
-repo: give the actual url
+repo: give the actual url (https://drive.google.com/drive/u/1/folders/1XN55OGpozy5Rhbs5QRFMatlCMTAo8sPu)
 sub date: 22/9/26
 student names: Adiba Tahsin, Arafat Islam, Arman Rahman Rafi, Dip Shekhor Datta, Megha Tania, Farhan Tahmid (in increasing order of roll)
+
+section 1: 
+- mails in this format (lastnameRoll@stud.kuet.ac.bd)
+
+sec 9:
+- rater agreement done
+- demographic 23-24 years (26 people), 28 yrs 1, 39 yrs 1, 44 yrs 1, 78 yrs 1
+- reproduce from GitHub: https://github.com/MishtiAloo/ML-train.git
+
+section 13:
+- synthetic content: some synthetic added
+
+section 15:
+- 31- 21%, 44- 19%, 46- 20%, 47- 19%, 57- 20%, 59- 21%, everyone captured and annotated their own 5 people data, distribute other works among all equally with necessary evidence files
+
+appendix c:
+- readme cover yes (if not, update the readme such way)
+- update the accountability
