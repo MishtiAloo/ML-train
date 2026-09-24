@@ -1,0 +1,157 @@
+{
+  "best_epoch": 6,
+  "history": [
+    {
+      "epoch": 0,
+      "margin": 0.0,
+      "train_loss": null,
+      "train_acc": null,
+      "train_loss_matched": 0.09658238291740417,
+      "train_acc_matched": 0.9794486215538847,
+      "val_acc": 0.8860103626943006,
+      "val_gap": 0.3393478989601135,
+      "val_loss": 0.08231379836797714
+    },
+    {
+      "epoch": 1,
+      "margin": 0.0,
+      "train_loss": 0.8234832400367373,
+      "train_acc": 0.9892230576441102,
+      "train_loss_matched": 0.13794752955436707,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8683937823834197,
+      "val_gap": 0.1224684938788414,
+      "val_loss": 0.4111747443675995
+    },
+    {
+      "epoch": 2,
+      "margin": 0.0,
+      "train_loss": 0.626759868397151,
+      "train_acc": 0.9997493734335839,
+      "train_loss_matched": 0.1368667334318161,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.844559585492228,
+      "val_gap": 0.10704844444990158,
+      "val_loss": 0.5132086277008057
+    },
+    {
+      "epoch": 3,
+      "margin": 0.05,
+      "train_loss": 0.6347583219222258,
+      "train_acc": 1.0,
+      "train_loss_matched": 0.036316074430942535,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8756476683937824,
+      "val_gap": 0.12404745817184448,
+      "val_loss": 0.3959334194660187
+    },
+    {
+      "epoch": 4,
+      "margin": 0.1,
+      "train_loss": 0.6386014826614457,
+      "train_acc": 0.9997493734335839,
+      "train_loss_matched": 0.00803059060126543,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8932642487046633,
+      "val_gap": 0.14089350402355194,
+      "val_loss": 0.3181872069835663
+    },
+    {
+      "epoch": 5,
+      "margin": 0.15000000000000002,
+      "train_loss": 0.6420345401405392,
+      "train_acc": 0.9994987468671679,
+      "train_loss_matched": 0.0022911999840289354,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.9015544041450777,
+      "val_gap": 0.15387314558029175,
+      "val_loss": 0.28290218114852905
+    },
+    {
+      "epoch": 6,
+      "margin": 0.2,
+      "train_loss": 0.6501346859716831,
+      "train_acc": 0.9992481203007518,
+      "train_loss_matched": 0.0005552360089495778,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.9046632124352332,
+      "val_gap": 0.16265220940113068,
+      "val_loss": 0.2608104944229126
+    },
+    {
+      "epoch": 7,
+      "margin": 0.2,
+      "train_loss": 0.6309547556970353,
+      "train_acc": 0.9992481203007518,
+      "train_loss_matched": 0.0005565971951000392,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8994818652849741,
+      "val_gap": 0.15199816226959229,
+      "val_loss": 0.31107452511787415
+    },
+    {
+      "epoch": 8,
+      "margin": 0.2,
+      "train_loss": 0.6260932622398051,
+      "train_acc": 0.9992481203007518,
+      "train_loss_matched": 0.0005124611197970808,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.900518134715026,
+      "val_gap": 0.14446711540222168,
+      "val_loss": 0.329112708568573
+    },
+    {
+      "epoch": 9,
+      "margin": 0.2,
+      "train_loss": 0.6201578571384114,
+      "train_acc": 0.9997493734335839,
+      "train_loss_matched": 0.0005424242117442191,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8974093264248705,
+      "val_gap": 0.14073921740055084,
+      "val_loss": 0.3564211428165436
+    },
+    {
+      "epoch": 10,
+      "margin": 0.2,
+      "train_loss": 0.6184674745514279,
+      "train_acc": 0.9992481203007518,
+      "train_loss_matched": 0.0005344911478459835,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8901554404145078,
+      "val_gap": 0.13699765503406525,
+      "val_loss": 0.3620736002922058
+    },
+    {
+      "epoch": 11,
+      "margin": 0.2,
+      "train_loss": 0.6162103203603797,
+      "train_acc": 0.9992481203007518,
+      "train_loss_matched": 0.0005518629332073033,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8911917098445595,
+      "val_gap": 0.13411441445350647,
+      "val_loss": 0.38425499200820923
+    }
+  ],
+  "args": {
+    "exp": "e2",
+    "setup": "metadata/e1e2_person_folds.json",
+    "fold": 2,
+    "manifest": "/home/tahmid/metadata/manifest.csv",
+    "out_dir": "runs/e1e2/learning_curve_matched",
+    "onnx_path": null,
+    "epochs": 20,
+    "lr": 3e-05,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "eval_batch_size": 64,
+    "margin": 0.2,
+    "warmup_epochs": 2,
+    "ramp_epochs": 4,
+    "scale": 32.0,
+    "patience": 5,
+    "seed": 42,
+    "accept_threshold": 0.3
+  }
+}

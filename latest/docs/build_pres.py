@@ -185,22 +185,22 @@ arrow(s,3.34,2.85,3.59,2.85)
 def plainline(s,x1,y1,x2,y2):
     sh=s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x1),Inches(y1),Inches(x2),Inches(y2)); sh.line.color.rgb=rgb('navy'); sh.line.width=Pt(1.2); sh._element.spPr.append(OxmlElement('a:effectLst'))
 plainline(s,4.89,2.85,5.02,2.85); plainline(s,5.02,1.88,5.02,4.04)
-plainline(s,7.17,1.88,7.17,4.04)
-for y,title,body in [(1.40,'P3 · stride 8','80 × 80\nA = 12,800'),(2.48,'P4 · stride 16','40 × 40\nA = 3,200'),(3.56,'P5 · stride 32','20 × 20\nA = 800')]:
+for y,title,body in [(1.40,'P3 · stride 8','80 × 80'),(2.48,'P4 · stride 16','40 × 40'),(3.56,'P5 · stride 32','20 × 20')]:
     shape=rect(s,5.14,y,1.9,.96,'E0E0E0'); shape.name='Diagram node: '+title
     text(s,5.20,y+.07,1.78,.25,title,12,'navy',True,align=PP_ALIGN.CENTER)
     text(s,5.20,y+.37,1.78,.54,body,11,'ink',align=PP_ALIGN.CENTER)
-    arrow(s,5.02,y+.48,5.14,y+.48); plainline(s,7.04,y+.48,7.17,y+.48)
-arrow(s,7.17,2.85,7.38,2.85)
-node(s,7.38,1.70,2.08,2.65,'Output · 9 tensors','At each level:\nFace score: A × 1\nBounding box: A × 4\n5 landmarks: A × 10',fill='A4FFA1',size=12)
-text(s,.60,3.97,4.35,.61,'2 anchors per location.\nThree prediction heads at each FPN level.',12,'muted')
+    arrow(s,5.02,y+.48,5.14,y+.48); arrow(s,7.04,y+.48,7.32,y+.48)
+    shape=rect(s,7.32,y,2.14,.96,'A4FFA1'); shape.name='Diagram node: '+title+' outputs'
+    text(s,7.38,y+.09,2.02,.80,'Face scores\nBounding boxes\nFive facial landmarks',11,'ink')
+text(s,7.30,1.12,2.18,.22,'OUTPUTS',11,'navy',True,align=PP_ALIGN.CENTER)
+text(s,.60,3.97,4.35,.61,'Nine output tensors per image:\nscores, boxes and landmarks at each level.',12,'muted')
 band(s,'Outputs → box decoding / filtering → 5-landmark alignment → 112 × 112 RGB crop.',y=4.72)
 
 s=slide('ArcFace: Actual iResNet-50 Architecture','w600k_r50.onnx · 24 residual blocks; block internals intentionally omitted.')
 # Two rows keep all tensor shapes legible without shrinking the labels.
 xs=[.54,2.83,5.12,7.41]
-top=[('Input RGB','N × 3 × 112 × 112'),('Stem','3 × 3 Conv + PReLU\nN × 64 × 112 × 112'),('Stage 1 · 3 blocks','64 channels\nN × 64 × 56 × 56'),('Stage 2 · 4 blocks','128 channels\nN × 128 × 28 × 28')]
-bottom=[('Stage 3 · 14 blocks','256 channels\nN × 256 × 14 × 14'),('Stage 4 · 3 blocks','512 channels\nN × 512 × 7 × 7'),('Embedding head','BN → flatten 25,088\nFC 512 → final BN'),('Output embedding','N × 512\nExternal L2 normalization')]
+top=[('Input RGB','N × 3 × 112 × 112'),('Stem','Convolution + PReLU'),('Stage 1','3 residual blocks'),('Stage 2','4 residual blocks')]
+bottom=[('Stage 3','14 residual blocks'),('Stage 4','3 residual blocks\nLast block: layer4.2'),('Embedding head','BN → flatten\nFC → final BN'),('Output embedding','N × 512\nExternal L2 normalization')]
 for row,items in [(1.45,top),(3.28,bottom)]:
     for j,(title,body) in enumerate(items):
         fill=('97ECF8' if j==0 else 'E0E0E0') if row<3 else ['E0E0E0','F4C5FF','F4C5FF','A4FFA1'][j]
@@ -292,16 +292,23 @@ table(s,['Outcome (count)','E0','E1','E2'],[
 card(s,.54,4.16,8.92,.90,'Interpretation','E2 accepts 193 wrong identities (3.32%), versus 13 (0.22%) for E1.',12.5)
 
 for e in ['e1','e2']:
-    s=slide(f'{e.upper()}: Training & Validation Loss','Same axes: solid = training loss; dashed = validation loss; one colour per fold.')
+    s=slide(f'{e.upper()}: Training & Validation Loss','One common loss: solid = training people, dashed = held-out validation people; one colour per fold.')
+    # Both sides use the same objective -- clean crops, no angular margin, no label
+    # smoothing, cross-entropy over the 30-benchmark gallery -- from
+    # runs/e1e2/learning_curve_matched/ (scripts/27_e1e2_matched_curve.py), which
+    # reproduces every selected epoch and adds only the matched training-side loss.
     def loss(fig,ax,e=e):
         for f in range(1,7):
-            h=json.loads((ROOT/f'runs/e1e2/learning_curve/fold{f}/{e}_person_model_history.json').read_text())['history']
-            for key,style in [('train_loss','-'),('val_loss','--')]:
+            d=json.loads((ROOT/f'runs/e1e2/learning_curve_matched/fold{f}/{e}_person_model_history.json').read_text())
+            h=d['history']
+            for key,style in [('train_loss_matched','-'),('val_loss','--')]:
                 valid=[r for r in h if r.get(key) is not None]
-                ax.plot([r['epoch'] for r in valid],[r[key] for r in valid],style,color=plt.cm.tab10(f-1),label=f'Fold {f}' if key=='train_loss' else None,lw=1.7)
-        ax.set(xlabel='Epoch',ylabel='Loss'); ax.grid(alpha=.2); ax.legend(ncol=3,loc='upper right')
+                ax.plot([r['epoch'] for r in valid],[r[key] for r in valid],style,color=plt.cm.tab10(f-1),label=f'Fold {f}' if key=='train_loss_matched' else None,lw=1.7)
+            sel=next(r for r in h if r['epoch']==d['best_epoch'])
+            ax.plot(sel['epoch'],sel['val_loss'],'*',color=plt.cm.tab10(f-1),markersize=11,markeredgecolor='black',markeredgewidth=.4,zorder=5)
+        ax.set(xlabel='Epoch (0 = pretrained model)',ylabel='Gallery cross-entropy'); ax.grid(alpha=.2); ax.legend(ncol=3,loc='upper right')
     picfit(s,plot(e+'_loss',loss,wh=(9,3.6)),.54,1.23,8.92,3.55)
-    text(s,.65,4.85,8.7,.25,'Loss scales differ: training uses 20-class margin + smoothing; validation uses 30-class plain logits.',10.5,'muted')
+    text(s,.65,4.85,8.7,.25,'Same objective on both sides (clean crops, no margin, no smoothing, 30-benchmark gallery), so the gap between the lines is a real generalisation gap. Stars mark the selected epoch, chosen by validation accuracy.',10.5,'muted')
 
 s=slide('Why More Trainable Layers Did Not Win','The block-only update is the strongest transfer configuration in this experiment.')
 card(s,.54,1.38,4.30,2.93,'Evidence','E1: 86.18%, improvements in all six folds.\nE2: 84.72%, 193 accepted wrong labels.\nValidation retained epoch 0 in three E2 folds.\nThe embedding FC matrix alone has ~12.85M weights.',14)
@@ -350,7 +357,11 @@ try:
     P.save(deck_path)
 except PermissionError:
     deck_path=HERE/'pres_updated.pptx'
-    P.save(deck_path)
+    try:
+        P.save(deck_path)
+    except PermissionError:
+        deck_path=HERE/'pres_simplified.pptx'
+        P.save(deck_path)
 print(f'Saved {deck_path.name}: {len(P.slides)} slides')
 
 if __name__=='__main__':

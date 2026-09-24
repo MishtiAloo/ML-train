@@ -1,0 +1,20 @@
+device=cuda  exp=e2  unfreeze=e2
+[0;93m2026-09-22 12:32:15.095345727 [W:onnxruntime:, execution_frame.cc:870 VerifyOutputSizes] Expected shape from model of {1,512} does not match actual shape of {2,512} for output 683[m
+Conversion check: mean cosine sim=1.000000
+fold 5: test=['p05', 'p08', 'p18', 'p25', 'p29']  val=['p01', 'p04', 'p09', 'p21', 'p24']  train=20 people
+train people=20 (3993 photos)  val people=5 (961 query photos)  test people=5 (960 query photos)  gallery=30
+Loading crops into memory...
+Unfrozen backbone tensors: ['BatchNormalization_121.weight', 'BatchNormalization_121.bias', 'Conv_122.weight', 'Conv_122.bias', 'Conv_124.weight', 'Conv_124.bias', 'BatchNormalization_126.weight', 'BatchNormalization_126.bias', 'Gemm_128.weight', 'Gemm_128.bias', 'BatchNormalization_129.weight', 'BatchNormalization_129.bias']
+Unfrozen backbone parameters: 17,568,256
+  epoch   0 (untrained)  val_acc=85.02%  val_gap=0.3319  val_loss=0.1052  train_loss_matched=0.1283
+  epoch   1  m=0.000  loss=0.8021  train_acc=99.15%  val_acc=78.77%  val_gap=0.0963  val_loss=0.7918  train_loss_matched=0.1326  (7s)
+  epoch   2  m=0.000  loss=0.6250  train_acc=100.00%  val_acc=74.92%  val_gap=0.0772  val_loss=0.9467  train_loss_matched=0.1336  (7s)
+  epoch   3  m=0.050  loss=0.6380  train_acc=99.92%  val_acc=80.75%  val_gap=0.0977  val_loss=0.7321  train_loss_matched=0.0342  (7s)
+  epoch   4  m=0.100  loss=0.6477  train_acc=99.90%  val_acc=83.56%  val_gap=0.1132  val_loss=0.6042  train_loss_matched=0.0074  (7s)
+  epoch   5  m=0.150  loss=0.6459  train_acc=99.92%  val_acc=83.66%  val_gap=0.1200  val_loss=0.5824  train_loss_matched=0.0018  (7s)
+  early stopping at epoch 5
+Best epoch: 0  val_acc=85.02%  val_gap=0.3319
+Saved history: runs/e1e2/learning_curve_matched/fold5/e2_person_model_history.json
+
+=== TEST [e2] unseen people ['p05', 'p08', 'p18', 'p25', 'p29'] (n=960)  accept-threshold=0.3 ===
+Top-1 accuracy (accepted AND correct): 90.83%  (95% CI: 88.8-92.5%)

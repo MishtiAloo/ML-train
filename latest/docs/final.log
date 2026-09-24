@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex 2026.4.25)  21 SEP 2026 17:18
+This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex 2026.4.25)  22 SEP 2026 12:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1230,49 +1230,51 @@ File: final_assets/fold_assignment.pdf Graphic file (type pdf)
 
 ] [16
 
-] [17
-
-]
+] [17]
 [18
+
+] [19
 
 ]
 File: final_assets/e1_loss.pdf Graphic file (type pdf)
 <use final_assets/e1_loss.pdf>
 File: final_assets/e2_loss.pdf Graphic file (type pdf)
 <use final_assets/e2_loss.pdf>
- [19
-
-] [20
+ [20
 
 ] [21
+
+] [22
+
+] [23
 
 ]
 File: final_assets/quality_rejected.pdf Graphic file (type pdf)
 <use final_assets/quality_rejected.pdf>
- [22
+ [24
 
 ]
 File: final_assets/e0_confusion.pdf Graphic file (type pdf)
 <use final_assets/e0_confusion.pdf>
 File: final_assets/arcface_rejected.pdf Graphic file (type pdf)
 <use final_assets/arcface_rejected.pdf>
- [23
+ [25
 
 ]
 File: final_assets/e1_confusion.pdf Graphic file (type pdf)
 <use final_assets/e1_confusion.pdf>
 File: final_assets/occlusion.pdf Graphic file (type pdf)
 <use final_assets/occlusion.pdf>
- [24
+ [26
 
 ]
 File: final_assets/e2_confusion.pdf Graphic file (type pdf)
 <use final_assets/e2_confusion.pdf>
 File: final_assets/epochs.pdf Graphic file (type pdf)
 <use final_assets/epochs.pdf>
- [25
+ [27
 
-] [26
+] [28
 
 ] (final.aux)
  ***********
@@ -1290,10 +1292,10 @@ Package rerunfilecheck Info: File `final.out' has not changed.
 Here is how much of TeX's memory you used:
  25873 strings out of 402987
  520895 string characters out of 5455769
- 982398 words of memory out of 5000000
+ 984469 words of memory out of 5000000
  54166 multiletter control sequences out of 15000+600000
  635611 words of font info for 127 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  84i,13n,94p,1016b,744s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on final.pdf (26 pages).
+Output written on final.pdf (28 pages).

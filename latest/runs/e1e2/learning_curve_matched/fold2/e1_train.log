@@ -1,0 +1,25 @@
+device=cuda  exp=e1  unfreeze=e1
+[0;93m2026-09-22 12:23:33.657159365 [W:onnxruntime:, execution_frame.cc:870 VerifyOutputSizes] Expected shape from model of {1,512} does not match actual shape of {2,512} for output 683[m
+Conversion check: mean cosine sim=1.000000
+fold 2: test=['p06', 'p07', 'p12', 'p13', 'p16']  val=['p10', 'p17', 'p22', 'p26', 'p30']  train=20 people
+train people=20 (3990 photos)  val people=5 (965 query photos)  test people=5 (985 query photos)  gallery=30
+Loading crops into memory...
+Unfrozen backbone tensors: ['BatchNormalization_121.weight', 'BatchNormalization_121.bias', 'Conv_122.weight', 'Conv_122.bias', 'Conv_124.weight', 'Conv_124.bias']
+Unfrozen backbone parameters: 4,720,640
+  epoch   0 (untrained)  val_acc=88.60%  val_gap=0.3393  val_loss=0.0823  train_loss_matched=0.0966
+  epoch   1  m=0.000  loss=1.0781  train_acc=98.67%  val_acc=72.12%  val_gap=0.1291  val_loss=0.3280  train_loss_matched=0.2520  (7s)
+  epoch   2  m=0.000  loss=0.6981  train_acc=99.72%  val_acc=67.05%  val_gap=0.1031  val_loss=0.4059  train_loss_matched=0.2277  (7s)
+  epoch   3  m=0.050  loss=0.7017  train_acc=99.62%  val_acc=81.87%  val_gap=0.1371  val_loss=0.2399  train_loss_matched=0.0514  (7s)
+  epoch   4  m=0.100  loss=0.6977  train_acc=99.55%  val_acc=88.19%  val_gap=0.1652  val_loss=0.1643  train_loss_matched=0.0109  (7s)
+  epoch   5  m=0.150  loss=0.6949  train_acc=99.52%  val_acc=88.81%  val_gap=0.1873  val_loss=0.1427  train_loss_matched=0.0024  (7s)
+  epoch   6  m=0.200  loss=0.6983  train_acc=99.47%  val_acc=88.70%  val_gap=0.2077  val_loss=0.1204  train_loss_matched=0.0006  (7s)
+  epoch   7  m=0.200  loss=0.6697  train_acc=99.67%  val_acc=88.29%  val_gap=0.2016  val_loss=0.1467  train_loss_matched=0.0006  (7s)
+  epoch   8  m=0.200  loss=0.6572  train_acc=99.85%  val_acc=87.88%  val_gap=0.1986  val_loss=0.1528  train_loss_matched=0.0006  (7s)
+  epoch   9  m=0.200  loss=0.6488  train_acc=99.92%  val_acc=87.88%  val_gap=0.1952  val_loss=0.1568  train_loss_matched=0.0006  (7s)
+  epoch  10  m=0.200  loss=0.6476  train_acc=99.87%  val_acc=87.46%  val_gap=0.1917  val_loss=0.1585  train_loss_matched=0.0006  (7s)
+  early stopping at epoch 10
+Best epoch: 5  val_acc=88.81%  val_gap=0.1873
+Saved history: runs/e1e2/learning_curve_matched/fold2/e1_person_model_history.json
+
+=== TEST [e1] unseen people ['p06', 'p07', 'p12', 'p13', 'p16'] (n=985)  accept-threshold=0.3 ===
+Top-1 accuracy (accepted AND correct): 81.02%  (95% CI: 78.4-83.3%)

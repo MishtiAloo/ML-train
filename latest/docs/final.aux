@@ -83,8 +83,8 @@
 \citation{retinaface}
 \@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces RetinaFace detection architecture: three output scales, each with classification, box regression and landmark heads.}}{14}{figure.12}\protected@file@percent }
 \newlabel{fig:detarchitecture}{{12}{14}{RetinaFace detection architecture: three output scales, each with classification, box regression and landmark heads}{figure.12}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces RetinaFace output tensors: two anchors per location; batch dimension omitted.}}{14}{table.12}\protected@file@percent }
-\newlabel{tab:detector}{{12}{14}{RetinaFace output tensors: two anchors per location; batch dimension omitted}{table.12}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces RetinaFace outputs at each of the three feature-pyramid levels.}}{14}{table.12}\protected@file@percent }
+\newlabel{tab:detector}{{12}{14}{RetinaFace outputs at each of the three feature-pyramid levels}{table.12}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Training forward/loss sequence. Gradients pass through the fixed embedding head in E1 to reach its trainable residual block; frozen parameters are not updated.}}{15}{figure.13}\protected@file@percent }
 \newlabel{fig:training}{{13}{15}{Training forward/loss sequence. Gradients pass through the fixed embedding head in E1 to reach its trainable residual block; frozen parameters are not updated}{figure.13}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Angular-margin schedule shared by E1 and E2. E0 executes no training updates.}}{15}{figure.14}\protected@file@percent }
@@ -95,55 +95,55 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Inference uses no angular margin, label smoothing or weight update. Detection failure and low-similarity rejection are separate outcomes; an accepted identity can still be wrong.}}{16}{figure.15}\protected@file@percent }
 \newlabel{fig:inference}{{15}{16}{Inference uses no angular margin, label smoothing or weight update. Detection failure and low-similarity rejection are separate outcomes; an accepted identity can still be wrong}{figure.15}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {10.6}Reproducibility}{16}{subsection.10.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.7}Results (compact)}{17}{subsection.10.7}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Pooled performance over 5,818 queries, all 30 identities tested once. Macro metrics are from the saved confusion-derived summary.}}{17}{table.14}\protected@file@percent }
-\newlabel{tab:overall}{{14}{17}{Pooled performance over 5,818 queries, all 30 identities tested once. Macro metrics are from the saved confusion-derived summary}{table.14}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Outcome breakdown from original GPU fold counts. Percentage rounding can prevent displayed rows from summing to exactly 100\%.}}{17}{table.15}\protected@file@percent }
-\newlabel{tab:outcomes}{{15}{17}{Outcome breakdown from original GPU fold counts. Percentage rounding can prevent displayed rows from summing to exactly 100\%}{table.15}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Per-fold accepted-correct accuracy. Parentheses give the selected epoch; zero means no fine-tuned checkpoint displaced the pretrained model.}}{17}{table.16}\protected@file@percent }
-\newlabel{tab:foldresults}{{16}{17}{Per-fold accepted-correct accuracy. Parentheses give the selected epoch; zero means no fine-tuned checkpoint displaced the pretrained model}{table.16}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces Per-occlusion query accuracy, pooled from the final fold results.}}{18}{table.17}\protected@file@percent }
-\newlabel{tab:occlusion}{{17}{18}{Per-occlusion query accuracy, pooled from the final fold results}{table.17}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces E1: training loss (solid) and validation gallery loss (dashed), all six folds on one set of axes. Most folds recover from the early perturbation; the selected epoch is 5 in five folds and 8 in fold 4.}}{19}{figure.16}\protected@file@percent }
-\newlabel{fig:e1loss}{{16}{19}{E1: training loss (solid) and validation gallery loss (dashed), all six folds on one set of axes. Most folds recover from the early perturbation; the selected epoch is 5 in five folds and 8 in fold 4}{figure.16}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces E2: both losses on the same axes, with colour identifying the fold. Greater variability and persistent validation loss accompany epoch-0 selection in three folds. The two loss definitions differ as explained in Section 10.6.}}{19}{figure.17}\protected@file@percent }
-\newlabel{fig:e2loss}{{17}{19}{E2: both losses on the same axes, with colour identifying the fold. Greater variability and persistent validation loss accompany epoch-0 selection in three folds. The two loss definitions differ as explained in Section 10.6}{figure.17}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {11}Usage Notes and Reuse Potential}{20}{section.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {12}Limitations and Known Biases}{20}{section.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {13}Ethics, Privacy and Responsible Data Use}{20}{section.13}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Ethics and data-use record. Unreported approvals or permissions are not assumed.}}{20}{table.18}\protected@file@percent }
-\newlabel{tab:ethics}{{18}{20}{Ethics and data-use record. Unreported approvals or permissions are not assumed}{table.18}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {14}Data and Code Availability}{21}{section.14}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces Availability record for this submission.}}{21}{table.19}\protected@file@percent }
-\newlabel{tab:availability}{{19}{21}{Availability record for this submission}{table.19}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {15}Student Contributions (CRediT-style)}{21}{section.15}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {20}{\ignorespaces Student contributions and shared evidence.}}{21}{table.20}\protected@file@percent }
-\newlabel{tab:contributions}{{20}{21}{Student contributions and shared evidence}{table.20}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {16}Acknowledgements, Funding and Competing Interests}{21}{section.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {16.1}Acknowledgements / Funding}{21}{subsection.16.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {16.2}Declaration of Competing Interests}{21}{subsection.16.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.7}Results (compact)}{18}{subsection.10.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Pooled performance over 5,818 queries, all 30 identities tested once. Macro metrics are from the saved confusion-derived summary.}}{18}{table.14}\protected@file@percent }
+\newlabel{tab:overall}{{14}{18}{Pooled performance over 5,818 queries, all 30 identities tested once. Macro metrics are from the saved confusion-derived summary}{table.14}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Outcome breakdown from original GPU fold counts. Percentage rounding can prevent displayed rows from summing to exactly 100\%.}}{18}{table.15}\protected@file@percent }
+\newlabel{tab:outcomes}{{15}{18}{Outcome breakdown from original GPU fold counts. Percentage rounding can prevent displayed rows from summing to exactly 100\%}{table.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Per-fold accepted-correct accuracy. Parentheses give the selected epoch; zero means no fine-tuned checkpoint displaced the pretrained model.}}{18}{table.16}\protected@file@percent }
+\newlabel{tab:foldresults}{{16}{18}{Per-fold accepted-correct accuracy. Parentheses give the selected epoch; zero means no fine-tuned checkpoint displaced the pretrained model}{table.16}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces Per-occlusion query accuracy, pooled from the final fold results.}}{19}{table.17}\protected@file@percent }
+\newlabel{tab:occlusion}{{17}{19}{Per-occlusion query accuracy, pooled from the final fold results}{table.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces E1: one common gallery loss on the training people (solid) and the held-out validation people (dashed), all six folds. Stars mark the selected epoch, which is chosen by validation accuracy, not by loss. Both sides start together at epoch 0; the training loss then falls to about 0.001 while the validation loss rises and never returns to its epoch-0 value.}}{20}{figure.16}\protected@file@percent }
+\newlabel{fig:e1loss}{{16}{20}{E1: one common gallery loss on the training people (solid) and the held-out validation people (dashed), all six folds. Stars mark the selected epoch, which is chosen by validation accuracy, not by loss. Both sides start together at epoch 0; the training loss then falls to about 0.001 while the validation loss rises and never returns to its epoch-0 value}{figure.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces E2: the same measurement. The gap opens wider than in E1, with validation losses ending between 0.38 and 0.91, and three folds keep the pretrained model.}}{20}{figure.17}\protected@file@percent }
+\newlabel{fig:e2loss}{{17}{20}{E2: the same measurement. The gap opens wider than in E1, with validation losses ending between 0.38 and 0.91, and three folds keep the pretrained model}{figure.17}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {11}Usage Notes and Reuse Potential}{21}{section.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {12}Limitations and Known Biases}{21}{section.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {13}Ethics, Privacy and Responsible Data Use}{21}{section.13}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Ethics and data-use record. Unreported approvals or permissions are not assumed.}}{21}{table.18}\protected@file@percent }
+\newlabel{tab:ethics}{{18}{21}{Ethics and data-use record. Unreported approvals or permissions are not assumed}{table.18}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {14}Data and Code Availability}{22}{section.14}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces Availability record for this submission.}}{22}{table.19}\protected@file@percent }
+\newlabel{tab:availability}{{19}{22}{Availability record for this submission}{table.19}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {15}Student Contributions (CRediT-style)}{23}{section.15}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {20}{\ignorespaces Student contributions and shared evidence.}}{23}{table.20}\protected@file@percent }
+\newlabel{tab:contributions}{{20}{23}{Student contributions and shared evidence}{table.20}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {16}Acknowledgements, Funding and Competing Interests}{23}{section.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {16.1}Acknowledgements / Funding}{23}{subsection.16.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {16.2}Declaration of Competing Interests}{23}{subsection.16.2}\protected@file@percent }
 \bibcite{pgu}{1}
 \bibcite{chong}{2}
 \bibcite{montero}{3}
 \bibcite{arcface}{4}
 \bibcite{retinaface}{5}
-\@writefile{toc}{\contentsline {section}{\numberline {17}References}{22}{section.17}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {21}{\ignorespaces Remaining manifest fields and reuse semantics. Together with Table~\ref {tab:dictionary}, this covers every manifest column.}}{22}{table.21}\protected@file@percent }
-\newlabel{tab:dictionarymore}{{21}{22}{Remaining manifest fields and reuse semantics. Together with Table~\ref {tab:dictionary}, this covers every manifest column}{table.21}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces Original capture-review rejection examples from the previous report, Section 5: blur, darkness, full coverage and bad framing. These illustrate review reasons, not an additional quantified exclusion set.}}{22}{figure.18}\protected@file@percent }
-\newlabel{fig:qcrejected}{{18}{22}{Original capture-review rejection examples from the previous report, Section 5: blur, darkness, full coverage and bad framing. These illustrate review reasons, not an additional quantified exclusion set}{figure.18}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces E0 confusion matrix, row-normalized over 5,818 queries. Identity labels 01--30 denote p01--p30; R is rejection below the threshold. Rejections explain recall below 100\% despite 100\% macro precision.}}{23}{figure.19}\protected@file@percent }
-\newlabel{fig:e0cm}{{19}{23}{E0 confusion matrix, row-normalized over 5,818 queries. Identity labels 01--30 denote p01--p30; R is rejection below the threshold. Rejections explain recall below 100\% despite 100\% macro precision}{figure.19}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces Actual E0 rejected photographs. Labels show true identity $>$ top identity and cosine score $s$. Top row: correct nearest identity but very low score. Bottom row: wrong nearest identity, still below 0.3. All twelve are rejected, not accepted misidentifications.}}{23}{figure.20}\protected@file@percent }
-\newlabel{fig:arcfail}{{20}{23}{Actual E0 rejected photographs. Labels show true identity $>$ top identity and cosine score $s$. Top row: correct nearest identity but very low score. Bottom row: wrong nearest identity, still below 0.3. All twelve are rejected, not accepted misidentifications}{figure.20}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces E1 confusion matrix, row-normalized. Last-block fine-tuning yields 86.18\% pooled accuracy and 92.15\% macro F1; the rejection column remains the dominant error source.}}{24}{figure.21}\protected@file@percent }
-\newlabel{fig:e1cm}{{21}{24}{E1 confusion matrix, row-normalized. Last-block fine-tuning yields 86.18\% pooled accuracy and 92.15\% macro F1; the rejection column remains the dominant error source}{figure.21}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces Accepted-correct accuracy by covering. E1 gains 11.6 percentage points for mask plus sunglasses; gains are not uniform across the other conditions.}}{24}{figure.22}\protected@file@percent }
-\newlabel{fig:occlusion}{{22}{24}{Accepted-correct accuracy by covering. E1 gains 11.6 percentage points for mask plus sunglasses; gains are not uniform across the other conditions}{figure.22}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces E2 confusion matrix, row-normalized. Macro precision falls to 96.43\%, and original GPU results report 3.32\% accepted misidentification. Folds 3, 4 and 5 retain the pretrained epoch-0 checkpoint.}}{25}{figure.23}\protected@file@percent }
-\newlabel{fig:e2cm}{{23}{25}{E2 confusion matrix, row-normalized. Macro precision falls to 96.43\%, and original GPU results report 3.32\% accepted misidentification. Folds 3, 4 and 5 retain the pretrained epoch-0 checkpoint}{figure.23}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces Validation accepted-correct accuracy by epoch for E1 and E2. One line per fold; dots mark selected checkpoints. E2 selects epoch 0 in folds 3, 4 and 5. Both loss plots are in the main report, Section 10.7.}}{25}{figure.24}\protected@file@percent }
-\newlabel{fig:epochs}{{24}{25}{Validation accepted-correct accuracy by epoch for E1 and E2. One line per fold; dots mark selected checkpoints. E2 selects epoch 0 in folds 3, 4 and 5. Both loss plots are in the main report, Section 10.7}{figure.24}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {22}{\ignorespaces Dataset release and FAIR-readiness checklist, following the supplied template.}}{26}{table.22}\protected@file@percent }
-\newlabel{tab:fair}{{22}{26}{Dataset release and FAIR-readiness checklist, following the supplied template}{table.22}{}}
-\gdef \@abspage@last{26}
+\@writefile{toc}{\contentsline {section}{\numberline {17}References}{24}{section.17}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {21}{\ignorespaces Remaining manifest fields and reuse semantics. Together with Table~\ref {tab:dictionary}, this covers every manifest column.}}{24}{table.21}\protected@file@percent }
+\newlabel{tab:dictionarymore}{{21}{24}{Remaining manifest fields and reuse semantics. Together with Table~\ref {tab:dictionary}, this covers every manifest column}{table.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces Original capture-review rejection examples from the previous report, Section 5: blur, darkness, full coverage and bad framing. These illustrate review reasons, not an additional quantified exclusion set.}}{24}{figure.18}\protected@file@percent }
+\newlabel{fig:qcrejected}{{18}{24}{Original capture-review rejection examples from the previous report, Section 5: blur, darkness, full coverage and bad framing. These illustrate review reasons, not an additional quantified exclusion set}{figure.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces E0 confusion matrix, row-normalized over 5,818 queries. Identity labels 01--30 denote p01--p30; R is rejection below the threshold. Rejections explain recall below 100\% despite 100\% macro precision.}}{25}{figure.19}\protected@file@percent }
+\newlabel{fig:e0cm}{{19}{25}{E0 confusion matrix, row-normalized over 5,818 queries. Identity labels 01--30 denote p01--p30; R is rejection below the threshold. Rejections explain recall below 100\% despite 100\% macro precision}{figure.19}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces Actual E0 rejected photographs. Labels show true identity $>$ top identity and cosine score $s$. Top row: correct nearest identity but very low score. Bottom row: wrong nearest identity, still below 0.3. All twelve are rejected, not accepted misidentifications.}}{25}{figure.20}\protected@file@percent }
+\newlabel{fig:arcfail}{{20}{25}{Actual E0 rejected photographs. Labels show true identity $>$ top identity and cosine score $s$. Top row: correct nearest identity but very low score. Bottom row: wrong nearest identity, still below 0.3. All twelve are rejected, not accepted misidentifications}{figure.20}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces E1 confusion matrix, row-normalized. Last-block fine-tuning yields 86.18\% pooled accuracy and 92.15\% macro F1; the rejection column remains the dominant error source.}}{26}{figure.21}\protected@file@percent }
+\newlabel{fig:e1cm}{{21}{26}{E1 confusion matrix, row-normalized. Last-block fine-tuning yields 86.18\% pooled accuracy and 92.15\% macro F1; the rejection column remains the dominant error source}{figure.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces Accepted-correct accuracy by covering. E1 gains 11.6 percentage points for mask plus sunglasses; gains are not uniform across the other conditions.}}{26}{figure.22}\protected@file@percent }
+\newlabel{fig:occlusion}{{22}{26}{Accepted-correct accuracy by covering. E1 gains 11.6 percentage points for mask plus sunglasses; gains are not uniform across the other conditions}{figure.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces E2 confusion matrix, row-normalized. Macro precision falls to 96.43\%, and original GPU results report 3.32\% accepted misidentification. Folds 3, 4 and 5 retain the pretrained epoch-0 checkpoint.}}{27}{figure.23}\protected@file@percent }
+\newlabel{fig:e2cm}{{23}{27}{E2 confusion matrix, row-normalized. Macro precision falls to 96.43\%, and original GPU results report 3.32\% accepted misidentification. Folds 3, 4 and 5 retain the pretrained epoch-0 checkpoint}{figure.23}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces Validation accepted-correct accuracy by epoch for E1 and E2. One line per fold; dots mark selected checkpoints. E2 selects epoch 0 in folds 3, 4 and 5. Both loss plots are in the main report, Section 10.7.}}{27}{figure.24}\protected@file@percent }
+\newlabel{fig:epochs}{{24}{27}{Validation accepted-correct accuracy by epoch for E1 and E2. One line per fold; dots mark selected checkpoints. E2 selects epoch 0 in folds 3, 4 and 5. Both loss plots are in the main report, Section 10.7}{figure.24}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {22}{\ignorespaces Dataset release and FAIR-readiness checklist, following the supplied template.}}{28}{table.22}\protected@file@percent }
+\newlabel{tab:fair}{{22}{28}{Dataset release and FAIR-readiness checklist, following the supplied template}{table.22}{}}
+\gdef \@abspage@last{28}

@@ -122,8 +122,14 @@ preserve consent, identity grouping, provenance and these limitations.
 TEAM AND CITATION
 2107031 Adiba Tahsin; 2107044 Arafat Islam; 2107046 Arman Rahman Rafi;
 2107047 Dip Shekhor Datta; 2107057 Megha Tania; 2107059 Farhan Tahmid.
-Each captured and annotated own five people's data. Other work is shared
-equally. CONTRIBUTIONS.md records supplied figures and artifact evidence.
+Each captured and annotated own five people's data. Project responsibilities
+are distributed across capture/curation (31), E0 implementation/preprocessing
+checks (44), folds/trainable-scope configuration/pipeline integration (46),
+checkpoint selection/metrics/error analysis (47), visualization/documentation
+(57), and E1/E2 training, fine-tuning and train/eval pipeline checking (59).
+CONTRIBUTIONS.md records the
+specific tasks, proportionally normalized percentages totaling 100%, and
+supporting artifact evidence.
 Suggested citation: the six authors above, Occlusion-Robust Face Identification
 Dataset: Evaluation with a Partially Fine-Tuned ArcFace Model, version 1,
 Group 5, CSE 4112, KUET, submission 22 September 2026, dataset URL above.

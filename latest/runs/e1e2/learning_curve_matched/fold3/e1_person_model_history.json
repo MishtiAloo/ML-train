@@ -1,0 +1,146 @@
+{
+  "best_epoch": 5,
+  "history": [
+    {
+      "epoch": 0,
+      "margin": 0.0,
+      "train_loss": null,
+      "train_acc": null,
+      "train_loss_matched": 0.09540296345949173,
+      "train_acc_matched": 0.9789631855747558,
+      "val_acc": 0.8047276464542652,
+      "val_gap": 0.3155243992805481,
+      "val_loss": 0.18378140032291412
+    },
+    {
+      "epoch": 1,
+      "margin": 0.0,
+      "train_loss": 1.0461959382540118,
+      "train_acc": 0.9889807162534435,
+      "train_loss_matched": 0.2172868400812149,
+      "train_acc_matched": 0.9902329075882795,
+      "val_acc": 0.736896197327852,
+      "val_gap": 0.11876480281352997,
+      "val_loss": 0.5816818475723267
+    },
+    {
+      "epoch": 2,
+      "margin": 0.0,
+      "train_loss": 0.6837546238766676,
+      "train_acc": 0.9984973703981969,
+      "train_loss_matched": 0.19574488699436188,
+      "train_acc_matched": 0.995992987728525,
+      "val_acc": 0.7183967112024666,
+      "val_gap": 0.10300355404615402,
+      "val_loss": 0.615169882774353
+    },
+    {
+      "epoch": 3,
+      "margin": 0.05,
+      "train_loss": 0.6913094850461823,
+      "train_acc": 0.9974956173303281,
+      "train_loss_matched": 0.046238012611866,
+      "train_acc_matched": 0.9997495617330328,
+      "val_acc": 0.7872559095580678,
+      "val_gap": 0.13175389170646667,
+      "val_loss": 0.48329958319664
+    },
+    {
+      "epoch": 4,
+      "margin": 0.1,
+      "train_loss": 0.6901928057146347,
+      "train_acc": 0.9964938642624593,
+      "train_loss_matched": 0.009804383851587772,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8273381294964028,
+      "val_gap": 0.1608506739139557,
+      "val_loss": 0.4093269407749176
+    },
+    {
+      "epoch": 5,
+      "margin": 0.15000000000000002,
+      "train_loss": 0.695355814455029,
+      "train_acc": 0.9939894815927873,
+      "train_loss_matched": 0.0024016438983380795,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8304213771839671,
+      "val_gap": 0.18345977365970612,
+      "val_loss": 0.38184264302253723
+    },
+    {
+      "epoch": 6,
+      "margin": 0.2,
+      "train_loss": 0.6988998728827848,
+      "train_acc": 0.9937390433258202,
+      "train_loss_matched": 0.0006248439894989133,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.828365878725591,
+      "val_gap": 0.2016797661781311,
+      "val_loss": 0.38664695620536804
+    },
+    {
+      "epoch": 7,
+      "margin": 0.2,
+      "train_loss": 0.6653043392186412,
+      "train_acc": 0.9969947407963937,
+      "train_loss_matched": 0.0005798138445243239,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8232271325796505,
+      "val_gap": 0.19786643981933594,
+      "val_loss": 0.3840934634208679
+    },
+    {
+      "epoch": 8,
+      "margin": 0.2,
+      "train_loss": 0.6526689272221843,
+      "train_acc": 0.9994991234660656,
+      "train_loss_matched": 0.0005795343313366175,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8201438848920863,
+      "val_gap": 0.19636495411396027,
+      "val_loss": 0.3857963979244232
+    },
+    {
+      "epoch": 9,
+      "margin": 0.2,
+      "train_loss": 0.6476241771869722,
+      "train_acc": 0.9989982469321312,
+      "train_loss_matched": 0.0005803690874017775,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8211716341212744,
+      "val_gap": 0.1905716210603714,
+      "val_loss": 0.391391783952713
+    },
+    {
+      "epoch": 10,
+      "margin": 0.2,
+      "train_loss": 0.6424668895520574,
+      "train_acc": 0.9992486851990984,
+      "train_loss_matched": 0.0005855113849975169,
+      "train_acc_matched": 1.0,
+      "val_acc": 0.8180883864337102,
+      "val_gap": 0.1871824413537979,
+      "val_loss": 0.40459418296813965
+    }
+  ],
+  "args": {
+    "exp": "e1",
+    "setup": "metadata/e1e2_person_folds.json",
+    "fold": 3,
+    "manifest": "/home/tahmid/metadata/manifest.csv",
+    "out_dir": "runs/e1e2/learning_curve_matched",
+    "onnx_path": null,
+    "epochs": 20,
+    "lr": 3e-05,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "eval_batch_size": 64,
+    "margin": 0.2,
+    "warmup_epochs": 2,
+    "ramp_epochs": 4,
+    "scale": 32.0,
+    "patience": 5,
+    "seed": 42,
+    "accept_threshold": 0.3
+  }
+}

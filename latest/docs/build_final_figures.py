@@ -115,16 +115,27 @@ for e in ['e0','e1','e2']:
     cb.set_label('Fraction of each true-identity row',fontsize=10)
     save(fig,e+'_confusion')
 
+# Loss curves: both sides use the SAME objective -- clean crops, no angular
+# margin, no label smoothing, cross-entropy over the 30-benchmark gallery --
+# measured on the training people (solid) and the unseen validation people
+# (dashed), so their separation is a genuine generalization gap. Source:
+# runs/e1e2/learning_curve_matched/ (scripts/27_e1e2_matched_curve.py), which
+# reproduces every selected epoch of runs/e1e2/folds/ and adds only the
+# matched training-side loss.
 for e in ['e1','e2']:
     fig,ax=plt.subplots(figsize=(6.75,3.8),layout='constrained')
     for f in range(1,7):
-        h=json.loads((ROOT/f'runs/e1e2/learning_curve/fold{f}/{e}_person_model_history.json').read_text())['history']
-        for key,style in [('train_loss','-'),('val_loss','--')]:
-            hs=[x for x in h if x[key] is not None]
+        d=json.loads((ROOT/f'runs/e1e2/learning_curve_matched/fold{f}/{e}_person_model_history.json').read_text())
+        h=d['history']
+        for key,style in [('train_loss_matched','-'),('val_loss','--')]:
+            hs=[x for x in h if x.get(key) is not None]
             ax.plot([x['epoch'] for x in hs],[x[key] for x in hs],linestyle=style,
-                    color=plt.cm.tab10(f-1),label=f'Fold {f}' if key=='train_loss' else None,linewidth=1.35)
-    ax.set_xlabel('Epoch');ax.set_ylabel('Loss');ax.grid(alpha=.2)
-    ax.set_title(e.upper()+': training (solid) and validation (dashed)',fontsize=11)
+                    color=plt.cm.tab10(f-1),label=f'Fold {f}' if key=='train_loss_matched' else None,linewidth=1.35)
+        sel=next(x for x in h if x['epoch']==d['best_epoch'])
+        ax.plot(sel['epoch'],sel['val_loss'],'*',color=plt.cm.tab10(f-1),markersize=9,
+                markeredgecolor='black',markeredgewidth=.4,zorder=5)
+    ax.set_xlabel('Epoch (0 = pretrained model)');ax.set_ylabel('Gallery cross-entropy');ax.grid(alpha=.2)
+    ax.set_title(e.upper()+': training people (solid) and validation people (dashed)',fontsize=11)
     ax.legend(ncol=3,fontsize=9,loc='upper right',columnspacing=.8,handlelength=1.4)
     save(fig,e+'_loss')
 

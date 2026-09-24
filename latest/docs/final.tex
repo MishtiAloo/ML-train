@@ -212,6 +212,7 @@ Folder / file & Contents & Record type\\\midrule
 \path{runs/e1e2/folds/fold*/} & Selected models, epoch histories and test-result JSON files & Experiment\\
 \path{runs/e1e2/analysis/} & Predictions, 30$\times$31 confusion CSVs and metric JSON files & Analysis\\
 \path{runs/e1e2/learning_curve/} & Repeated runs with validation gallery loss added & Analysis\\
+\path{runs/e1e2/learning_curve_matched/} & Repeated runs scoring training and validation people with one common loss & Analysis\\
 \path{models/}; \path{scripts/} & Pretrained ONNX models; preparation, training and analysis scripts & Software\\
 \path{docs/} & Technical reports, metric tables, plots and this report & Documentation\\\bottomrule
 \end{tabularx}
@@ -355,18 +356,18 @@ From each person's \code{none} images, select the photograph with maximal detect
 \nextpage
 \subsection{ML model(s) and hyperparameters}
 \cont{Full ArcFace / IResNet-50 architecture: input to output}
-Figure~\ref{fig:fullarcface} expands the actual \code{w600k\_r50.onnx} network, with tensor sizes verified from the supplied ONNX graph. Dimensions are $N\times C\times H\times W$ unless flattened; $N$ is the batch size. ArcFace is the angular-margin learning method, while IResNet-50 is the embedding backbone used here.
+Figure~\ref{fig:fullarcface} shows the actual \code{w600k\_r50.onnx} network with its input and output dimensions; $N$ is the batch size. ArcFace is the angular-margin learning method, while IResNet-50 is the embedding backbone used here.
 \begin{center}
 \begin{tikzpicture}[main/.style={box,text width=105mm}]
 \node[main,fill=input] (in) at (0,0) {\textbf{Input: aligned RGB face}\\$N\times3\times112\times112$; normalized to $[-1,1]$};
-\node[main,fill=frozen] (stem) at (0,-1.85) {\textbf{Stem:} $3\times3$ Conv, stride 1 + PReLU\\$N\times64\times112\times112$};
-\node[main,fill=frozen] (s1) at (0,-3.7) {\textbf{Stage 1: 3 residual blocks}, 64 channels\\$N\times64\times56\times56$};
-\node[main,fill=frozen] (s2) at (0,-5.55) {\textbf{Stage 2: 4 residual blocks}, 128 channels\\$N\times128\times28\times28$};
-\node[main,fill=frozen] (s3) at (0,-7.4) {\textbf{Stage 3: 14 residual blocks}, 256 channels\\$N\times256\times14\times14$};
-\node[main,fill=train] (s4) at (0,-9.25) {\textbf{Stage 4: 3 residual blocks}, 512 channels\\$N\times512\times7\times7$; last block = layer4.2};
-\node[main,fill=train] (flat) at (0,-11.1) {\textbf{Embedding head: BN2 $\to$ Flatten}\\$512\times7\times7=25{,}088$ features per face};
-\node[main,fill=train] (fc) at (0,-12.95) {\textbf{Fully connected projection}\\$N\times25{,}088\to N\times512$};
-\node[main,fill=out] (outp) at (0,-14.8) {\textbf{Final BN1d $\to$ output embedding}\\512 values per face; $[1,512]$ for one image};
+\node[main,fill=frozen] (stem) at (0,-1.85) {\textbf{Stem:} convolution + PReLU};
+\node[main,fill=frozen] (s1) at (0,-3.7) {\textbf{Stage 1: 3 residual blocks}};
+\node[main,fill=frozen] (s2) at (0,-5.55) {\textbf{Stage 2: 4 residual blocks}};
+\node[main,fill=frozen] (s3) at (0,-7.4) {\textbf{Stage 3: 14 residual blocks}};
+\node[main,fill=train] (s4) at (0,-9.25) {\textbf{Stage 4: 3 residual blocks}\\Last block = layer4.2};
+\node[main,fill=train] (flat) at (0,-11.1) {\textbf{Embedding head: BN2 $\to$ Flatten}};
+\node[main,fill=train] (fc) at (0,-12.95) {\textbf{Fully connected projection}};
+\node[main,fill=out] (outp) at (0,-14.8) {\textbf{Final BN1d $\to$ output embedding}\\$N\times512$};
 \foreach \a/\b in {in/stem,stem/s1,s1/s2,s2/s3,s3/s4,s4/flat,flat/fc,fc/outp}{\draw[arrow](\a)--(\b);}
 
 \end{tikzpicture}
@@ -405,7 +406,7 @@ E2 & E1 plus BatchNormalization\_126, Gemm\_128, BatchNormalization\_129 & 17,56
 \end{datatable}
 \nextpage
 \cont{10.4 Model architectures (continued): RetinaFace detector}
-The project's RetinaFace stage~\cite{retinaface}, \code{det\_10g.onnx}, is always frozen: 4,225,835 parameters and 158 ONNX nodes. Figure~\ref{fig:detarchitecture} shows its three-scale outputs; Table~\ref{tab:detector} gives the tensor dimensions at $640\times640$ input.
+The project's RetinaFace stage~\cite{retinaface}, \code{det\_10g.onnx}, is always frozen: 4,225,835 parameters and 158 ONNX nodes. Figure~\ref{fig:detarchitecture} shows its three-scale outputs; Table~\ref{tab:detector} summarizes what each output represents.
 \begin{center}
 \begin{tikzpicture}
 \node[box,fill=input,text width=152mm] (a) at (5.75,0) {Dynamic RGB image: $1\times3\times H\times W$; typically $640\times640$};
@@ -413,25 +414,25 @@ The project's RetinaFace stage~\cite{retinaface}, \code{det\_10g.onnx}, is alway
 \node[box,fill=frozen] (p3) at (0,-3.9) {P3: stride 8\\$80\times80$ feature map};
 \node[box,fill=frozen] (p4) at (5.75,-3.9) {P4: stride 16\\$40\times40$ feature map};
 \node[box,fill=frozen] (p5) at (11.5,-3.9) {P5: stride 32\\$20\times20$ feature map};
-\node[box,fill=out,minimum height=22mm] (h3) at (0,-6.2) {12,800 face scores\\12,800 boxes\\12,800 landmark sets};
-\node[box,fill=out,minimum height=22mm] (h4) at (5.75,-6.2) {3,200 face scores\\3,200 boxes\\3,200 landmark sets};
-\node[box,fill=out,minimum height=22mm] (h5) at (11.5,-6.2) {800 face scores\\800 boxes\\800 landmark sets};
+\node[box,fill=out,minimum height=22mm] (h3) at (0,-6.2) {Face scores\\Bounding boxes\\Five facial landmarks};
+\node[box,fill=out,minimum height=22mm] (h4) at (5.75,-6.2) {Face scores\\Bounding boxes\\Five facial landmarks};
+\node[box,fill=out,minimum height=22mm] (h5) at (11.5,-6.2) {Face scores\\Bounding boxes\\Five facial landmarks};
 \draw[arrow](a)--(b);
 \foreach \i in {3,4,5}{\draw[arrow](b.south -| p\i.north)--(p\i.north);\draw[arrow](p\i)--(h\i);}
 \end{tikzpicture}
 \captionof{figure}{RetinaFace detection architecture: three output scales, each with classification, box regression and landmark heads.}
 \label{fig:detarchitecture}
 \end{center}
-\begin{datatable}{RetinaFace output tensors: two anchors per location; batch dimension omitted.}{tab:detector}
-\begin{tabularx}{\linewidth}{Y r r r r r}\toprule
-Level & Stride & Feature map & Scores & Boxes & Landmarks\\\midrule
-P3 & 8 & $80\times80$ & $12800\times1$ & $12800\times4$ & $12800\times10$\\
-P4 & 16 & $40\times40$ & $3200\times1$ & $3200\times4$ & $3200\times10$\\
-P5 & 32 & $20\times20$ & $800\times1$ & $800\times4$ & $800\times10$\\\bottomrule
+\begin{datatable}{RetinaFace outputs at each of the three feature-pyramid levels.}{tab:detector}
+\begin{tabularx}{\linewidth}{L{35mm}Y}\toprule
+Output & Meaning\\\midrule
+Face scores & Confidence that a candidate region contains a face\\
+Bounding boxes & Face location and extent in the image\\
+Five facial landmarks & Left eye, right eye, nose, left mouth corner and right mouth corner\\\bottomrule
 \end{tabularx}
 \end{datatable}
 
-Each level has two anchors per spatial location. The box head emits four values per anchor; the landmark head emits ten coordinates representing five points. These landmarks drive the similarity transform before the recognizer receives a crop. The detector remains fixed across E0, E1 and E2, so the adaptation comparison changes recognition rather than detection.
+The facial landmarks drive the similarity transform before the recognizer receives an aligned crop. The detector remains fixed across E0, E1 and E2, so the adaptation comparison changes recognition rather than detection.
 
 The analyzed ONNX graph includes 58 convolution, 36 ReLU, 16 addition, three average-pooling, three sigmoid, two resize and one max-pooling nodes, among its 158 total nodes. The three resolutions permit detection at different face scales. Nine output tensors result: score, box and landmark outputs for each of the three levels.
 
@@ -513,10 +514,10 @@ Obtain the code from \codeurl\ and the dataset from \datasetlink. Follow \path{d
 \item \path{20_e1e2_person_folds.py}: prepare gallery, exclusions and folds.
 \item \path{19_e1e2_person_finetune.py}: all six folds and E0/E1/E2; maximum epochs 0/20/20, acceptance threshold 0.3.
 \item \path{21_e1e2_confusion.py} and \path{23_dump_predictions.py}: metrics and per-query outcomes for each experiment.
-\item \path{25_e1e2_learning_curve.py}: repeat E1/E2 with validation loss added.
+\item \path{25_e1e2_learning_curve.py}: repeat E1/E2 with validation loss added; \path{27_e1e2_matched_curve.py}: repeat again, scoring the training people with the validation rule for the Section 10.7 curves.
 \item \path{22_e1e2_plots.py}, \path{24_report_figures.py}: original figures; \path{docs/build_final_figures.py}: this report's vector figures, with no retraining.
 \end{enumerate}
-\textbf{Loss comparability.} Training uses a 20-person head, angular margin and smoothing; validation loss uses the 30-person gallery without margin or smoothing. Their absolute levels are not a directly comparable generalization gap. Section 10.7 overlays both to show epoch trends, with solid training and dashed validation lines.
+\textbf{Loss comparability.} The optimized objective uses a 20-person head, angular margin, label smoothing and augmented crops, so its value is not comparable with a validation loss. The curves in Section 10.7 therefore report one common objective on both sides: clean crops, no margin, no label smoothing and cross-entropy over the 30-person gallery, measured on the training people and on the held-out validation people. Their separation is a genuine generalization gap. This measurement changes no training result; the repeated runs reproduce every selected epoch.
 
 % PAGE 14
 \nextpage
@@ -557,7 +558,7 @@ The ranking is E1 $>$ E0 $>$ E2. Last-block adaptation transfers modestly to hel
 % PAGE 15
 \nextpage
 \cont{10.7 Results (continued): occlusion sensitivity and training behaviour}
-Table~\ref{tab:occlusion} shows the largest E1 gain under mask plus sunglasses. Figures~\ref{fig:e1loss}--\ref{fig:e2loss} overlay training and validation losses on the same axes, one colour per fold. The per-occlusion chart and validation-accuracy curves appear in Appendix B (Figures~\ref{fig:occlusion} and \ref{fig:epochs}).
+Table~\ref{tab:occlusion} shows the largest E1 gain under mask plus sunglasses. Figures~\ref{fig:e1loss}--\ref{fig:e2loss} plot one common loss on the training and validation people, one colour per fold. The per-occlusion chart and validation-accuracy curves appear in Appendix B (Figures~\ref{fig:occlusion} and \ref{fig:epochs}).
 \begin{datatable}{Per-occlusion query accuracy, pooled from the final fold results.}{tab:occlusion}
 \begin{tabularx}{\linewidth}{Y r r r r}\toprule
 Occlusion & Queries & E0 & E1 & E2\\\midrule
@@ -574,8 +575,8 @@ Mask + sunglasses & 777 & 35.6\% & \textbf{47.2\%} & 42.7\%\\\bottomrule
 The per-occlusion gain is concentrated in the hardest combined covering. Scarf has fewer identities, and every measurement conditions on detection having succeeded. The following page shows the training trajectories at larger scale.
 \nextpage
 \cont{10.7 Results (continued): learning curves}
-\fig{e1_loss.pdf}{1}{E1: training loss (solid) and validation gallery loss (dashed), all six folds on one set of axes. Most folds recover from the early perturbation; the selected epoch is 5 in five folds and 8 in fold 4.}{fig:e1loss}
-\fig{e2_loss.pdf}{1}{E2: both losses on the same axes, with colour identifying the fold. Greater variability and persistent validation loss accompany epoch-0 selection in three folds. The two loss definitions differ as explained in Section 10.6.}{fig:e2loss}
+\fig{e1_loss.pdf}{1}{E1: one common gallery loss on the training people (solid) and the held-out validation people (dashed), all six folds. Stars mark the selected epoch, which is chosen by validation accuracy, not by loss. Both sides start together at epoch 0; the training loss then falls to about 0.001 while the validation loss rises and never returns to its epoch-0 value.}{fig:e1loss}
+\fig{e2_loss.pdf}{1}{E2: the same measurement. The gap opens wider than in E1, with validation losses ending between 0.38 and 0.91, and three folds keep the pretrained model.}{fig:e2loss}
 \textbf{Confusion matrices and macro metrics.} Table~\ref{tab:overall} reports macro scores; Appendix B gives every 30-person matrix. Rejections dominate E0/E1 errors; E2 also has more accepted wrong identities. The 11.6-point E1 gain under mask plus sunglasses drives its net benefit.
 
 % PAGE 16
@@ -616,17 +617,18 @@ Code version / commit / release & Not supplied\\
 README \& environment & \path{docs/FINAL_README.txt} covers files, variables, setup and reuse. Exact dependency versions / lockfile: not supplied.\\\bottomrule
 \end{tabularx}
 \end{datatable}
+\nextpage
 \section{Student Contributions (CRediT-style)}
-Each student captured and annotated their own five participants; all other roles are shared equally. Declared figures total 120\%, not a normalized 100\%. Shared evidence E1--E6 and role details are in \path{docs/CONTRIBUTIONS.md}; artifacts do not establish exclusive authorship.
+Each student captured and annotated their own five participants. Beyond this common collection role, Farhan Tahmid handles E1/E2 training, fine-tuning and training--evaluation pipeline checking; implementation, integration, metric analysis and documentation are distributed among the other members as detailed below. Contribution percentages are proportionally normalized to total 100\%. Evidence E1--E6 is indexed in \path{docs/CONTRIBUTIONS.md}; these are supporting project artifacts, not an independent authorship audit.
 \begin{datatable}{Student contributions and shared evidence.}{tab:contributions}
-\begin{tabularx}{\linewidth}{L{20mm}L{31mm}L{17mm}Y L{29mm}}\toprule
-Roll & Student & Reported (\%) & Main contributions & Evidence / files\\\midrule
-2107031 & Adiba Tahsin & 21 & Own-five capture/annotation; equal shared roles & E1--E6\\
-2107044 & Arafat Islam & 19 & Own-five capture/annotation; equal shared roles & E1--E6\\
-2107046 & Arman Rahman Rafi & 20 & Own-five capture/annotation; equal shared roles & E1--E6\\
-2107047 & Dip Shekhor Datta & 19 & Own-five capture/annotation; equal shared roles & E1--E6\\
-2107057 & Megha Tania & 20 & Own-five capture/annotation; equal shared roles & E1--E6\\
-2107059 & Farhan Tahmid & 21 & Own-five capture/annotation; equal shared roles & E1--E6\\\bottomrule
+\begin{tabularx}{\linewidth}{L{20mm}L{31mm}L{15mm}Y L{19mm}}\toprule
+Roll & Student & Share (\%) & Main contributions & Evidence / files\\\midrule
+2107031 & Adiba Tahsin & 17.50 & Capture protocol and quality-review coordination; label/age summaries; data dictionary and consent documentation & E1, E6\\
+2107044 & Arafat Islam & 15.83 & E0 baseline implementation; RetinaFace crop/failure review; manifest schema and duplicate checks & E1, E3, E5\\
+2107046 & Arman Rahman Rafi & 16.67 & Six-fold/gallery/exclusion preparation; trainable-scope configuration; training--evaluation pipeline integration and leakage checks & E2, E3, E4\\
+2107047 & Dip Shekhor Datta & 15.83 & Validation-based checkpoint selection; prediction/metric analysis; confusion matrices and occlusion/rejection interpretation & E3, E4, E5\\
+2107057 & Megha Tania & 16.67 & Learning-curve and architecture visualizations; base-paper comparison; report/README editing and reference checks & E5, E6\\
+2107059 & Farhan Tahmid & 17.50 & E1/E2 model training and fine-tuning; training--evaluation pipeline checking & E3, E4\\\bottomrule
 \end{tabularx}
 \end{datatable}
 \section{Acknowledgements, Funding and Competing Interests}
@@ -705,7 +707,7 @@ Leakage safety & Related subjects/augmentations stay within partitions & Yes & S
 Reproducible processing & Code recreates processed data and baseline from released inputs & No & Scripts and histories exist, but exact environment and full authorized raw-data release are not supplied.\\
 Ethics/privacy & Consent/approval/licensing requirements satisfied & No & Signed consent and access controls reported; approval details and complete release permissions are not independently available.\\
 Documentation & README covers files, variables, setup and reuse & Yes & \path{docs/FINAL_README.txt} covers the file structure, 13 metadata fields, setup, reproduction and reuse precautions.\\
-Team accountability & All six students' contributions recorded & Yes & Section 15 and \path{docs/CONTRIBUTIONS.md}: names, rolls, declared figures, own-five-person capture/annotation and equally shared responsibilities with artifact references.\\\bottomrule
+Team accountability & All six students' contributions recorded & Yes & Section 15 and \path{docs/CONTRIBUTIONS.md}: individual tasks, names/rolls, declared figures and evidence links.\\\bottomrule
 \end{tabularx}
 \end{datatable}
 \textbf{Evidence hierarchy for this report.} Experiment definitions, model scopes, split rules and metrics follow the final technical report and its saved results. The prior report supplies submission details, base papers, participant recruitment, consent, capture categories and historical quality control. Its earlier experiment labels and image-level split results are superseded. Additional manifest checks and redrawn plots use the supplied local records; no recognition model was retrained for this document.
