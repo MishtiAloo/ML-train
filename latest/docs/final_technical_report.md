@@ -75,7 +75,7 @@ flowchart LR
     classDef train fill:#A4FFA1,stroke:#000000,color:#000000
 ```
 
-`manifest.csv` records, per crop: `person_id`, `occlusion`, `lighting`, the RetinaFace `det_score` (detector confidence, used later for benchmark selection — §3.3), and `bbox_area_frac` (how much of the frame the detected face occupies). The detector's own confidence is not uniformly high across the dataset — occluded faces are systematically harder to detect, not just harder to recognize:
+`manifest.csv` records, per crop: the original and aligned-crop paths, `person_id`, `occlusion`, `lighting`, `md5`, `group_id`, and the RetinaFace `det_score` (detector confidence, used later for benchmark selection — §3.3). The detector's own confidence is not uniformly high across the dataset — occluded faces are systematically harder to detect, not just harder to recognize:
 
 ![Detection score distribution](plots/dataset_det_score_hist.png)
 

@@ -19,6 +19,12 @@ person's best clean photo by the pretrained model). The top match is
 reported only if its similarity reaches --threshold (default 0.3), the same
 acceptance rule used in evaluation; otherwise the answer is UNKNOWN.
 
+The page can also register a new person. It asks for a name, accepts five
+photos that pass face, landmark, blur, lighting, and upright-head checks,
+then permanently saves the best photo's E0 embedding in a separate demo
+gallery. Saved enrollments are merged into the lookup gallery at startup;
+the fixed 30-person experiment gallery is never modified.
+
 Run (from the project root):
     python scripts/28_demo_server.py --show-names
 Then open the printed https://<LAN-IP>:5000 on a phone on the same Wi-Fi,
@@ -34,6 +40,7 @@ import argparse
 import json
 import re
 import sys
+import threading
 import time
 from collections import deque
 from pathlib import Path
@@ -69,7 +76,16 @@ STATE = {
     "fold": 1,
     "emb_buffer": deque(maxlen=6),
     "model_paths": {},
+    "enrollments_path": None,
+    "enroll_dir": None,
+    "enrolled_benchmarks": None,
+    "enrolled_persons": [],
+    "enrolled_names": [],
+    "enrollment": None,
+    "enroll_required": 5,
+    "enroll_quality": {},
 }
+ENROLL_LOCK = threading.Lock()
 
 
 # ---------------------------------------------------------------- models
@@ -141,6 +157,103 @@ def classify(emb: np.ndarray):
     accepted = score >= STATE["threshold"]
     runner_up = float(np.sort(sims)[-2])
     return (person if accepted else "UNKNOWN"), person, score, runner_up
+
+
+def enrollment_quality(img: np.ndarray, bbox: np.ndarray, kps: np.ndarray, crop: np.ndarray):
+    """Check that an enrollment frame is clear, well lit, and roughly frontal."""
+    cfg = STATE["enroll_quality"]
+    if kps is None or np.asarray(kps).shape != (5, 2) or not np.isfinite(kps).all():
+        return False, "All five face landmarks must be visible.", {}
+
+    h, w = img.shape[:2]
+    points = np.asarray(kps, dtype=np.float64)
+    if not ((points[:, 0] >= 0).all() and (points[:, 0] < w).all()
+            and (points[:, 1] >= 0).all() and (points[:, 1] < h).all()):
+        return False, "Keep the whole face inside the camera frame.", {}
+
+    left_eye, right_eye, nose, left_mouth, right_mouth = points
+    eye_y = (left_eye[1] + right_eye[1]) / 2.0
+    mouth_y = (left_mouth[1] + right_mouth[1]) / 2.0
+    geometry_ok = (left_eye[0] < right_eye[0] and left_mouth[0] < right_mouth[0]
+                   and left_eye[0] < nose[0] < right_eye[0]
+                   and eye_y < nose[1] < mouth_y)
+    if not geometry_ok:
+        return False, "Look straight at the camera with the full face visible.", {}
+
+    tilt = abs(float(np.degrees(np.arctan2(right_eye[1] - left_eye[1],
+                                           right_eye[0] - left_eye[0]))))
+    if tilt > cfg["max_tilt"]:
+        return False, f"Keep your head upright (tilt {tilt:.1f} degrees).", {"tilt": tilt}
+
+    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+    blur = float(cv2.Laplacian(gray, cv2.CV_64F).var())
+    light = float(gray.mean())
+    det_score = float(bbox[4]) if len(bbox) > 4 else 0.0
+    metrics = {"blur": blur, "light": light, "tilt": tilt, "det_score": det_score}
+    if det_score < cfg["min_det_score"]:
+        return False, "Face detection is uncertain. Move closer and look at the camera.", metrics
+    if blur < cfg["min_blur"]:
+        return False, "Image is blurry. Hold the camera and your head still.", metrics
+    if light < cfg["min_light"]:
+        return False, "Image is too dark. Move to better lighting.", metrics
+    if light > cfg["max_light"]:
+        return False, "Image is too bright. Avoid strong light behind or on the face.", metrics
+
+    light_score = max(0.0, 1.0 - abs(light - 127.5) / 127.5)
+    upright_score = max(0.0, 1.0 - tilt / max(cfg["max_tilt"], 1e-9))
+    quality = det_score + 0.25 * min(blur / max(cfg["min_blur"], 1e-9), 3.0)
+    quality += 0.25 * light_score + 0.25 * upright_score
+    metrics["quality"] = quality
+    return True, "Accepted.", metrics
+
+
+def load_enrollments(path: Path):
+    if not path.exists():
+        return np.empty((0, 512), dtype=np.float64), [], []
+    saved = np.load(path, allow_pickle=False)
+    benchmarks = saved["benchmarks"].astype(np.float64)
+    persons = [str(v) for v in saved["persons"]]
+    names = [str(v) for v in saved["names"]]
+    if benchmarks.ndim != 2 or benchmarks.shape[1] != 512 or len(benchmarks) != len(persons):
+        raise ValueError(f"invalid enrollment gallery: {path}")
+    if len(names) != len(persons):
+        raise ValueError(f"enrollment names do not match persons: {path}")
+    benchmarks /= np.linalg.norm(benchmarks, axis=1, keepdims=True) + 1e-9
+    return benchmarks, persons, names
+
+
+def save_enrollment(name: str, emb: np.ndarray, crop: np.ndarray):
+    """Persist one E0 benchmark, then add it to the live gallery."""
+    with ENROLL_LOCK:
+        used = set(STATE["persons"])
+        number = 1
+        while f"enrolled_{number:03d}" in used:
+            number += 1
+        person = f"enrolled_{number:03d}"
+
+        crop_path = STATE["enroll_dir"] / f"{person}.jpg"
+        STATE["enroll_dir"].mkdir(parents=True, exist_ok=True)
+        if not cv2.imwrite(str(crop_path), crop, [cv2.IMWRITE_JPEG_QUALITY, 95]):
+            raise OSError(f"could not save enrollment crop: {crop_path}")
+
+        old_bench = STATE["enrolled_benchmarks"]
+        new_bench = np.vstack([old_bench, emb[None]])
+        new_persons = STATE["enrolled_persons"] + [person]
+        new_names = STATE["enrolled_names"] + [name]
+        path = STATE["enrollments_path"]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temp_path = path.with_name(path.stem + ".tmp.npz")
+        np.savez_compressed(temp_path, benchmarks=new_bench.astype(np.float32),
+                            persons=np.array(new_persons), names=np.array(new_names))
+        temp_path.replace(path)
+
+        STATE["enrolled_benchmarks"] = new_bench
+        STATE["enrolled_persons"] = new_persons
+        STATE["enrolled_names"] = new_names
+        STATE["benchmarks"] = np.vstack([STATE["benchmarks"], emb[None]])
+        STATE["persons"].append(person)
+        STATE["names"][person] = name
+        return person, crop_path
 
 
 def display_name(pid: str) -> str:
@@ -219,6 +332,7 @@ PAGE = """
   #result { font-size:1.7em; margin:12px 0 2px; min-height:1.3em; }
   .ok { color:#4caf50; } .unknown { color:#ff5252; } .none { color:#888; }
   #score, #role { font-size:.9em; color:#aaa; }
+  #enrollStatus { font-size:.9em; color:#ffd54f; min-height:1.2em; padding:4px 10px; }
   #modelNote { font-size:.8em; color:#888; margin-top:4px; padding:0 10px; }
   button { font-size:1.05em; padding:9px 20px; margin:6px; border-radius:8px; border:none; background:#2979ff; color:#fff; }
   button:disabled { background:#555; }
@@ -231,6 +345,7 @@ PAGE = """
 <div id="result" class="none">Press Start</div>
 <div id="score"></div>
 <div id="role"></div>
+<div id="enrollStatus"></div>
 <div>
   <select id="modelSelect">{{ model_options|safe }}</select>
   <select id="foldSelect">{{ fold_options|safe }}</select>
@@ -241,17 +356,22 @@ PAGE = """
   <button id="startBtn">Start</button>
   <button id="stopBtn" disabled>Stop</button>
   <button id="switchBtn">Switch Camera</button>
+  <button id="registerBtn">Register New Person</button>
+  <button id="cancelEnrollBtn" disabled>Cancel Registration</button>
 </div>
 <canvas id="canvas" style="display:none;"></canvas>
 <script>
 const video=document.getElementById('video'), canvas=document.getElementById('canvas');
 const resultEl=document.getElementById('result'), scoreEl=document.getElementById('score');
 const roleEl=document.getElementById('role'), noteEl=document.getElementById('modelNote');
+const enrollEl=document.getElementById('enrollStatus');
 const camSelect=document.getElementById('camSelect'), modelSelect=document.getElementById('modelSelect');
 const foldSelect=document.getElementById('foldSelect');
-let running=false, stream=null, facingMode='user', frameIntervalMs=500;
+const registerBtn=document.getElementById('registerBtn'), cancelEnrollBtn=document.getElementById('cancelEnrollBtn');
+let running=false, enrolling=false, stream=null, facingMode='user', frameIntervalMs=500;
 
 async function setModel() {
+  if (enrolling) return;
   modelSelect.disabled = foldSelect.disabled = true;
   const wasRunning = running; running = false;
   noteEl.textContent = 'Loading model...';
@@ -299,11 +419,16 @@ async function start() {
   loop();
 }
 function stop() {
+  if (enrolling) fetch('/enroll/cancel', {method:'POST'}).catch(() => {});
+  enrolling = false;
   running = false;
   if (stream) stream.getTracks().forEach(t => t.stop());
   document.getElementById('startBtn').disabled = false;
   document.getElementById('stopBtn').disabled = true;
+  registerBtn.disabled = false; cancelEnrollBtn.disabled = true;
+  modelSelect.disabled = foldSelect.disabled = false;
   resultEl.className='none'; resultEl.textContent='Stopped'; scoreEl.textContent=''; roleEl.textContent='';
+  enrollEl.textContent='';
 }
 async function switchCam() {
   facingMode = (facingMode === 'user') ? 'environment' : 'user';
@@ -318,7 +443,7 @@ camSelect.onchange = async () => {
   try { await openStream(); } catch (e) {}
 };
 async function loop() {
-  if (!running) return;
+  if (!running || enrolling) return;
   const w = video.videoWidth, h = video.videoHeight;
   if (w && h) {
     canvas.width = w; canvas.height = h;
@@ -332,6 +457,59 @@ async function loop() {
       if (running) setTimeout(loop, frameIntervalMs);
     }, 'image/jpeg', 0.85);
   } else if (running) setTimeout(loop, 200);
+}
+async function startEnrollment() {
+  if (!running) {
+    enrollEl.textContent = 'Press Start and allow the camera before registering.';
+    return;
+  }
+  const name = prompt('Enter the new person name:');
+  if (!name || !name.trim()) return;
+  try {
+    const res = await fetch('/enroll/start', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:name.trim()})});
+    const data = await res.json();
+    if (!res.ok || !data.ok) { enrollEl.textContent = 'Registration error: ' + (data.error || res.status); return; }
+    enrolling = true;
+    registerBtn.disabled = true; cancelEnrollBtn.disabled = false;
+    modelSelect.disabled = foldSelect.disabled = true;
+    resultEl.className='none'; resultEl.textContent='Registering ' + data.name;
+    scoreEl.textContent=''; roleEl.textContent='';
+    enrollEl.textContent='0 / ' + data.required + ' accepted. Look straight at the camera.';
+    enrollmentLoop();
+  } catch (e) { enrollEl.textContent = 'Registration error: ' + e; }
+}
+async function cancelEnrollment() {
+  try { await fetch('/enroll/cancel', {method:'POST'}); } catch (e) {}
+  enrolling = false;
+  registerBtn.disabled = false; cancelEnrollBtn.disabled = true;
+  modelSelect.disabled = foldSelect.disabled = false;
+  enrollEl.textContent='Registration cancelled.';
+  if (running) loop();
+}
+async function enrollmentLoop() {
+  if (!running || !enrolling) return;
+  const w=video.videoWidth, h=video.videoHeight;
+  if (!w || !h) { setTimeout(enrollmentLoop, 250); return; }
+  canvas.width=w; canvas.height=h; canvas.getContext('2d').drawImage(video, 0, 0, w, h);
+  canvas.toBlob(async (blob) => {
+    try {
+      const form=new FormData(); form.append('frame', blob, 'enroll.jpg');
+      const res=await fetch('/enroll/frame', {method:'POST', body:form});
+      const data=await res.json();
+      if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+      if (data.complete) {
+        enrolling=false; registerBtn.disabled=false; cancelEnrollBtn.disabled=true;
+        modelSelect.disabled=foldSelect.disabled=false;
+        resultEl.className='ok'; resultEl.textContent=data.name + ' registered';
+        enrollEl.textContent='Best of ' + data.required + ' accepted photos saved permanently.';
+        if (running) loop();
+        return;
+      }
+      enrollEl.textContent=data.accepted_count + ' / ' + data.required + ' accepted. ' + data.message;
+    } catch (e) { enrollEl.textContent='Registration error: ' + e; }
+    if (running && enrolling) setTimeout(enrollmentLoop, 700);
+  }, 'image/jpeg', 0.92);
 }
 function render(d) {
   if (!d.face_found) { resultEl.className='none'; resultEl.textContent='No face detected';
@@ -350,6 +528,7 @@ function render(d) {
 document.getElementById('startBtn').onclick = start;
 document.getElementById('stopBtn').onclick = stop;
 document.getElementById('switchBtn').onclick = switchCam;
+registerBtn.onclick = startEnrollment; cancelEnrollBtn.onclick = cancelEnrollment;
 modelSelect.onchange = setModel; foldSelect.onchange = setModel;
 if (navigator.mediaDevices) listCams();
 setModel();
@@ -395,6 +574,89 @@ def set_model():
                     "load_ms": int((time.time() - t0) * 1000)})
 
 
+@app.route("/enroll/start", methods=["POST"])
+def enroll_start():
+    payload = request.get_json(force=True, silent=True) or {}
+    name = " ".join(str(payload.get("name", "")).strip().split())
+    if not name:
+        return jsonify({"ok": False, "error": "name is required"}), 400
+    if len(name) > 80:
+        return jsonify({"ok": False, "error": "name must be 80 characters or fewer"}), 400
+    if STATE["enrollment"] is not None:
+        return jsonify({"ok": False, "error": "another registration is already active"}), 409
+    if any(name.casefold() == saved.casefold() for saved in STATE["enrolled_names"]):
+        return jsonify({"ok": False, "error": "that name is already registered"}), 409
+    STATE["emb_buffer"].clear()
+    STATE["enrollment"] = {"name": name, "samples": []}
+    return jsonify({"ok": True, "name": name, "required": STATE["enroll_required"]})
+
+
+@app.route("/enroll/cancel", methods=["POST"])
+def enroll_cancel():
+    STATE["enrollment"] = None
+    return jsonify({"ok": True})
+
+
+@app.route("/enroll/frame", methods=["POST"])
+def enroll_frame():
+    session = STATE["enrollment"]
+    if session is None:
+        return jsonify({"error": "no active registration"}), 409
+    file = request.files.get("frame")
+    if file is None:
+        return jsonify({"error": "no frame"}), 400
+    img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
+    if img is None:
+        return jsonify({"error": "decode failed"}), 400
+
+    bboxes, kpss = STATE["det"].detect(img, max_num=0, metric="default")
+    if bboxes is not None and len(bboxes) > 1:
+        return jsonify({"complete": False, "accepted": False,
+                        "accepted_count": len(session["samples"]),
+                        "required": STATE["enroll_required"],
+                        "message": "Only one person should be visible during registration."})
+    bbox, kps = pick_largest(bboxes, kpss)
+    if bbox is None or kps is None:
+        return jsonify({"complete": False, "accepted": False,
+                        "accepted_count": len(session["samples"]),
+                        "required": STATE["enroll_required"],
+                        "message": "No clear face detected."})
+
+    crop = align_crop(img, kps, image_size=112)
+    accepted, message, metrics = enrollment_quality(img, bbox, kps, crop)
+    if not accepted:
+        return jsonify({"complete": False, "accepted": False,
+                        "accepted_count": len(session["samples"]),
+                        "required": STATE["enroll_required"], "message": message,
+                        "metrics": metrics})
+
+    # The fixed gallery was built with E0. New benchmarks must use that same
+    # embedding space even when E1 or E2 is selected for live recognition.
+    emb = embed(crop, "e0", STATE["fold"])
+    if STATE["enrollment"] is not session:
+        return jsonify({"error": "registration was cancelled"}), 409
+    session["samples"].append({"embedding": emb, "crop": crop.copy(),
+                               "quality": metrics["quality"]})
+    accepted_count = len(session["samples"])
+    if accepted_count < STATE["enroll_required"]:
+        return jsonify({"complete": False, "accepted": True,
+                        "accepted_count": accepted_count,
+                        "required": STATE["enroll_required"], "message": message,
+                        "metrics": metrics})
+
+    best = max(session["samples"], key=lambda sample: sample["quality"])
+    try:
+        person, crop_path = save_enrollment(session["name"], best["embedding"], best["crop"])
+    except Exception as exc:  # noqa: BLE001 -- return a useful registration error
+        return jsonify({"error": f"could not save registration: {exc}"}), 500
+    name = session["name"]
+    STATE["enrollment"] = None
+    STATE["emb_buffer"].clear()
+    return jsonify({"complete": True, "accepted": True, "accepted_count": accepted_count,
+                    "required": STATE["enroll_required"], "person": person, "name": name,
+                    "crop_path": str(crop_path)})
+
+
 @app.route("/predict", methods=["POST"])
 def predict():
     file = request.files.get("frame")
@@ -430,13 +692,29 @@ def predict():
     })
 
 
-def main():
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser()
     ap.add_argument("--models-dir", default=str(ROOT / "models"))
     ap.add_argument("--benchmarks", default=str(ROOT / "runs" / "e1e2" / "person_benchmarks.npz"))
     ap.add_argument("--folds-file", default=str(ROOT / "metadata" / "e1e2_person_folds.json"))
     ap.add_argument("--names", default=str(ROOT / "metadata" / "person_id_mapping.txt"))
     ap.add_argument("--show-names", action="store_true", help="show real names instead of p## ids")
+    ap.add_argument("--enrollments", default=str(ROOT / "runs" / "e1e2" / "demo_enrollments.npz"),
+                    help="persistent gallery for people registered through the demo")
+    ap.add_argument("--enroll-dir", default=str(ROOT / "runs" / "e1e2" / "enrolled_people"),
+                    help="directory that stores the selected benchmark crop for each new person")
+    ap.add_argument("--enroll-samples", type=int, default=5,
+                    help="number of quality-approved photos required for registration")
+    ap.add_argument("--enroll-min-blur", type=float, default=80.0,
+                    help="minimum Laplacian variance for an enrollment crop")
+    ap.add_argument("--enroll-min-light", type=float, default=55.0,
+                    help="minimum mean grayscale value for an enrollment crop")
+    ap.add_argument("--enroll-max-light", type=float, default=205.0,
+                    help="maximum mean grayscale value for an enrollment crop")
+    ap.add_argument("--enroll-max-tilt", type=float, default=15.0,
+                    help="maximum absolute eye-line angle in degrees")
+    ap.add_argument("--enroll-min-det-score", type=float, default=0.65,
+                    help="minimum detector confidence for an enrollment photo")
     ap.add_argument("--threshold", type=float, default=0.3, help="acceptance threshold; below it the answer is UNKNOWN")
     ap.add_argument("--det-size", type=int, default=640)
     ap.add_argument("--det-thresh", type=float, default=0.5)
@@ -444,7 +722,18 @@ def main():
     ap.add_argument("--exp", default="e0", choices=list(EXPERIMENTS))
     ap.add_argument("--fold", type=int, default=1)
     ap.add_argument("--port", type=int, default=5000)
-    args = ap.parse_args()
+    return ap
+
+
+def init_state(args):
+    """Load models, gallery, folds and saved enrollments into STATE.
+    Shared with 29_webcam_demo.py, which drives the same routes locally."""
+    if args.enroll_samples < 2:
+        raise SystemExit("--enroll-samples must be at least 2")
+    if not (0 <= args.enroll_min_light < args.enroll_max_light <= 255):
+        raise SystemExit("enrollment light limits must satisfy 0 <= min < max <= 255")
+    if args.enroll_min_blur < 0 or args.enroll_max_tilt <= 0:
+        raise SystemExit("enrollment blur must be non-negative and tilt must be positive")
 
     models_dir = Path(args.models_dir)
     det_path = models_dir / "det_10g.onnx"
@@ -461,11 +750,33 @@ def main():
     STATE["threshold"] = args.threshold
     STATE["emb_buffer"] = deque(maxlen=args.buffer)
     STATE["exp"], STATE["fold"] = args.exp, args.fold
+    STATE["enrollments_path"] = Path(args.enrollments)
+    STATE["enroll_dir"] = Path(args.enroll_dir)
+    STATE["enroll_required"] = args.enroll_samples
+    STATE["enroll_quality"] = {
+        "min_blur": args.enroll_min_blur,
+        "min_light": args.enroll_min_light,
+        "max_light": args.enroll_max_light,
+        "max_tilt": args.enroll_max_tilt,
+        "min_det_score": args.enroll_min_det_score,
+    }
 
     setup = json.loads(Path(args.folds_file).read_text(encoding="utf-8"))
     STATE["folds"] = {f["fold"]: f for f in setup["folds"]}
     if args.show_names:
         STATE["names"] = load_names(Path(args.names))
+
+    enrolled_bench, enrolled_persons, enrolled_names = load_enrollments(STATE["enrollments_path"])
+    overlap = set(STATE["persons"]) & set(enrolled_persons)
+    if overlap:
+        raise SystemExit(f"enrollment IDs overlap the fixed gallery: {sorted(overlap)}")
+    STATE["enrolled_benchmarks"] = enrolled_bench
+    STATE["enrolled_persons"] = enrolled_persons
+    STATE["enrolled_names"] = enrolled_names
+    if len(enrolled_bench):
+        STATE["benchmarks"] = np.vstack([STATE["benchmarks"], enrolled_bench])
+        STATE["persons"].extend(enrolled_persons)
+    STATE["names"].update(dict(zip(enrolled_persons, enrolled_names)))
 
     print("Loading detector and pretrained recognizer (CPU)...", flush=True)
     STATE["det"] = load_detector(str(det_path), args.det_size, args.det_thresh)
@@ -474,8 +785,13 @@ def main():
     available = {e: (e not in FOLD_EXPERIMENTS or all(fold_checkpoint(e, k).exists() for k in STATE["folds"]))
                  for e in EXPERIMENTS}
     print(f"Gallery: {len(STATE['persons'])} people, threshold {STATE['threshold']}, "
-          f"averaging {args.buffer} frames")
+          f"averaging {args.buffer} frames ({len(enrolled_persons)} demo enrollment(s))")
     print(f"Models: " + ", ".join(f"{e}{'' if ok else ' (checkpoints missing)'}" for e, ok in available.items()))
+
+
+def main():
+    args = build_parser().parse_args()
+    init_state(args)
 
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

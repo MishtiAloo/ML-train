@@ -33,8 +33,10 @@ D:\ML train\
 │   ├── models/            flat: w600k_r50.onnx (recognizer), det_10g.onnx (detector)
 │   ├── metadata/          manifest.csv, e1e2_person_folds.json
 │   ├── runs/e1e2/          benchmarks, 18 checkpoints (E0/E1/E2 x 6 folds), results, confusion matrices
+│   │                      (+ demo_enrollments.npz, enrolled_people/ once someone registers in the demo)
 │   ├── scripts/           19-27: fold setup, training, confusion analysis, plotting, learning curves
-│   │                      28_demo_server.py: the live camera demo (E0-E2), runs on this laptop
+│   │                      28_demo_server.py: the live phone/browser camera demo (E0-E2), runs on this laptop
+│   │                      29_webcam_demo.py: the same demo on this laptop's own webcam, desktop window
 │   └── docs/              report.md, confusion_matrices.md, epoch_curves.md, plots/
 └── requirements-gpu-box.txt   exact package set of the training environment (3090 box)
 ```
@@ -95,6 +97,29 @@ Each frame goes through detection → alignment → embedding → cosine match a
 A second dropdown picks the fold for E1/E2, and the page states whether the person currently named was **unseen**, a validation person, or trained on in that fold — fold *k* is the honest setting for its own 5 test people. Switching model or fold clears the frame buffer, because a fine-tuned backbone produces a different embedding space.
 
 **Offline check:** correct on every stored photo tried across E0/E1/E2 and two folds, including masked and sunglasses shots.
+
+**Webcam version (no phone, no browser):**
+
+```bash
+python latest/scripts/29_webcam_demo.py --show-names    # --camera 1 to use the other camera
+```
+
+This opens a desktop window on the laptop's webcam, with the same model and fold dropdowns, live box and name, and registration (a name box plus **Register New Person**). It reuses `28_demo_server.py`'s code in-process, so results, quality checks and registered people are identical to the phone demo and shared with it. Tested here: recognized p30 live (score 0.66), and registering a new person from the webcam saved them and then recognized them (score 0.86).
+
+**Registering a new person:** press **Start**, then **Register New Person** and type a name. The page keeps sending frames until 5 of them pass the quality gate. A frame passes only if:
+- exactly one face is visible and all 5 landmarks are inside the frame in a frontal arrangement;
+- the head is upright (eye-line tilt ≤ 15°);
+- the detector score is ≥ 0.65;
+- the aligned crop is sharp (Laplacian variance ≥ 80);
+- the crop is neither too dark nor too bright (mean brightness 55–205).
+
+The highest-quality of the 5 is kept as that person's benchmark, embedded with **E0** (the same model that built the fixed 30-person gallery, so it works with E0, E1 and E2). Registered people are saved permanently and reloaded on every start:
+- `latest/runs/e1e2/demo_enrollments.npz` holds the embeddings and names;
+- `latest/runs/e1e2/enrolled_people/enrolled_###.jpg` holds the chosen crop.
+
+`person_benchmarks.npz` and the experiment results are never modified. Every threshold is a command-line option (`--enroll-samples`, `--enroll-min-blur`, `--enroll-min-light`, `--enroll-max-light`, `--enroll-max-tilt`, `--enroll-min-det-score`). To remove registered people, delete those two paths.
+
+Offline check of registration: p05 was removed from the gallery, registered from 5 of their clean photos, and the server restarted. p05's other photos, many of them occluded, were then recognized under the new name in 8/12 cases with E0 and 11/12 with E1 (fold 1).
 
 ## Key design notes
 
