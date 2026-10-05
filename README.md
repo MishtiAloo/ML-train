@@ -33,7 +33,8 @@ D:\ML train\
 │   ├── models/            flat: w600k_r50.onnx (recognizer), det_10g.onnx (detector)
 │   ├── metadata/          manifest.csv, e1e2_person_folds.json
 │   ├── runs/e1e2/          benchmarks, 18 checkpoints (E0/E1/E2 x 6 folds), results, confusion matrices
-│   ├── scripts/           18-22: fold setup, training, confusion analysis, plotting
+│   ├── scripts/           19-27: fold setup, training, confusion analysis, plotting, learning curves
+│   │                      28_demo_server.py: the live camera demo (E0-E2), runs on this laptop
 │   └── docs/              report.md, confusion_matrices.md, epoch_curves.md, plots/
 └── requirements-gpu-box.txt   exact package set of the training environment (3090 box)
 ```
@@ -72,6 +73,28 @@ pip install opencv-python-headless numpy torch onnx onnx2torch onnxruntime matpl
 > **onnxruntime-gpu note:** installing plain `onnxruntime` after `onnxruntime-gpu` silently overwrites it with a CPU-only build. Install `onnxruntime-gpu` last, with `--no-deps`, pinned to your CUDA runtime (`onnxruntime-gpu==1.20.2` for CUDA 12.4).
 
 > **Windows + onnx2torch:** passing a file path to `onnx2torch.convert()` triggers a Windows-only tempfile bug (`PermissionError`, reopening a handle it still holds). `latest/scripts/21_e1e2_confusion.py` works around this by passing a pre-loaded `onnx.load()` model instead — reuse that pattern in anything new.
+
+## Live demo (runs on this laptop, CPU only)
+
+```bash
+python latest/scripts/28_demo_server.py --show-names    # add --port 5000 to change the port
+```
+
+It prints an `https://<LAN-IP>:5000` address. Open it on a phone on the same Wi-Fi, accept the self-signed certificate warning once (the certificate is generated into `latest/runs/certs/` and reused), then tap **Start**. `https://localhost:5000` works in this machine's browser too. HTTPS is required because browsers only expose the camera on a secure context.
+
+Each frame goes through detection → alignment → embedding → cosine match against the 30 fixed benchmarks, with the same **0.3 acceptance threshold** used in evaluation: below it, the answer is **UNKNOWN**. The last 6 frames' embeddings are averaged before matching. Measured here: about 0.3 s per frame for E0 and 0.5 s for E1/E2.
+
+**Model dropdown:**
+
+| Mode | Weights served | Notes |
+|---|---|---|
+| E0 | pretrained backbone | no fine-tuning; the fold selector doesn't apply |
+| E1 | `runs/e1e2/folds/fold<k>/e1_person_model.pt` | last residual block fine-tuned |
+| E2 | `runs/e1e2/folds/fold<k>/e2_person_model.pt` | block + embedding head fine-tuned |
+
+A second dropdown picks the fold for E1/E2, and the page states whether the person currently named was **unseen**, a validation person, or trained on in that fold — fold *k* is the honest setting for its own 5 test people. Switching model or fold clears the frame buffer, because a fine-tuned backbone produces a different embedding space.
+
+**Offline check:** correct on every stored photo tried across E0/E1/E2 and two folds, including masked and sunglasses shots.
 
 ## Key design notes
 

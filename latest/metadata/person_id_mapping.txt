@@ -1,0 +1,34 @@
+Person ID Mapping
+=================
+
+ID | Team member | Person | Folder
+p01 | Adiba | Adiba | Adiba\Adiba
+p02 | Adiba | Aunt | Adiba\Aunt
+p03 | Adiba | Khalamony | Adiba\Khalamony
+p04 | Adiba | Nabil | Adiba\Nabil
+p05 | Adiba | Nanu | Adiba\Nanu
+p06 | Arafat | ABRAR | Arafat\ABRAR
+p07 | Arafat | Arafat | Arafat\Arafat
+p08 | Arafat | JABER | Arafat\JABER
+p09 | Arafat | MITHUN | Arafat\MITHUN
+p10 | Arafat | SAAJ | Arafat\SAAJ
+p11 | dip | Ansh | dip\Ansh
+p12 | dip | Ashraful | dip\Ashraful
+p13 | dip | Dip | dip\Dip
+p14 | dip | sayeed | dip\sayeed
+p15 | dip | Ullash | dip\Ullash
+p16 | Megha | Antu | Megha\Antu
+p17 | Megha | Arpita | Megha\Arpita
+p18 | Megha | Megha | Megha\Megha
+p19 | Megha | Minha | Megha\Minha
+p20 | Megha | Rajorshi | Megha\Rajorshi
+p21 | Rafi | Argho | Rafi\Argho
+p22 | Rafi | Arif | Rafi\Arif
+p23 | Rafi | Masum | Rafi\Masum
+p24 | Rafi | Rafi | Rafi\Rafi
+p25 | Rafi | Zobayer | Rafi\Zobayer
+p26 | Tahmid | Faisal | Tahmid\Faisal
+p27 | Tahmid | Jahid | Tahmid\Jahid
+p28 | Tahmid | Naquib | Tahmid\Naquib
+p29 | Tahmid | Rezwan | Tahmid\Rezwan
+p30 | Tahmid | Tahmid | Tahmid\Tahmid

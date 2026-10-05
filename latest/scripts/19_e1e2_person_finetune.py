@@ -5,8 +5,7 @@ does not make sense when val/test people are never trained on), and no
 leakage (train/val/test people are disjoint, so no image can appear in
 more than one split).
 
-Two experiments in normal use, chosen with --exp (e3 = full unfreeze also
-exists in the code but is not part of the current comparison):
+Two experiments, chosen with --exp:
   e1 : unfreeze the last residual block only
   e2 : unfreeze the last residual block + the embedding (fc) layer
        (same scope as B1 / protocol 3's b1)
@@ -68,7 +67,6 @@ UNFREEZE_PREFIXES = {
     "e1": ("BatchNormalization_121.", "Conv_122.", "Conv_124."),
     "e2": ("BatchNormalization_121.", "Conv_122.", "Conv_124.",
            "BatchNormalization_126.", "Gemm_128.", "BatchNormalization_129."),
-    "e3": None,  # full unfreeze -- every backbone parameter trains
 }
 
 

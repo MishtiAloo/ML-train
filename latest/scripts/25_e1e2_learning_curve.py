@@ -35,7 +35,6 @@ UNFREEZE_PREFIXES = {
     "e1": ("BatchNormalization_121.", "Conv_122.", "Conv_124."),
     "e2": ("BatchNormalization_121.", "Conv_122.", "Conv_124.",
            "BatchNormalization_126.", "Gemm_128.", "BatchNormalization_129."),
-    "e3": None,
 }
 
 
