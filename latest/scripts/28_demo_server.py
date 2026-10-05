@@ -23,7 +23,8 @@ The page can also register a new person. It asks for a name, accepts five
 photos that pass face, landmark, blur, lighting, and upright-head checks,
 then permanently saves the best photo's E0 embedding in a separate demo
 gallery. Saved enrollments are merged into the lookup gallery at startup;
-the fixed 30-person experiment gallery is never modified.
+the fixed 30-person experiment gallery is never modified. The People button
+lists the gallery and can permanently delete demo-registered people only.
 
 Run (from the project root):
     python scripts/28_demo_server.py --show-names
@@ -222,6 +223,19 @@ def load_enrollments(path: Path):
     return benchmarks, persons, names
 
 
+def write_enrollments(bench: np.ndarray, persons: list, names: list):
+    """Atomically rewrite the demo gallery file; remove it when empty."""
+    path = STATE["enrollments_path"]
+    if not persons:
+        path.unlink(missing_ok=True)
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = path.with_name(path.stem + ".tmp.npz")
+    np.savez_compressed(temp_path, benchmarks=bench.astype(np.float32),
+                        persons=np.array(persons), names=np.array(names))
+    temp_path.replace(path)
+
+
 def save_enrollment(name: str, emb: np.ndarray, crop: np.ndarray):
     """Persist one E0 benchmark, then add it to the live gallery."""
     with ENROLL_LOCK:
@@ -240,12 +254,7 @@ def save_enrollment(name: str, emb: np.ndarray, crop: np.ndarray):
         new_bench = np.vstack([old_bench, emb[None]])
         new_persons = STATE["enrolled_persons"] + [person]
         new_names = STATE["enrolled_names"] + [name]
-        path = STATE["enrollments_path"]
-        path.parent.mkdir(parents=True, exist_ok=True)
-        temp_path = path.with_name(path.stem + ".tmp.npz")
-        np.savez_compressed(temp_path, benchmarks=new_bench.astype(np.float32),
-                            persons=np.array(new_persons), names=np.array(new_names))
-        temp_path.replace(path)
+        write_enrollments(new_bench, new_persons, new_names)
 
         STATE["enrolled_benchmarks"] = new_bench
         STATE["enrolled_persons"] = new_persons
@@ -254,6 +263,29 @@ def save_enrollment(name: str, emb: np.ndarray, crop: np.ndarray):
         STATE["persons"].append(person)
         STATE["names"][person] = name
         return person, crop_path
+
+
+def delete_enrollment(person: str) -> str:
+    """Permanently remove one demo-registered person. Fixed-gallery people
+    are never in enrolled_persons, so they cannot be deleted."""
+    with ENROLL_LOCK:
+        i = STATE["enrolled_persons"].index(person)
+        name = STATE["enrolled_names"][i]
+        new_bench = np.delete(STATE["enrolled_benchmarks"], i, axis=0)
+        new_persons = STATE["enrolled_persons"][:i] + STATE["enrolled_persons"][i + 1:]
+        new_names = STATE["enrolled_names"][:i] + STATE["enrolled_names"][i + 1:]
+        write_enrollments(new_bench, new_persons, new_names)
+        (STATE["enroll_dir"] / f"{person}.jpg").unlink(missing_ok=True)
+
+        g = STATE["persons"].index(person)
+        STATE["benchmarks"] = np.delete(STATE["benchmarks"], g, axis=0)
+        STATE["persons"] = STATE["persons"][:g] + STATE["persons"][g + 1:]
+        STATE["enrolled_benchmarks"] = new_bench
+        STATE["enrolled_persons"] = new_persons
+        STATE["enrolled_names"] = new_names
+        STATE["names"].pop(person, None)
+        STATE["emb_buffer"].clear()
+        return name
 
 
 def display_name(pid: str) -> str:
@@ -337,6 +369,10 @@ PAGE = """
   button { font-size:1.05em; padding:9px 20px; margin:6px; border-radius:8px; border:none; background:#2979ff; color:#fff; }
   button:disabled { background:#555; }
   select { font-size:1em; padding:6px; margin:5px; max-width:92%; }
+  #people { display:none; max-width:480px; margin:6px auto 16px; padding:0 10px; text-align:left; font-size:.9em; }
+  #people h4 { margin:10px 0 4px; } #people .fixed { color:#aaa; line-height:1.5; }
+  #people .row { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; }
+  #people .row button { font-size:.85em; padding:5px 12px; background:#d32f2f; }
 </style>
 </head>
 <body>
@@ -358,7 +394,9 @@ PAGE = """
   <button id="switchBtn">Switch Camera</button>
   <button id="registerBtn">Register New Person</button>
   <button id="cancelEnrollBtn" disabled>Cancel Registration</button>
+  <button id="peopleBtn">People</button>
 </div>
+<div id="people"></div>
 <canvas id="canvas" style="display:none;"></canvas>
 <script>
 const video=document.getElementById('video'), canvas=document.getElementById('canvas');
@@ -503,6 +541,7 @@ async function enrollmentLoop() {
         modelSelect.disabled=foldSelect.disabled=false;
         resultEl.className='ok'; resultEl.textContent=data.name + ' registered';
         enrollEl.textContent='Best of ' + data.required + ' accepted photos saved permanently.';
+        if (peopleEl.style.display === 'block') loadPeople();
         if (running) loop();
         return;
       }
@@ -510,6 +549,43 @@ async function enrollmentLoop() {
     } catch (e) { enrollEl.textContent='Registration error: ' + e; }
     if (running && enrolling) setTimeout(enrollmentLoop, 700);
   }, 'image/jpeg', 0.92);
+}
+const peopleEl=document.getElementById('people');
+function heading(text) { const h=document.createElement('h4'); h.textContent=text; return h; }
+async function loadPeople() {
+  try {
+    const data = await (await fetch('/people')).json();
+    peopleEl.replaceChildren(heading('Original gallery (' + data.fixed.length + ', cannot be deleted)'));
+    const fixed=document.createElement('div'); fixed.className='fixed';
+    fixed.textContent = data.fixed.map(p => p.name).join(', ');
+    peopleEl.appendChild(fixed);
+    peopleEl.appendChild(heading('Registered in the demo (' + data.registered.length + ')'));
+    if (!data.registered.length) {
+      const none=document.createElement('div'); none.className='fixed'; none.textContent='Nobody yet.';
+      peopleEl.appendChild(none);
+    }
+    data.registered.forEach(p => {
+      const row=document.createElement('div'); row.className='row';
+      const label=document.createElement('span'); label.textContent=p.name;
+      const del=document.createElement('button'); del.textContent='Delete';
+      del.onclick = () => deletePerson(p.id, p.name);
+      row.append(label, del); peopleEl.appendChild(row);
+    });
+  } catch (e) { peopleEl.textContent = 'Could not load the list: ' + e; }
+}
+async function togglePeople() {
+  if (peopleEl.style.display === 'block') { peopleEl.style.display='none'; return; }
+  await loadPeople(); peopleEl.style.display='block';
+}
+async function deletePerson(id, name) {
+  if (!confirm('Permanently delete ' + name + '?')) return;
+  try {
+    const res = await fetch('/enroll/delete', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({person: id})});
+    const data = await res.json();
+    enrollEl.textContent = data.ok ? (data.name + ' deleted.') : ('Delete error: ' + data.error);
+  } catch (e) { enrollEl.textContent = 'Delete error: ' + e; }
+  loadPeople();
 }
 function render(d) {
   if (!d.face_found) { resultEl.className='none'; resultEl.textContent='No face detected';
@@ -529,6 +605,7 @@ document.getElementById('startBtn').onclick = start;
 document.getElementById('stopBtn').onclick = stop;
 document.getElementById('switchBtn').onclick = switchCam;
 registerBtn.onclick = startEnrollment; cancelEnrollBtn.onclick = cancelEnrollment;
+document.getElementById('peopleBtn').onclick = togglePeople;
 modelSelect.onchange = setModel; foldSelect.onchange = setModel;
 if (navigator.mediaDevices) listCams();
 setModel();
@@ -595,6 +672,28 @@ def enroll_start():
 def enroll_cancel():
     STATE["enrollment"] = None
     return jsonify({"ok": True})
+
+
+@app.route("/people")
+def people():
+    enrolled = set(STATE["enrolled_persons"])
+    return jsonify({
+        "fixed": [{"id": p, "name": display_name(p)} for p in STATE["persons"] if p not in enrolled],
+        "registered": [{"id": p, "name": n}
+                       for p, n in zip(STATE["enrolled_persons"], STATE["enrolled_names"])],
+    })
+
+
+@app.route("/enroll/delete", methods=["POST"])
+def enroll_delete():
+    person = str((request.get_json(force=True, silent=True) or {}).get("person", ""))
+    if person not in STATE["enrolled_persons"]:
+        return jsonify({"ok": False, "error": "only people registered in the demo can be deleted"}), 400
+    try:
+        name = delete_enrollment(person)
+    except Exception as exc:  # noqa: BLE001 -- report to the page instead of a 500 page
+        return jsonify({"ok": False, "error": f"could not delete: {exc}"}), 500
+    return jsonify({"ok": True, "person": person, "name": name})
 
 
 @app.route("/enroll/frame", methods=["POST"])

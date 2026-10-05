@@ -5,7 +5,8 @@ no copied logic: this script loads 28's state with its own init_state() and
 drives 28's /predict, /set_model and /enroll/* routes in-process through
 Flask's test client. Same models, same 30-person gallery, same 0.3 threshold,
 same quality gate, and the same persistent demo_enrollments.npz -- a person
-registered here is recognized by the phone demo too, and vice versa.
+registered here is recognized by the phone demo too, and vice versa. The
+People... window lists the gallery and deletes demo-registered people only.
 
 The window is drawn with tkinter because the installed OpenCV build has no
 GUI support (cv2.imshow is unavailable). Inference runs on a background
@@ -29,7 +30,7 @@ import threading
 import time
 import tkinter as tk
 from pathlib import Path
-from tkinter import ttk
+from tkinter import messagebox, ttk
 
 import cv2
 from PIL import Image, ImageTk
@@ -57,6 +58,7 @@ class Worker(threading.Thread):
         self.enroll_msg = ""
         self.enrolling = False
         self.running = True
+        self.people_version = 0           # bumped whenever the gallery changes
 
     def submit(self, frame):
         with self.lock:
@@ -88,6 +90,7 @@ class Worker(threading.Thread):
                 self.enrolling = False
                 self.enroll_msg = (f"{data['name']} registered. Best of {data['required']} "
                                    "accepted photos saved permanently.")
+                self.people_version += 1
             else:
                 self.enroll_msg = (f"{data['accepted_count']} / {data['required']} accepted. "
                                    f"{data['message']}")
@@ -109,6 +112,12 @@ class Worker(threading.Thread):
             self.client.post("/enroll/cancel")
             self.enrolling = False
             self.enroll_msg = "Registration cancelled."
+        elif kind == "delete":
+            data = self.client.post("/enroll/delete", json={"person": cmd[1]}).get_json()
+            self.enroll_msg = (f"{data['name']} deleted." if data.get("ok")
+                               else "Delete error: " + data.get("error", "?"))
+            self.result = None
+            self.people_version += 1
 
 
 class App:
@@ -151,6 +160,9 @@ class App:
         tk.Button(row, text="Register New Person", command=self.register).pack(side="left", padx=4)
         tk.Button(row, text="Cancel Registration",
                   command=lambda: worker.commands.put(("cancel",))).pack(side="left", padx=4)
+        tk.Button(row, text="People...", command=self.open_people).pack(side="left", padx=4)
+        self.people_win = None
+        self.list_client = demo.app.test_client()   # read-only /people calls from this thread
 
         root.protocol("WM_DELETE_WINDOW", self.close)
         self.set_model()
@@ -170,6 +182,44 @@ class App:
         self.worker.commands.put(("enroll", name))
         self.name.delete(0, "end")
 
+    def open_people(self):
+        if self.people_win is not None and self.people_win.winfo_exists():
+            self.people_win.lift()
+            return
+        win = self.people_win = tk.Toplevel(self.root)
+        win.title("People")
+        win.configure(bg="#111", padx=12, pady=10)
+        self.fixed_hdr = tk.Label(win, fg="#eee", bg="#111", font=("Segoe UI", 10, "bold"))
+        self.fixed_hdr.pack(anchor="w")
+        self.fixed_lbl = tk.Label(win, fg="#aaa", bg="#111", wraplength=420, justify="left")
+        self.fixed_lbl.pack(anchor="w", pady=(0, 8))
+        self.reg_hdr = tk.Label(win, fg="#eee", bg="#111", font=("Segoe UI", 10, "bold"))
+        self.reg_hdr.pack(anchor="w")
+        self.reg_list = tk.Listbox(win, width=50, height=8)
+        self.reg_list.pack(fill="x")
+        tk.Button(win, text="Delete selected", command=self.delete_selected).pack(pady=(6, 0))
+        self.refresh_people()
+
+    def refresh_people(self):
+        data = self.list_client.get("/people").get_json()
+        self.registered = data["registered"]
+        self.fixed_hdr.config(text=f"Original gallery ({len(data['fixed'])}, cannot be deleted)")
+        self.fixed_lbl.config(text=", ".join(p["name"] for p in data["fixed"]))
+        self.reg_hdr.config(text=f"Registered in the demo ({len(self.registered)})")
+        self.reg_list.delete(0, "end")
+        for p in self.registered:
+            self.reg_list.insert("end", p["name"])
+        self.seen_version = self.worker.people_version
+
+    def delete_selected(self):
+        sel = self.reg_list.curselection()
+        if not sel:
+            messagebox.showinfo("People", "Select a registered person first.", parent=self.people_win)
+            return
+        p = self.registered[sel[0]]
+        if messagebox.askyesno("Delete", f"Permanently delete {p['name']}?", parent=self.people_win):
+            self.worker.commands.put(("delete", p["id"]))
+
     def tick(self):
         ok, frame = self.cap.read()
         if ok:
@@ -177,6 +227,9 @@ class App:
             self.show(frame)
         self.note.config(text=self.worker.note)
         self.enroll.config(text=self.worker.enroll_msg)
+        if (self.people_win is not None and self.people_win.winfo_exists()
+                and self.worker.people_version != self.seen_version):
+            self.refresh_people()
         self.root.after(30, self.tick)
 
     def show(self, frame):

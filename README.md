@@ -117,7 +117,9 @@ The highest-quality of the 5 is kept as that person's benchmark, embedded with *
 - `latest/runs/e1e2/demo_enrollments.npz` holds the embeddings and names;
 - `latest/runs/e1e2/enrolled_people/enrolled_###.jpg` holds the chosen crop.
 
-`person_benchmarks.npz` and the experiment results are never modified. Every threshold is a command-line option (`--enroll-samples`, `--enroll-min-blur`, `--enroll-min-light`, `--enroll-max-light`, `--enroll-max-tilt`, `--enroll-min-det-score`). To remove registered people, delete those two paths.
+`person_benchmarks.npz` and the experiment results are never modified. Every threshold is a command-line option (`--enroll-samples`, `--enroll-min-blur`, `--enroll-min-light`, `--enroll-max-light`, `--enroll-max-tilt`, `--enroll-min-det-score`).
+
+**People list and deleting:** both demos have a **People** button (**People...** in the webcam window). It shows the original 30, which cannot be deleted, and everyone registered in the demo, each with a delete option and a confirmation prompt. A deletion takes effect immediately and permanently: the person's row, their saved crop and their entry in `demo_enrollments.npz` are removed, and the file itself is removed once nobody is left. The server refuses deletes for the original 30 even if the request is hand-made. To remove everyone at once, delete the two paths above.
 
 Offline check of registration: p05 was removed from the gallery, registered from 5 of their clean photos, and the server restarted. p05's other photos, many of them occluded, were then recognized under the new name in 8/12 cases with E0 and 11/12 with E1 (fold 1).
 
