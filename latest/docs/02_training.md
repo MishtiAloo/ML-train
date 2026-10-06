@@ -19,7 +19,7 @@ E0 leaves everything frozen and is only a baseline. It should be run with `--epo
 
 Training joins outputs from the earlier data stage with the pretrained recognition model:
 
-- `manifest.csv` and the aligned crops were originally created by the archived `01_preprocess.py` and `02_split.py` dataset-preparation scripts, as described in [Stage 1](01_data_split.md#where-manifestcsv-comes-from).
+- `manifest.csv` and the aligned crops are created by [`01_preprocess.py`](../scripts/01_preprocess.py) and [`02_split.py`](../scripts/02_split.py), as described in [Stage 1](01_data_split.md#where-manifestcsv-comes-from).
 - `e1e2_person_folds.json` and `person_benchmarks.npz` are created by [`20_e1e2_person_folds.py`](../scripts/20_e1e2_person_folds.py).
 - `w600k_r50.onnx` is the pretrained ArcFace recognition model under `latest/models/`. It supplies the starting weights; this training script does not create it.
 - `19_e1e2_person_finetune.py` combines those inputs and writes a checkpoint, history, and final test report for the selected experiment and fold.
@@ -27,7 +27,7 @@ Training joins outputs from the earlier data stage with the pretrained recogniti
 ```mermaid
 %%{init: {"themeVariables": {"fontSize": "10px"}, "flowchart": {"nodeSpacing": 55, "rankSpacing": 60}}}%%
 flowchart TD
-    A[Processed face photos] --> B[Archived 01_preprocess.py and 02_split.py]
+    A[Processed face photos] --> B[01_preprocess.py and 02_split.py]
     B --> C[Aligned crops and manifest.csv]
     C --> D[20_e1e2_person_folds.py]
     E[Saved crop embeddings] --> D

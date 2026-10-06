@@ -2,7 +2,7 @@
 
 CSE 4112 Machine Learning Laboratory project (KUET) — identification of 30 enrolled people under masks, sunglasses, scarves, caps and combined occlusions, using a pretrained ArcFace model (`buffalo_l`, iResNet50) and a RetinaFace detector.
 
-**All current work lives in [`latest/`](latest/), which is fully self-contained** — its own crops, models, metadata, checkpoints, results, plots, docs and scripts. Everything this project explored before it (trained-classifier heads, the benchmark-embedding protocol, the unseen-people protocol, the live phone demo, earlier versions of this same experiment, and the dataset-preprocessing tooling) has been moved — not deleted — to `D:\ML train archive\`. See "Archive" below.
+**All current work lives in [`latest/`](latest/), which is fully self-contained** — its own crops, models, metadata, checkpoints, results, plots, docs and scripts. The preprocessing scripts needed to rebuild the current data artifacts are also retained in `latest/scripts/`. Older experiments and historical copies were moved — not deleted — to `D:\ML train archive\`. See "Archive" below.
 
 ## The final experiment (`latest/`)
 
@@ -27,14 +27,15 @@ Partial ArcFace-backbone fine-tuning, evaluated on people the model never traine
 
 ```
 D:\ML train\
-├── processed_data/       raw captured images, p01..p30 (frozen dataset -- do not edit; unrelated tooling archived)
+├── processed_data/       raw captured images, p01..p30 (frozen dataset -- do not edit)
 ├── latest/                the final experiment, self-contained
 │   ├── crops/             112x112 aligned face crops (5,988 images)
 │   ├── models/            flat: w600k_r50.onnx (recognizer), det_10g.onnx (detector)
 │   ├── metadata/          manifest.csv, e1e2_person_folds.json
 │   ├── runs/e1e2/          benchmarks, 18 checkpoints (E0/E1/E2 x 6 folds), results, confusion matrices
 │   │                      (+ demo_enrollments.npz, enrolled_people/ once someone registers in the demo)
-│   ├── scripts/           19-27: fold setup, training, confusion analysis, plotting, learning curves
+│   ├── scripts/           01-03: crop preprocessing, manifest grouping, cached embeddings
+│   │                      18-27: person splits, training, evaluation, plotting, learning curves
 │   │                      28_demo_server.py: the live phone/browser camera demo (E0-E2), runs on this laptop
 │   │                      29_webcam_demo.py: the same demo on this laptop's own webcam, desktop window
 │   └── docs/              report.md, confusion_matrices.md, epoch_curves.md, plots/
@@ -51,12 +52,12 @@ Everything else was moved (not deleted) to **`D:\ML train archive\`**, keeping o
 |---|---|
 | Trained-classifier heads (E1–E3), benchmark-embedding protocol (B0/B1), unseen-people protocol (6 folds, UNKNOWN calibration), the live phone demo, and all their scripts/checkpoints/docs | `archive/scripts/`, `archive/runs/`, `archive/docs/`, `archive/metadata/` |
 | An earlier, leaky (image-level split) version of this same E1/E2 experiment, and its single-fold (not 6-fold) successor | `archive/scripts/16_e1e2_split.py`, `17_e1e2_finetune.py`; `archive/latest_single_split_03/` |
-| Dataset-preprocessing tooling: `common.py`, `01_preprocess.py`, `02_split.py`, `03_embed.py`, `models/buffalo_l/*.onnx`, `metadata/manifest.csv`, `embeddings.npz`, `preprocess_log.csv`, `person_id_mapping.txt`, `rename.txt` | `archive/scripts/`, `archive/models/buffalo_l/`, `archive/metadata/` |
+| Historical copies of dataset-preprocessing code, older model layout, and intermediate metadata such as `preprocess_log.csv` and `rename.txt` | `scripts/`, `models/buffalo_l/`, `metadata/` inside `D:\ML train archive\` |
 | Consent form (`consent.pdf`, `consent.tex`) | `archive/docs/` |
 | Older material from before that (draft slides/charts, GPU-box script snapshots, rejected photos, an abandoned E0 probe) | `archive/_scratch/`, `archive/box_snapshot/`, `archive/put_asides/`, `archive/runs/eval/e0/` |
 | The main project's `crops/` (duplicate of `latest/crops/`) | `archive/crops/` |
 
-Copy anything back to its original path to restore it — nothing was deleted. If `processed_data/` ever needs reprocessing (new raw photos, a re-crop), restore `archive/scripts/{common.py,01_preprocess.py,02_split.py,03_embed.py}` and `archive/models/buffalo_l/` first.
+The active preprocessing path is now `latest/scripts/{01_preprocess.py,02_split.py,03_embed.py}` plus `latest/scripts/common.py`; these use the model files already stored under `latest/models/`.
 
 ## Setup
 

@@ -18,12 +18,12 @@ Across all six folds, every person is used as a test person exactly once and as 
 
 The manifest is not created by `20_e1e2_person_folds.py`. It was created earlier by the dataset-preparation tools:
 
-1. `01_preprocess.py` scanned the standardized photos under `processed_data/`. It read the person, occlusion, and lighting from each filename, calculated the image hash, detected the largest face, aligned it, saved a `112 x 112` crop, and wrote the result to `preprocess_log.csv`.
-2. If the main detector attempt failed, `01_preprocess.py` tried a lower detection threshold and then an enlarged copy. Images that still failed were recorded in the preprocessing log but did not enter the manifest.
-3. `02_split.py` read `preprocess_log.csv`, kept successful crops, created `group_id` values for related burst/source images, and wrote `manifest.csv`.
-4. `03_embed.py` read the crops listed in the manifest and created `embeddings.npz`, which is needed when selecting the benchmark gallery.
+1. [`01_preprocess.py`](../scripts/01_preprocess.py) scans the standardized photos under `processed_data/`. It reads the person, occlusion, and lighting from each filename, calculates the image hash, detects the largest face, aligns it, saves a `112 x 112` crop, and writes the result to `preprocess_log.csv`.
+2. If the main detector attempt fails, `01_preprocess.py` tries a lower detection threshold and then an enlarged copy. Images that still fail are recorded in the preprocessing log but do not enter the manifest.
+3. [`02_split.py`](../scripts/02_split.py) reads `preprocess_log.csv`, keeps successful crops, creates `group_id` values for related burst/source images, and writes the cleaned `manifest.csv`. Despite its historical filename, the current version does not assign image-level train/validation/test roles.
+4. [`03_embed.py`](../scripts/03_embed.py) reads the crops listed in the manifest and creates `embeddings.npz`, which is needed when selecting the benchmark gallery.
 
-Those dataset-preparation scripts were moved to `archive/scripts/` when the repository was pruned. Their location and restore instructions are recorded in [the repository archive notes](../../README.md#L49-L57). They are upstream data-building code, while [`20_e1e2_person_folds.py`](../scripts/20_e1e2_person_folds.py) is the current experiment-splitting code.
+These upstream scripts are now kept in `latest/scripts/` beside the current experiment-splitting code, [`20_e1e2_person_folds.py`](../scripts/20_e1e2_person_folds.py). [`18_e1e2_person_split.py`](../scripts/18_e1e2_person_split.py) is also retained because it produced the still-supported single-split setup used when training is run without `--fold`.
 
 The old manifest generator also wrote an image-level `split` column. The current experiment never used it: current train/validation/test roles come from the person lists in `e1e2_person_folds.json`. That obsolete column and unused preprocessing-only columns have therefore been removed from the current manifest.
 
