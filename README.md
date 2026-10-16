@@ -20,7 +20,7 @@ Partial ArcFace-backbone fine-tuning, evaluated on people the model never traine
 |---|---|
 | [`latest/docs/final_technical_report.md`](latest/docs/final_technical_report.md) | **Full technical report**: dataset/sample galleries, data-splitting and benchmark-selection diagrams, verified block-level ArcFace/RetinaFace architectures, E1/E2 training mechanics (loss, hyperparameters, backprop, epoch stopping), and the complete result set, all in one self-contained document |
 | [`latest/docs/report.md`](latest/docs/report.md) | Shorter write-up: objective, method, results, conclusion |
-| [`latest/docs/confusion_matrices.md`](latest/docs/confusion_matrices.md) | Per-person and per-occlusion precision/recall/macro-F1/accuracy, confusion-matrix heatmaps |
+| [`latest/docs/confusion_matrices.md`](latest/docs/confusion_matrices.md) | Per-person and per-occlusion precision/recall/macro-F1/accuracy, confusion-matrix heatmaps (thresholded, plus top-1 matrices without the 0.3 threshold: E0 97.46%, E1 94.65%, E2 91.96%) |
 | [`latest/docs/epoch_curves.md`](latest/docs/epoch_curves.md) | Full epoch-by-epoch training/validation curve, every fold and experiment |
 
 ## Repository layout

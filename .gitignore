@@ -25,6 +25,7 @@ metadata/manifest.csv
 *.pt
 *.pth
 *.ckpt
+/modelPack.zip
 
 # Deployed gallery is derived from embeddings.npz via 07_build_gallery.py
 runs/gallery.npz

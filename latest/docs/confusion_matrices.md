@@ -8,6 +8,22 @@ Companion to `report.md`. All numbers pooled over the 6 test folds (n=5,818 quer
 ![E1 confusion matrix](plots/e1_confusion_overall.png)
 ![E2 confusion matrix](plots/e2_confusion_overall.png)
 
+## 0b. Top-1 confusion matrices without the acceptance threshold
+
+These three matrices drop the 0.3 threshold. Every query photo is assigned to its nearest benchmark, so there is no REJECT column, and a cell's count is the number of that true person's photos whose closest benchmark was the column's person. The colour is the row-normalized rate, and the diagonal holds the correct predictions.
+
+| | Top-1 correct | Top-1 wrong | Top-1 accuracy | People at 100% |
+|---|---|---|---|---|
+| E0 (untrained) | 5,670 | 148 | **97.46%** | 16 / 30 |
+| E1 (block only) | 5,507 | 311 | 94.65% | 10 / 30 |
+| E2 (block + fc) | 5,350 | 468 | 91.96% | 8 / 30 |
+
+![E0 top-1 confusion matrix, no threshold](plots/e0_confusion_top1.png)
+![E1 top-1 confusion matrix, no threshold](plots/e1_confusion_top1.png)
+![E2 top-1 confusion matrix, no threshold](plots/e2_confusion_top1.png)
+
+Without the threshold the ranking reverses: E0 > E1 > E2, against E1 > E0 > E2 for the thresholded accuracy in §1. The two views measure different things. Fine-tuning raises the similarity scores of correct matches, so fewer correct matches fall below 0.3. That is why E1 wins the thresholded measure: of E0's 874 rejected photos, 726 already had the right person on top. Fine-tuning on only 20 people also moves some photos' nearest benchmark to the wrong person, so pure top-1 ranking gets worse with each extra trainable layer. E2's errors concentrate in a few people, for example p06→p04, p01→p03 and p04→p30.
+
 ## 1. Overall accuracy and macro-averaged metrics
 
 | Experiment | Accuracy | Macro precision | Macro recall | Macro F1 |
@@ -160,5 +176,9 @@ Each occlusion's confusion matrix is computed only over that occlusion's query p
 | `runs/e1e2/analysis/{exp}_metrics.json` | This file's source numbers, machine-readable |
 | `runs/e1e2/analysis/{exp}_confusion_overall.csv` | 30×31 confusion matrix (true person × predicted person + REJECT), pooled over all 6 folds |
 | `runs/e1e2/analysis/{exp}_confusion_<occlusion>.csv` | Same, restricted to that occlusion's query photos |
+
+| `runs/e1e2/analysis/{exp}_predictions.csv` | One row per query photo, with its top-1 `pred_person`, whether or not it was accepted; the source of the §0b matrices |
+
+The §0b images are drawn by `scripts/22_e1e2_plots.py` (`plot_confusion_top1`) from the predictions files.
 
 Produced by `scripts/21_e1e2_confusion.py --exp {e0,e1,e2}` (reads the checkpoints already saved by `19_e1e2_person_finetune.py`; does not retrain anything).

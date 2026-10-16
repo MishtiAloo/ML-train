@@ -414,6 +414,12 @@ Full 30-person confusion matrices (each with an extra REJECT column — a query 
 ![E1 confusion matrix](plots/e1_confusion_overall.png)
 ![E2 confusion matrix](plots/e2_confusion_overall.png)
 
+**Without the acceptance threshold.** If every query is simply assigned to its nearest benchmark (no REJECT column), top-1 accuracy is E0 **97.46%**, E1 94.65%, E2 91.96%. The ranking reverses, because fine-tuning mainly lifts correct matches above 0.3 rather than improving which person ranks first; see [`confusion_matrices.md` §0b](confusion_matrices.md#0b-top-1-confusion-matrices-without-the-acceptance-threshold).
+
+![E0 top-1 confusion matrix, no threshold](plots/e0_confusion_top1.png)
+![E1 top-1 confusion matrix, no threshold](plots/e1_confusion_top1.png)
+![E2 top-1 confusion matrix, no threshold](plots/e2_confusion_top1.png)
+
 Macro precision stays near 100% for all three configurations precisely because misidentification is rare (§6.1) — almost all of the gap between accuracy and recall in every confusion matrix is the REJECT column, not a wrong-person column. E2's visibly lower macro precision (96.43% vs. E0's 100.00%) is the confusion-matrix-level signature of the same 3.32% pooled misidentification rate from §6.1.
 
 ## 7. Discussion & Conclusion

@@ -6,6 +6,8 @@ including a laptop with no CUDA.
 Outputs, under --out-dir (default docs/plots/ next to this script's project
 root):
     {e0,e1,e2}_confusion_overall.png   row-normalized 30x31 heatmap
+    {e0,e1,e2}_confusion_top1.png      30x30 heatmap, nearest benchmark only (no 0.3
+                                       threshold, so no REJECT column)
     per_occlusion_accuracy.png         grouped bar chart, E0 vs E1 vs E2
     outcome_breakdown.png              stacked bar: accepted/rejected/misID
     epoch_curves.png                   val accuracy per epoch, all 6 folds, E1 vs E2
@@ -56,6 +58,43 @@ def plot_confusion(analysis_dir: Path, out_dir: Path):
         fig.savefig(out_dir / f"{exp}_confusion_overall.png", dpi=150)
         plt.close(fig)
         print(f"saved {out_dir / f'{exp}_confusion_overall.png'}")
+
+
+def plot_confusion_top1(analysis_dir: Path, out_dir: Path):
+    """Closed-set view: every query is assigned to its nearest benchmark,
+    ignoring the 0.3 acceptance threshold. pred_person in *_predictions.csv
+    is that top-1 match whether or not it was accepted."""
+    for exp in EXPS:
+        with open(analysis_dir / f"{exp}_predictions.csv", newline="") as fh:
+            rows = list(csv.DictReader(fh))
+        persons = sorted({r["person_id"] for r in rows})
+        idx = {p: i for i, p in enumerate(persons)}
+        cm = np.zeros((len(persons), len(persons)), dtype=int)
+        for r in rows:
+            cm[idx[r["person_id"]], idx[r["pred_person"]]] += 1
+        cm_norm = cm / np.maximum(cm.sum(axis=1, keepdims=True), 1)
+        acc = np.trace(cm) / cm.sum()
+
+        fig, ax = plt.subplots(figsize=(11, 10))
+        im = ax.imshow(cm_norm, cmap="Blues", vmin=0, vmax=1)
+        for i in range(len(persons)):
+            for j in range(len(persons)):
+                if cm[i, j]:
+                    ax.text(j, i, str(cm[i, j]), ha="center", va="center", fontsize=5,
+                            color="white" if cm_norm[i, j] > 0.5 else "black")
+        ax.set_xticks(range(len(persons)))
+        ax.set_xticklabels(persons, rotation=90, fontsize=6)
+        ax.set_yticks(range(len(persons)))
+        ax.set_yticklabels(persons, fontsize=6)
+        ax.set_xlabel("Predicted person (nearest benchmark, no acceptance threshold)")
+        ax.set_ylabel("True person")
+        ax.set_title(f"{LABELS[exp]} — top-1 confusion matrix, no threshold "
+                     f"(cell = count, colour = row rate), n={cm.sum()}, top-1 accuracy {acc:.2%}")
+        fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02, label="row-normalized rate")
+        fig.tight_layout()
+        fig.savefig(out_dir / f"{exp}_confusion_top1.png", dpi=150)
+        plt.close(fig)
+        print(f"saved {out_dir / f'{exp}_confusion_top1.png'}  top-1 accuracy {acc:.4%}")
 
 
 def plot_per_occlusion(metrics: dict, out_dir: Path):
@@ -146,6 +185,7 @@ def main():
     metrics = {exp: json.load(open(analysis_dir / f"{exp}_metrics.json")) for exp in EXPS}
 
     plot_confusion(analysis_dir, out_dir)
+    plot_confusion_top1(analysis_dir, out_dir)
     plot_per_occlusion(metrics, out_dir)
     plot_outcome_breakdown(results_dir, out_dir)
     plot_epoch_curves(results_dir, out_dir)
